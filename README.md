@@ -1,6 +1,6 @@
 # water-app
 
-water-app is a React Native mobile app that helps users build and maintain focus habits with a calm, friendly experience.
+This is a React Native mobile app that helps users build and maintain focus habits with a calm, friendly experience.
 
 ## What it is
 

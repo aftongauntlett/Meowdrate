@@ -2,6 +2,7 @@ import * as React from 'react';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
 import { HomeScreen } from '../screens/HomeScreen';
+import { DrinkMomentScreen } from '../screens/DrinkMomentScreen';
 import type { RootStackParamList } from './types';
 import { theme } from '../theme';
 
@@ -18,6 +19,11 @@ export function AppNavigator() {
       }}
     >
       <Stack.Screen name="Home" component={HomeScreen} options={{ title: 'water-app' }} />
+      <Stack.Screen
+        name="DrinkMoment"
+        component={DrinkMomentScreen}
+        options={{ title: 'Drink moment' }}
+      />
     </Stack.Navigator>
   );
 }
