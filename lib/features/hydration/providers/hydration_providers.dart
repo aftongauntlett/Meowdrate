@@ -59,6 +59,26 @@ class HydrationController {
           totalMlToday: summary.totalAmountMl,
         );
   }
+
+  /// Debug-only: backdates a drink entry (e.g. "4 hours ago") to exercise
+  /// the thirsty/idle mood states without waiting on real time. Deliberately
+  /// skips points/streak — it's simulating the clock, not a real action.
+  Future<void> debugLogBackdated(Duration ago, {int amountMl = kDrinkAmountMl}) async {
+    await _ref
+        .read(hydrationRepositoryProvider)
+        .logDrink(amountMl, at: DateTime.now().subtract(ago));
+    await _ref.read(hydrationSummaryProvider.notifier).refresh();
+    _ref.invalidate(lastDrinkAtProvider);
+  }
+
+  /// Debug-only: wipes all local hydration + pet data, for testing the
+  /// fresh-install / zero-state experience.
+  Future<void> debugResetAll() async {
+    await _ref.read(hydrationRepositoryProvider).clearAll();
+    await _ref.read(petStateProvider.notifier).debugReset();
+    await _ref.read(hydrationSummaryProvider.notifier).refresh();
+    _ref.invalidate(lastDrinkAtProvider);
+  }
 }
 
 final hydrationControllerProvider = Provider((ref) => HydrationController(ref));

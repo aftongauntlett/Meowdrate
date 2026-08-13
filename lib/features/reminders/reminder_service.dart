@@ -54,7 +54,7 @@ class ReminderService {
       title: 'Your buddy is getting thirsty',
       body: 'Take a sip of water and check in on your pet.',
       repeatInterval: RepeatInterval.hourly,
-      androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
+      androidScheduleMode: AndroidScheduleMode.inexactAllowWhileIdle,
       notificationDetails: const NotificationDetails(
         android: AndroidNotificationDetails(
           _channelId,

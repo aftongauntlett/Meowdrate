@@ -45,6 +45,10 @@ flutter analyze
 flutter test
 ```
 
+See [TESTING.md](TESTING.md) for a manual test pass through every feature,
+including a debug panel (debug builds only) for exercising streaks/points
+without waiting on real time.
+
 ## Folder structure
 
 ```

@@ -1,8 +1,10 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_spacing.dart';
+import '../../debug/debug_panel.dart';
 import '../../pet/providers/pet_providers.dart';
 import '../../pet/widgets/pet_view.dart';
 import '../../reminders/reminder_service.dart';
@@ -86,6 +88,14 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     );
   }
 
+  void _openDebugPanel() {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: AppColors.surface,
+      builder: (_) => const DebugPanel(),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final summaryAsync = ref.watch(hydrationSummaryProvider);
@@ -111,15 +121,25 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                           fontWeight: FontWeight.w800,
                         ),
                   ),
-                  IconButton(
-                    tooltip: _remindersEnabled ? 'Reminders on' : 'Reminders off',
-                    onPressed: _toggleReminders,
-                    icon: Icon(
-                      _remindersEnabled
-                          ? Icons.notifications_active
-                          : Icons.notifications_none,
-                      color: _remindersEnabled ? AppColors.primary : AppColors.textMuted,
-                    ),
+                  Row(
+                    children: [
+                      if (kDebugMode)
+                        IconButton(
+                          tooltip: 'Debug panel',
+                          onPressed: _openDebugPanel,
+                          icon: const Icon(Icons.bug_report_outlined, color: AppColors.textMuted),
+                        ),
+                      IconButton(
+                        tooltip: _remindersEnabled ? 'Reminders on' : 'Reminders off',
+                        onPressed: _toggleReminders,
+                        icon: Icon(
+                          _remindersEnabled
+                              ? Icons.notifications_active
+                              : Icons.notifications_none,
+                          color: _remindersEnabled ? AppColors.primary : AppColors.textMuted,
+                        ),
+                      ),
+                    ],
                   ),
                 ],
               ),

@@ -76,6 +76,35 @@ class PetNotifier extends AsyncNotifier<PetState> {
     final d = date.day.toString().padLeft(2, '0');
     return '$y-$m-$d';
   }
+
+  /// Debug-only helpers for exercising streaks/points without waiting on
+  /// real time or real drinks. Callers gate these behind kDebugMode.
+  Future<void> debugAdjustPoints(int delta) async {
+    final current = state.value ?? const PetState();
+    final next = current.copyWith(points: (current.points + delta).clamp(0, 1 << 30));
+    state = AsyncValue.data(next);
+    await ref.read(petRepositoryProvider).saveState(next);
+  }
+
+  Future<void> debugBumpStreak() async {
+    final current = state.value ?? const PetState();
+    final newStreak = current.currentStreak + 1;
+    final yesterday = _isoDate(DateTime.now().subtract(const Duration(days: 1)));
+
+    final next = current.copyWith(
+      currentStreak: newStreak,
+      longestStreak: newStreak > current.longestStreak ? newStreak : current.longestStreak,
+      lastGoalMetDate: yesterday,
+    );
+    state = AsyncValue.data(next);
+    await ref.read(petRepositoryProvider).saveState(next);
+  }
+
+  Future<void> debugReset() async {
+    const fresh = PetState();
+    state = const AsyncValue.data(fresh);
+    await ref.read(petRepositoryProvider).saveState(fresh);
+  }
 }
 
 final petStateProvider = AsyncNotifierProvider<PetNotifier, PetState>(PetNotifier.new);

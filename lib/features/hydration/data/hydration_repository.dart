@@ -22,9 +22,9 @@ class HydrationRepository {
         .toList();
   }
 
-  Future<HydrationEntry> logDrink(int amountMl) async {
+  Future<HydrationEntry> logDrink(int amountMl, {DateTime? at}) async {
     final entry = HydrationEntry(
-      timestamp: DateTime.now().millisecondsSinceEpoch,
+      timestamp: (at ?? DateTime.now()).millisecondsSinceEpoch,
       amountMl: amountMl,
     );
 
@@ -35,6 +35,10 @@ class HydrationRepository {
     });
 
     return entry;
+  }
+
+  Future<void> clearAll() async {
+    await _store.writeJson(_storageKey, {'drinks': <Map<String, dynamic>>[]});
   }
 
   Future<List<HydrationEntry>> getDrinksToday({DateTime? now}) async {
