@@ -1,77 +1,78 @@
-# water-app
+# Water Buddy
 
-This is a React Native mobile app that helps users build and maintain focus habits with a calm, friendly experience.
+A small hydration companion app: log water, watch a pet react, build a
+streak, and unlock cosmetics for your buddy.
 
 ## What it is
 
-A product-grade mobile application foundation with a clean architecture, shared UI components, navigation, and strict TypeScript.
+A focused, playful hydration tracker with a pet companion whose mood
+reflects how recently you've had water, a daily goal + streak loop, and a
+points-based shop for cosmetic accessories. Everything is stored locally —
+no backend.
 
 ## Tech stack
 
-- Expo (latest SDK)
-- React Native
-- TypeScript (strict)
-- React Navigation
-- ESLint + Prettier
+- Flutter (Dart)
+- Riverpod (`flutter_riverpod`) for state management
+- `shared_preferences` for local persistence
+- `lottie` for pet mood animations (with a graceful placeholder fallback)
+- `flutter_local_notifications` for hydration reminders
 
 ## How to run
 
 ### Prerequisites
 
-- Node.js + npm
-- Expo Go app (for device testing) or Xcode/Android Studio for simulators
+- Flutter SDK (`brew install --cask flutter`)
+- Chrome (web), or Xcode/Android Studio for simulators/devices
 
 ### Install
 
 ```bash
-npm install
+flutter pub get
 ```
 
-### Start
+### Run
 
 ```bash
-npx expo start
+flutter run -d chrome   # easiest — no simulator/emulator required
+flutter run              # picks any connected device/simulator
 ```
 
-Useful scripts:
+Useful commands:
 
 ```bash
-npm run typecheck
-npm run lint
-npm run format:check
+flutter analyze
+flutter test
 ```
 
 ## Folder structure
 
-The project uses an `app/` source directory for maintainability.
-
 ```
-app/
-  components/    Reusable UI building blocks
-  screens/       Screen layout + navigation wiring (no business logic)
-  hooks/         Stateful orchestration and reusable app hooks
-  services/      Domain logic, API clients, side effects
-  storage/       Persistence (AsyncStorage/secure storage wrappers)
-  navigation/    Navigators and navigation types
-  theme/         Design tokens (colors, spacing, radius)
-  utils/         Small pure helpers
-  App.tsx        App root (providers, navigation container)
-
-App.tsx          Thin Expo entrypoint that delegates to app/App.tsx
-index.ts         Expo root registration
-assets/          Static assets
+lib/
+  main.dart                    App entrypoint, notification init
+  app.dart                     MaterialApp + theme wiring
+  core/
+    theme/                     Design tokens (colors, spacing, radius) + ThemeData
+    storage/                   Thin shared_preferences + JSON wrapper
+  features/
+    hydration/                 Drink logging: models, repository, providers, screens
+    pet/                       Pet mood, points/streak state, PetView animation widget
+    shop/                      Cosmetic unlock catalog + screen
+    reminders/                 Local notification scheduling
+assets/
+  pet/                         Drop-in Lottie animations (see assets/pet/README.md)
 ```
+
+## Adding pet animations
+
+`PetView` looks for `assets/pet/idle.json`, `happy.json`, and
+`thirsty.json` (Lottie files) and falls back to an emoji placeholder if
+they're missing, so the app runs fine before real art is sourced. See
+`assets/pet/README.md` for details.
 
 ## Design principles
 
-- Clear boundaries: UI vs orchestration vs domain logic
-- Small, focused modules (avoid “god files”)
-- Predictable data flow and testable code paths
+- Clear boundaries: UI vs. state/providers vs. data/repositories
+- Small, focused modules per feature (hydration / pet / shop / reminders)
+- Local-first persistence, no backend dependency
 - Consistent styling via theme tokens
-
-## Accessibility goals
-
-- Interactive elements have roles/labels and adequate touch targets
-- High-contrast, readable typography and spacing
-- Support system settings where practical (font scaling, safe areas)
-- Avoid color-only signals; always include text or structure
