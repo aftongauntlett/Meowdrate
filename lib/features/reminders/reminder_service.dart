@@ -51,15 +51,15 @@ class ReminderService {
   Future<void> scheduleHourlyReminder() async {
     await _plugin.periodicallyShow(
       id: _reminderNotificationId,
-      title: 'Your buddy is getting thirsty',
-      body: 'Take a sip of water and check in on your pet.',
+      title: 'The flood isn\'t going to drain itself.',
+      body: 'A creature is still waiting on you. Just saying.',
       repeatInterval: RepeatInterval.hourly,
       androidScheduleMode: AndroidScheduleMode.inexactAllowWhileIdle,
       notificationDetails: const NotificationDetails(
         android: AndroidNotificationDetails(
           _channelId,
           _channelName,
-          channelDescription: 'Periodic reminders to log water and check on your pet.',
+          channelDescription: 'Periodic reminders to log water and clear today\'s flood.',
         ),
         iOS: DarwinNotificationDetails(),
         macOS: DarwinNotificationDetails(),

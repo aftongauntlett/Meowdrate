@@ -1,5 +1,7 @@
 import 'dart:async';
 
+import 'package:audioplayers/audioplayers.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -18,6 +20,7 @@ class DrinkMomentScreen extends ConsumerStatefulWidget {
 class _DrinkMomentScreenState extends ConsumerState<DrinkMomentScreen> {
   late int _remainingSeconds = kDrinkMomentSeconds;
   Timer? _timer;
+  AudioPlayer? _songPlayer;
 
   @override
   void initState() {
@@ -30,11 +33,29 @@ class _DrinkMomentScreenState extends ConsumerState<DrinkMomentScreen> {
         _timer?.cancel();
       }
     });
+    unawaited(_playSong());
+  }
+
+  // Runs on its own player rather than through SoundService, so a one-shot
+  // SFX (e.g. drinkLogged when the user taps through) doesn't cut it off.
+  // Same "missing/unplayable asset is skipped silently" tolerance as
+  // SoundService — see assets/audio/README.md.
+  Future<void> _playSong() async {
+    try {
+      final player = _songPlayer = AudioPlayer();
+      await player.setVolume(0.5);
+      await player.play(AssetSource('audio/drinkMomentSong.mp3'));
+    } catch (error) {
+      if (kDebugMode) {
+        debugPrint('DrinkMomentScreen: skipping song ($error)');
+      }
+    }
   }
 
   @override
   void dispose() {
     _timer?.cancel();
+    _songPlayer?.dispose();
     super.dispose();
   }
 
@@ -58,6 +79,8 @@ class _DrinkMomentScreenState extends ConsumerState<DrinkMomentScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final colors = context.colors;
+
     return Scaffold(
       body: SafeArea(
         child: Padding(
@@ -69,15 +92,15 @@ class _DrinkMomentScreenState extends ConsumerState<DrinkMomentScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                'Your pet found water',
+                'Time to hydrate.',
                 style: Theme.of(context).textTheme.headlineSmall?.copyWith(
                       fontWeight: FontWeight.w800,
                     ),
               ),
               const SizedBox(height: AppSpacing.sm),
               Text(
-                'Take a few sips and come back when you’re done.',
-                style: TextStyle(color: AppColors.textMuted, fontSize: 16, height: 1.4),
+                'Take a few sips. I\'ll be here the whole time, watching.',
+                style: TextStyle(color: colors.textMuted, fontSize: 16, height: 1.4),
               ),
               const Spacer(),
               Center(
@@ -87,9 +110,9 @@ class _DrinkMomentScreenState extends ConsumerState<DrinkMomentScreen> {
                     vertical: AppSpacing.xxl,
                   ),
                   decoration: BoxDecoration(
-                    color: AppColors.surface,
+                    color: colors.surface,
                     borderRadius: BorderRadius.circular(18),
-                    border: Border.all(color: AppColors.border),
+                    border: Border.all(color: colors.border),
                   ),
                   child: Column(
                     children: [
@@ -104,8 +127,10 @@ class _DrinkMomentScreenState extends ConsumerState<DrinkMomentScreen> {
                       ),
                       const SizedBox(height: AppSpacing.sm),
                       Text(
-                        _isComplete ? 'Your pet is waiting…' : 'Hold on until the timer ends.',
-                        style: const TextStyle(color: AppColors.textMuted, fontSize: 14),
+                        _isComplete
+                            ? 'Go ahead — I\'m timing you.'
+                            : 'Hold on until the timer ends.',
+                        style: TextStyle(color: colors.textMuted, fontSize: 14),
                       ),
                     ],
                   ),

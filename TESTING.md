@@ -2,73 +2,97 @@
 
 How to exercise every feature by hand. Use the in-app **debug panel**
 (bug icon, top-right of Home — only visible in debug builds) to skip
-waiting on real time/drinks for the streak/points/mood checks below.
+waiting on real time/drinks for the checks below.
 
 ## 1. Fresh install / zero state
 
 1. Debug panel → **Reset all local data**
-2. Confirm: pet shows the idle placeholder, "Feeling okay", `0 / 2000 ml`,
-   `0 drinks today`, `0 day streak`, `0 points`, Recent says "No drinks yet."
+2. Confirm: flood is full, today's cat is shown (idle sprite animation
+   playing), caption reads "Keep drinking to clear the flood.",
+   `0 / 2000 ml`, `0 drinks today`, Recent says "No drinks yet." No
+   streak/day-count anywhere on this screen — that lives in Settings
+   only (see §5).
 
 ## 2. Drink Moment flow
 
 1. Tap **Log a drink**
-2. Confirm the countdown starts at `00:15` and counts down once per second
+2. Confirm the countdown starts at `00:15` and counts down once per
+   second
 3. Confirm **I drank** is disabled until the countdown hits `00:00`, and
-   the hint text switches from "Hold on until the timer ends." to "Your
-   pet is waiting…"
-4. Tap **Skip** on a fresh countdown instead — confirm it returns to Home
-   with nothing logged (count/ml unchanged)
-5. Redo and tap **I drank** once complete — confirm:
-   - Snackbar: "Nice — drink logged."
+   the hint text switches from "Hold on until the timer ends." to "Go
+   ahead — I'm timing you."
+4. Tap **Skip** on a fresh countdown instead — confirm it returns to
+   Home with nothing logged (count/ml unchanged)
+5. Redo and tap **I drank** once complete — confirm, back on Home:
    - Drinks-today count +1, total ml +250
-   - Progress bar advances
+   - The flood visibly drops (smoothly — see §3 for the animation check)
+     and the narrator caption changes to a drink-logged line
    - New row appears at the top of Recent with the current time
-   - Pet mood switches to **happy** and label reads "Nice and hydrated!"
-   - Points +10
+   - No snackbar/toast appears — the caption change is the only
+     confirmation now
 
-## 3. Pet mood states
+## 3. Flood level + creature reveal
 
-Mood is driven by time since the last logged drink — use the debug panel
-instead of waiting:
+Flood level is derived live from today's total — use the debug panel
+instead of logging drinks one at a time:
 
-- **Happy**: log a drink normally (§2) → mood should be happy immediately
-- **Idle**: happens naturally ~20 min after a drink; not worth waiting for
-  manually, just confirm it's the state whenever it's neither happy nor
-  thirsty
-- **Thirsty**: debug panel → **Simulate thirsty (4h ago)** → mood switches
-  to thirsty ("Getting thirsty…") without a real wait. Note this also adds
-  250ml to today's total (it's a real drink entry, just backdated).
+- **Drain flood (0%)** → water disappears, caption switches to a
+  goal-met line, today's cat is fully visible
+- **Flood full (100%)** → water covers almost the whole scene
+- **Use real flood level** → returns to the real derived value
+- **Next creature** → cycles the roster (Tabby / Box Cat / Dracula Cat)
+  so you can check every sprite animates without waiting for date
+  rollover
+- **Animation smoothness**: watch the water for at least 10–15 seconds
+  continuously — confirm it swishes smoothly with no visible "jump" or
+  reset in the wave pattern. Same for stars at night (§6): confirm they
+  render as small 4-point sparkles (not plain dots) and some visibly
+  twinkle at different rates, not all in unison.
 
-## 4. Daily goal + streaks
+## 4. Daily goal + streak (Settings)
 
 1. Debug panel → **Complete today's goal** (logs 2000ml in one shot)
-2. Confirm: progress bar fills to 100%, streak becomes `1 day streak`,
-   points jump by `10 + 25` (log + daily-goal bonus)
-3. Tap it again the same day — confirm streak does **not** double-count
-   (goal-met bonus only fires once per calendar day)
-4. Debug panel → **+1 day streak** a few times — confirm the streak chip
-   updates immediately each tap (this simulates *previous* days, so it
-   won't fight with today's real goal-completion logic)
+2. Confirm: flood drains, a goal-met narrator line shows, and (if sound
+   assets are present — see §8) the goal-met sound plays
+3. Tap it again the same day — confirm the day-count does **not**
+   double-count (only increments the first time the goal is met each
+   day) — check via Settings, not Home (see step 5 below)
+4. Debug panel → **+1 day streak** a few times, then open Settings (gear
+   icon) → confirm the "Consistency" section's day count updates
+   accordingly, phrased plainly ("N days in a row"), no fire icon, no
+   celebratory styling
 
-## 5. Points + Shop ("Closet")
+## 5. Narrator voice
 
-1. Debug panel → **+100 points** (repeat until you have enough for
-   whatever you want to test)
-2. Tap the points chip on Home → opens **Closet**
-3. Pick an item below your balance → **Unlock** should be tappable;
-   confirm points deduct by the item's cost and the button changes to
-   **Equip**
-4. Tap **Equip** → go back to Home → confirm the accessory emoji renders
-   over the pet
-5. Return to Closet → **Unequip** → confirm the accessory disappears from
-   Home
-6. Try an item costing more than your balance → **Unlock** should be
-   disabled (greyed out)
-7. Debug panel → **-100 points** to test the insufficient-funds state
-   without unlocking everything first
+- **Next narrator line** → cycles the drink-logged pool without needing
+  to log real drinks; confirm the caption text changes each tap and
+  doesn't repeat for a while
+- **Preview goal-missed line** / **Preview long-absence line** (debug
+  panel only) → shows a snackbar preview of a line from that pool;
+  confirm it's sarcastic per PRD.md's Voice & Tone section, not an
+  actual health warning. This debug preview is the only place a
+  narrator line still shows in a snackbar — for real users it never
+  does (see next bullet).
+- To see a **real** goal-missed/long-absence event: reset, then edit
+  `shared_preferences` directly to backdate `lastSeenDate`/
+  `lastGoalMetDate`, or simply wait. On the next app open, confirm the
+  line appears as the flood scene's own opening caption (not a popup),
+  and that it's replaced by a normal drink-logged line the moment you
+  log a drink
 
-## 6. Reminders
+## 6. Time of day + theme
+
+- Debug panel → **Dawn** / **Day** / **Dusk** / **Night** → confirm the
+  flood scene's sky gradient and stars change immediately (most visible
+  when the flood is also drained — see §3)
+- **Use real time of day** → returns to the device clock
+- Settings (gear icon) → switch between **System** / **Light** / **Dark**
+  → confirm the app chrome (background, cards, buttons, text) changes,
+  while the flood scene's sky/water/cat colors stay exactly the same
+  regardless of which is selected — these are two independent systems
+  by design (see PRD.md's Time of Day & Theming section)
+
+## 7. Reminders
 
 1. Tap the bell icon (top-right of Home)
 2. First tap requests notification permission — accept the system prompt
@@ -79,18 +103,19 @@ instead of waiting:
    Chrome (web) it's expected to no-op or behave inconsistently, since
    browser notification permissioning is a different system
 
-## 7. Persistence
+## 8. Persistence
 
-1. Log a couple of drinks, unlock/equip an item, build up a streak
+1. Log a couple of drinks, build up a streak
 2. Fully close the app (swipe away / quit, not just backgrounding)
-3. Reopen — confirm everything from step 1 is still there (state lives in
-   `shared_preferences`, not memory)
+3. Reopen — confirm the day-count (Settings) and theme preference are
+   still there (state lives in `shared_preferences`, not memory), but
+   today's drink log is day-scoped, not a long-term history — that's
+   intentional, see PRD.md's Persistence Model
 
 ## Known placeholders (not bugs)
 
-- Pet animations are an emoji placeholder until real Lottie files are
-  dropped into `assets/pet/` (see `assets/pet/README.md`) — the
-  `Failed to load resource ... idle.json 404` console message is expected
-  until then.
+- No sound plays until self-made files are dropped into `assets/audio/`
+  (see that folder's `README.md`) — this is silent by design, not a
+  crash. No console error is expected either.
 - `flutter run -d chrome` / `-d macos` can't fully exercise reminders —
   test those on a real iOS/Android device.

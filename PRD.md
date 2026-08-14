@@ -20,6 +20,16 @@ enough to finally be allowed to enjoy the app.
 The app is 100% free. No accounts, no ads, no in-app purchases, no login.
 Everything lives on the device.
 
+**The goal is to need this app less over time, not more.** Most habit
+apps are built to maximize engagement — daily-open streaks, notifications
+pulling you back, numbers designed to feel bad to let drop. This app is
+the opposite: the actual goal is better hydration habits, full stop. If
+the app helps build that habit and then you stop needing it, that's a
+win, not churn to prevent. Concretely, this means being suspicious of any
+feature whose main effect is "gives you a reason to check the app" rather
+than "helps you drink water" — see the streak placement decision below
+for what this looks like in practice.
+
 ## Core Loop
 
 The app opens on a scene that's flooded with water, swishing near the top
@@ -32,9 +42,6 @@ clears for the day.
   keeps the "starts full, drains as you drink" mechanic legible: draining
   it is the good outcome, matching how drinking water actually works in
   your body.
-- **Points** are earned per drink and spent same-day on picking one of a
-  few small good deeds — "clean the beach," "feed a bird," "plant
-  something." One light choice per day, not a shop, not a grind.
 - **Missing the goal** has no *mechanical* punishment. The day's creature
   just stays shy/hidden and is there again tomorrow, and the streak
   resets quietly with no punishment screen. No lost items, no locked
@@ -42,6 +49,13 @@ clears for the day.
   not do what Finch does. The narrator is free to be sarcastic about it
   in the moment (see Voice & Tone) — that's writing, not a dark pattern,
   since nothing real is actually at stake.
+
+**Cut after building it: the good-deeds picker.** An earlier version of
+this loop had points earned per drink, spent same-day on picking one of
+a few small good deeds ("clean the beach," "feed a bird"). Built and
+tried, then removed — it was an extra step that didn't add anything; the
+water draining and the creature being saved was already the whole point.
+Not every idea needs to survive contact with the actual app.
 
 ## Persistence Model (Local-Only, Deliberately Shallow)
 
@@ -51,12 +65,16 @@ detailed history:
 
 - **Today's progress** — persists through the day (needed for the loop to
   function), resets each day regardless.
-- **A streak count** (consecutive days the goal was met) — kept. Losing a
+- **A streak count** (consecutive days the goal was met) — kept, but
+  moved to Settings rather than shown on the main screen. Losing a
   number stings far less than losing a curated collection, so this is
   worth the small amount of "something to lose" it reintroduces. Keep the
   messaging low-drama either way: no "you lost your streak!" moment on a
   miss, it just quietly starts counting from 0 again the next successful
-  day.
+  day. Kept off the home screen deliberately — see the anti-engagement
+  note in Vision; a number you have to go looking for in Settings doesn't
+  nudge daily-open behavior the way a fire-icon chip on the home screen
+  would.
 - **No per-day archive / scrapbook / creature log.** A bird flutters off,
   says thanks, and that's the entire memory of the interaction — nothing
   is kept, so there's nothing specific to lose or grieve if storage resets.
@@ -72,8 +90,8 @@ manage anger about it.
 once, not as a scary first-launch warning):
 
 > No accounts, no cloud, nothing tracked. Everything lives on your phone —
-> if you switch phones or reinstall, your streak starts over. That's the
-> tradeoff for keeping this free and private.
+> if you switch phones or reinstall, your progress starts over. That's
+> the tradeoff for keeping this free and private.
 
 ## Keeping It Fresh Without a Backend
 
@@ -104,16 +122,49 @@ progress. No image assets. This is the same trick behind "cute duck game
 made entirely of sine waves" — cheap, smooth, and it's already the visual
 centerpiece of the whole app.
 
-### Creatures
+Early version had a visible "jump" every few seconds — the animation
+driver was a bounded 0→1 timer that reset periodically, and one of the
+two overlaid waves multiplied that value by a non-round factor, so the
+reset didn't land on a clean multiple of a full wave for that layer.
+Fixed by driving both waves off continuously-increasing elapsed time
+instead of a value that resets — nothing to jump anymore. Stars got the
+same treatment (real 4-point sparkle shapes instead of plain dots, with
+per-star independent twinkling), driven off the same continuous clock.
 
-Build as simple flat vector shapes drawn in code (circles, ellipses,
-bezier paths via `CustomPainter` or `CustomClipper`) rather than sourcing
-sprite packs. A small roster (duck, otter, turtle, fish, frog...) built
-from a shared set of primitive shapes keeps the style consistent across
-the whole cast, and it's realistic for one person to draw entirely in
-code — no vector art tool needed, though something like Figma/Inkscape
-could help block out shapes first if drawing paths blind in code gets
-hard.
+### Creatures — self-made didn't land, pivoted to a licensed pack
+
+The original plan was flat vector shapes drawn in code (circles,
+ellipses, bezier paths), matching the self-made-first goal. Built it,
+looked at it running, and it read as too rough — primitive-shapes-only
+has a real quality ceiling, and creatures are looked at directly and
+often enough that the ceiling mattered more here than it did for the
+water/sky background.
+
+Pivoted to a small licensed sprite pack instead: **Cat Pack / Cat Mega
+Pack** by toffeecraft (itch.io, free, credited in Settings → Credits and
+in `assets/creatures/README.md`). This also reframed the cast: instead of
+a roster of assorted pond wildlife, **the app only rescues cats** — which
+fits the flood premise better anyway (cats famously hate water). The
+pack's pixel-art sprite strips gave a roster of four (Tabby, Box Cat,
+Dracula Cat, Pochi), sliced and played back at runtime with
+nearest-neighbor scaling to keep the pixel art crisp.
+
+The lesson generalizes: self-made-first is the right default given the
+constraints (solo, no art background, free), but it's a starting
+position to try, not a rule to force through when the result is visibly
+worse than a well-made, properly licensed, free alternative. Water/sky/
+stars stayed procedural because that approach was actually working there.
+
+**Mood reacts to flood level.** The day's cat gets sadder/dimmer/slower
+as the flood sits full, and happier/brighter/quicker as it drains — same
+cat all day, reacting rather than swapping identity. Pochi has genuinely
+distinct per-mood art (hissing when the flood's mostly full → grooming
+partway through → sleeping peacefully once it's cleared), hand-cropped
+from the mega pack's fuller sprite sheet. The other three cats only have
+one real animation each, so their mood comes through via a tint (desaturate
++ dim when sad, slight brighten when happy) and animation-speed change
+applied at runtime — same technique either way, just layered on top of
+real mood art where it exists.
 
 ### Sound
 
@@ -243,27 +294,36 @@ versa.
 - No detailed per-day history/scrapbook the user can lose and grieve.
 - No punishing streak mechanics or permanent loss of pets/items for a
   missed day.
-- No "shop" — points are spent same-day on flavor choices, not
-  accumulated toward purchases.
+- No "shop" — nothing accumulated toward purchases, ever (this also
+  killed the good-deeds picker — see Core Loop above — once it turned
+  out to just be a shop-shaped extra step in disguise).
+- No streak chip on the home screen — see the anti-engagement note in
+  Vision. It lives in Settings, quiet and easy to ignore.
 
 ## Decisions
 
-- **Creature roster: ~10 creatures** (duck, otter, turtle, fish, frog,
-  crab, seal, heron, dragonfly, beaver, or similar). Enough for a
-  date-seeded pool to feel varied for months without repeating on
-  consecutive days, small enough for one person to hand-draw as vector
-  shapes in a reasonable amount of time. Easy to expand later since
-  there's no migration cost — it's just a bigger pool to seed from.
-- **Streak: kept**, low-drama on a miss (see Persistence Model above).
+- **Creature roster: cats only**, 4 (Tabby, Box Cat, Dracula Cat, Pochi)
+  from a licensed sprite pack — see Creatures above for why this replaced
+  the original ~10-species self-made plan. Small pool for now; easy to
+  grow later (bigger pack, or more self-made entries mixed in) since it's
+  just a bigger list to date-seed from, no migration cost.
+- **Mood: reacts to flood level**, not fixed per creature — sad/dim/slow
+  when full, happy/bright/quick when drained. Real distinct art where
+  available (Pochi), tint+speed modulation everywhere else.
+- **Streak: kept, but Settings-only** — not shown on the home screen.
+  See the anti-engagement note in Vision: the point is better habits,
+  not a number that pulls you back to check in.
+- **Good-deeds picker: cut.** Built, tried, removed — see Core Loop.
 - **Time of day: tied to device local clock**, live-shifting scene with
-  stars at night; separate manual Light/Dark/System toggle for UI chrome
-  (see Time of Day & Theming above).
+  stars at night (fixed to be jump-free — see Water background above);
+  separate manual Light/Dark/System toggle for UI chrome (see Time of
+  Day & Theming above).
 
 ## Open Questions
 
-- Exact clock-hour boundaries for dawn/day/dusk/night bands — tune once
-  the gradient is actually visible and playable rather than guessing
-  upfront.
-- Note pool size for the encouragement copy ("You're doing great!" and
-  friends) — same freshness-vs-effort tradeoff as the creature roster,
-  worth sizing once a first batch of copy is drafted.
+- Whether a 4-cat pool stays varied enough long-term, or needs
+  expanding (bigger pack, or self-made entries mixed in) once real
+  day-to-day use makes repeats noticeable.
+- Whether the other three cats are worth hand-cropping real mood art
+  for too, now that the mega pack is available, or whether the
+  tint/speed modulation reads well enough on its own.

@@ -1,7 +1,11 @@
+import 'dart:async';
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../core/audio/sound_effect.dart';
+import '../../../core/audio/sound_service.dart';
 import '../../../core/storage/local_store.dart';
-import '../../pet/providers/pet_providers.dart';
+import '../../flood/providers/flood_providers.dart';
 import '../data/hydration_repository.dart';
 import '../hydration_constants.dart';
 import '../models/hydration_entry.dart';
@@ -30,8 +34,8 @@ final hydrationSummaryProvider =
   HydrationSummaryNotifier.new,
 );
 
-/// Timestamp of the most recent drink ever logged (any day), used to drive
-/// the pet's mood — independent of "today"'s totals.
+/// Timestamp of the most recent drink ever logged (any day) — independent
+/// of "today"'s totals.
 final lastDrinkAtProvider = FutureProvider<DateTime?>((ref) async {
   final drinks = await ref.watch(hydrationRepositoryProvider).getAllDrinks();
   if (drinks.isEmpty) {
@@ -42,8 +46,8 @@ final lastDrinkAtProvider = FutureProvider<DateTime?>((ref) async {
   return DateTime.fromMillisecondsSinceEpoch(latestMs);
 });
 
-/// Orchestrates logging a drink across the hydration + pet features so
-/// screens don't need to know how points/streaks are derived.
+/// Orchestrates logging a drink across the hydration + flood features so
+/// screens don't need to know how the streak is derived.
 class HydrationController {
   HydrationController(this._ref);
 
@@ -55,14 +59,15 @@ class HydrationController {
     _ref.invalidate(lastDrinkAtProvider);
 
     final summary = _ref.read(hydrationSummaryProvider).value ?? DrinksTodaySummary.empty;
-    await _ref.read(petStateProvider.notifier).registerDrinkLogged(
+    await _ref.read(floodStateProvider.notifier).registerDrinkLogged(
           totalMlToday: summary.totalAmountMl,
         );
+    unawaited(_ref.read(soundServiceProvider).play(SoundEffect.drinkLogged));
   }
 
   /// Debug-only: backdates a drink entry (e.g. "4 hours ago") to exercise
-  /// the thirsty/idle mood states without waiting on real time. Deliberately
-  /// skips points/streak — it's simulating the clock, not a real action.
+  /// time-based mechanics without waiting on real time. Deliberately skips
+  /// the streak — it's simulating the clock, not a real action.
   Future<void> debugLogBackdated(Duration ago, {int amountMl = kDrinkAmountMl}) async {
     await _ref
         .read(hydrationRepositoryProvider)
@@ -71,11 +76,11 @@ class HydrationController {
     _ref.invalidate(lastDrinkAtProvider);
   }
 
-  /// Debug-only: wipes all local hydration + pet data, for testing the
+  /// Debug-only: wipes all local hydration + flood data, for testing the
   /// fresh-install / zero-state experience.
   Future<void> debugResetAll() async {
     await _ref.read(hydrationRepositoryProvider).clearAll();
-    await _ref.read(petStateProvider.notifier).debugReset();
+    await _ref.read(floodStateProvider.notifier).debugReset();
     await _ref.read(hydrationSummaryProvider.notifier).refresh();
     _ref.invalidate(lastDrinkAtProvider);
   }

@@ -6,40 +6,53 @@ import 'app_spacing.dart';
 class AppTheme {
   const AppTheme._();
 
-  static ThemeData get dark {
+  static ThemeData get dark => _themeFor(AppColors.dark, Brightness.dark);
+
+  static ThemeData get light => _themeFor(AppColors.light, Brightness.light);
+
+  static ThemeData _themeFor(AppColors colors, Brightness brightness) {
     final base = ThemeData(
-      brightness: Brightness.dark,
+      brightness: brightness,
       useMaterial3: true,
-      scaffoldBackgroundColor: AppColors.background,
-      colorScheme: const ColorScheme.dark(
-        surface: AppColors.background,
-        primary: AppColors.primary,
-        onPrimary: AppColors.background,
-        secondary: AppColors.gold,
-        onSurface: AppColors.text,
-      ),
+      scaffoldBackgroundColor: colors.background,
+      colorScheme: brightness == Brightness.dark
+          ? ColorScheme.dark(
+              surface: colors.background,
+              primary: colors.primary,
+              onPrimary: colors.background,
+              secondary: colors.gold,
+              onSurface: colors.text,
+            )
+          : ColorScheme.light(
+              surface: colors.background,
+              primary: colors.primary,
+              onPrimary: colors.background,
+              secondary: colors.gold,
+              onSurface: colors.text,
+            ),
       fontFamily: 'Roboto',
+      extensions: [colors],
     );
 
     return base.copyWith(
       textTheme: base.textTheme.apply(
-        bodyColor: AppColors.text,
-        displayColor: AppColors.text,
+        bodyColor: colors.text,
+        displayColor: colors.text,
       ),
       cardTheme: CardThemeData(
-        color: AppColors.surface,
+        color: colors.surface,
         elevation: 0,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(AppRadius.lg),
-          side: const BorderSide(color: AppColors.border),
+          side: BorderSide(color: colors.border),
         ),
       ),
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
-          backgroundColor: AppColors.primary,
-          foregroundColor: AppColors.background,
-          disabledBackgroundColor: AppColors.surface,
-          disabledForegroundColor: AppColors.textMuted,
+          backgroundColor: colors.primary,
+          foregroundColor: colors.background,
+          disabledBackgroundColor: colors.surface,
+          disabledForegroundColor: colors.textMuted,
           padding: const EdgeInsets.symmetric(vertical: AppSpacing.md),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(AppRadius.md),
@@ -49,7 +62,7 @@ class AppTheme {
       ),
       textButtonTheme: TextButtonThemeData(
         style: TextButton.styleFrom(
-          foregroundColor: AppColors.textMuted,
+          foregroundColor: colors.textMuted,
           textStyle: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
         ),
       ),
