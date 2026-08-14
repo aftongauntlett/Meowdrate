@@ -1,4 +1,4 @@
-package com.aftongauntlett.water_app
+package com.aftongauntlett.meowdrate
 
 import io.flutter.embedding.android.FlutterActivity
 

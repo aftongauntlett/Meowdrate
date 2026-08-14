@@ -1,4 +1,4 @@
-# Water Buddy
+# Meowdrate
 
 A hydration app that starts full instead of empty. No points to grind,
 no shop, no ads, no accounts — just a flood that recedes as you drink,

@@ -1,10 +1,10 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:water_app/core/audio/sound_effect.dart';
-import 'package:water_app/core/audio/sound_service.dart';
-import 'package:water_app/core/utils/iso_date.dart';
-import 'package:water_app/features/flood/providers/flood_providers.dart';
+import 'package:meowdrate/core/audio/sound_effect.dart';
+import 'package:meowdrate/core/audio/sound_service.dart';
+import 'package:meowdrate/core/utils/iso_date.dart';
+import 'package:meowdrate/features/flood/providers/flood_providers.dart';
 
 /// registerDrinkLogged plays a sound on goal-met; the real SoundService
 /// touches platform channels that aren't available in a plain `test()`

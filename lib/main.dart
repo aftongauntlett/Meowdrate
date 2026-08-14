@@ -8,5 +8,5 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await reminderService.init();
 
-  runApp(const ProviderScope(child: WaterApp()));
+  runApp(const ProviderScope(child: MeowdrateApp()));
 }

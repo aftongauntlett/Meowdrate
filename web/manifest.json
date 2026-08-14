@@ -1,11 +1,11 @@
 {
-    "name": "water_app",
-    "short_name": "water_app",
+    "name": "Meowdrate",
+    "short_name": "Meowdrate",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",
     "theme_color": "#0175C2",
-    "description": "A new Flutter project.",
+    "description": "A hydration app with a flood that recedes as you drink.",
     "orientation": "portrait-primary",
     "prefer_related_applications": false,
     "icons": [

@@ -1,4 +1,4 @@
-# Water Buddy — Product Redesign PRD
+# Meowdrate — Product Redesign PRD
 
 ## Status
 
@@ -12,8 +12,8 @@ built on top of it is being replaced with what's described below.
 
 Most hydration/habit apps run on manufactured scarcity: you earn a trickle
 of points and constantly feel like you can't afford the fun stuff, which
-makes the app feel like it's optimizing for engagement, not for you. Water
-Buddy inverts that. You start every day with abundance, and the entire loop
+makes the app feel like it's optimizing for engagement, not for you.
+Meowdrate inverts that. You start every day with abundance, and the entire loop
 is about spending what you have on something good — not accumulating
 enough to finally be allowed to enjoy the app.
 

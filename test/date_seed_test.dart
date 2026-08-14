@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:water_app/core/utils/date_seed.dart';
+import 'package:meowdrate/core/utils/date_seed.dart';
 
 void main() {
   group('dateSeededIndex', () {

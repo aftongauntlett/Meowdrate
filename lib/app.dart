@@ -5,15 +5,15 @@ import 'core/theme/app_theme.dart';
 import 'features/flood/screens/flood_home_screen.dart';
 import 'features/settings/providers/theme_mode_providers.dart';
 
-class WaterApp extends ConsumerWidget {
-  const WaterApp({super.key});
+class MeowdrateApp extends ConsumerWidget {
+  const MeowdrateApp({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final themeMode = ref.watch(themeModeProvider).value ?? ThemeMode.system;
 
     return MaterialApp(
-      title: 'Water Buddy',
+      title: 'Meowdrate',
       debugShowCheckedModeBanner: false,
       theme: AppTheme.light,
       darkTheme: AppTheme.dark,

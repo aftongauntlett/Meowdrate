@@ -135,7 +135,7 @@ class _FloodHomeScreenState extends ConsumerState<FloodHomeScreen> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
-                    'Water Buddy',
+                    'Meowdrate',
                     style: Theme.of(context).textTheme.headlineMedium?.copyWith(
                           fontWeight: FontWeight.w800,
                         ),
