@@ -41,23 +41,6 @@ class HydrationRepository {
     await _store.writeJson(_storageKey, {'drinks': <Map<String, dynamic>>[]});
   }
 
-  /// Drops only today's entries, keeping prior days' history (and the
-  /// streak it's built on) intact.
-  Future<void> clearToday({DateTime? now}) async {
-    final drinks = await getAllDrinks();
-    final start = _startOfDay(now ?? DateTime.now());
-    final end = start.add(const Duration(days: 1));
-
-    final kept = drinks.where((d) {
-      final at = DateTime.fromMillisecondsSinceEpoch(d.timestamp);
-      return at.isBefore(start) || !at.isBefore(end);
-    }).toList();
-
-    await _store.writeJson(_storageKey, {
-      'drinks': kept.map((d) => d.toJson()).toList(),
-    });
-  }
-
   Future<List<HydrationEntry>> getDrinksToday({DateTime? now}) async {
     final drinks = await getAllDrinks();
     final start = _startOfDay(now ?? DateTime.now());

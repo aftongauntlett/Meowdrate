@@ -89,17 +89,6 @@ class HydrationController {
     _ref.invalidate(lastDrinkAtProvider);
   }
 
-  /// Clears today's logged drinks only — yesterday and earlier (and the
-  /// streak they've built) are untouched. The flood level corrects itself
-  /// on the next read since it's derived live from today's total rather
-  /// than stored.
-  Future<void> resetToday() async {
-    await _ref.read(hydrationRepositoryProvider).clearToday();
-    await _ref.read(hydrationSummaryProvider.notifier).refresh();
-    _ref.invalidate(lastDrinkAtProvider);
-    await _syncHomeWidget();
-  }
-
   /// Debug-only: wipes all local hydration + flood data, for testing the
   /// fresh-install / zero-state experience.
   Future<void> debugResetAll() async {

@@ -17,6 +17,8 @@ import '../../../core/widgets/themed_card_decoration.dart';
 import '../../creatures/creature_roster.dart';
 import '../../creatures/models/mood_band.dart';
 import '../../creatures/widgets/sprite_animation.dart';
+import '../../settings/providers/music_muted_providers.dart';
+import '../../settings/providers/sound_muted_providers.dart';
 import '../hydration_constants.dart';
 import '../providers/hydration_providers.dart';
 
@@ -30,9 +32,29 @@ class DrinkMomentScreen extends ConsumerStatefulWidget {
 class _DrinkMomentScreenState extends ConsumerState<DrinkMomentScreen> {
   static const _songVolume = 0.5;
 
+  // How long the crossfade at each loop boundary (and the very first
+  // fade-in) takes. Comfortably shorter than the track itself, so the
+  // envelope in _fadeFactor never has to fight itself mid-song.
+  static const _fadeWindow = Duration(seconds: 2);
+
   late int _remainingSeconds = kDrinkMomentSeconds;
   Timer? _timer;
   AudioPlayer? _songPlayer;
+  StreamSubscription<Duration>? _songPositionSub;
+  StreamSubscription<Duration>? _songDurationSub;
+  Duration? _songDuration;
+  Duration _songPosition = Duration.zero;
+
+  // Mirrors musicMutedProvider and soundMutedProvider locally so
+  // _updateSongVolume can read them synchronously from the
+  // position-stream callback. Seeded from whatever the providers already
+  // have (falls back to unmuted while still loading) and kept in sync by
+  // the ref.listen calls in build(). _musicMuted is this screen's own
+  // music-only toggle (see _MusicMuteButton); _soundMuted is the Settings
+  // "Sound" master mute, which silences the song too — either one being
+  // true means no audio.
+  bool _musicMuted = false;
+  bool _soundMuted = false;
 
   // Picked once per visit (not per rebuild) so it doesn't shuffle under
   // the user mid-countdown — a fresh roll each time this screen opens.
@@ -41,6 +63,8 @@ class _DrinkMomentScreenState extends ConsumerState<DrinkMomentScreen> {
   @override
   void initState() {
     super.initState();
+    _musicMuted = ref.read(musicMutedProvider).value ?? false;
+    _soundMuted = ref.read(soundMutedProvider).value ?? false;
     _timer = Timer.periodic(const Duration(seconds: 1), (_) {
       setState(() {
         _remainingSeconds = (_remainingSeconds - 1).clamp(
@@ -48,12 +72,11 @@ class _DrinkMomentScreenState extends ConsumerState<DrinkMomentScreen> {
           kDrinkMomentSeconds,
         );
       });
+      // The countdown is just a pace-setter, not a track length — once it
+      // hits zero the timer stops ticking but the song keeps looping, so
+      // someone who wants to linger and listen can.
       if (_remainingSeconds == 0) {
         _timer?.cancel();
-        // A straight stop() here was an abrupt cut — full volume to
-        // silence in one frame, with nothing else on screen changing at
-        // that exact instant to explain it. Fade instead.
-        unawaited(_fadeOutSong());
       }
     });
     unawaited(_playSong());
@@ -66,7 +89,19 @@ class _DrinkMomentScreenState extends ConsumerState<DrinkMomentScreen> {
   Future<void> _playSong() async {
     try {
       final player = _songPlayer = AudioPlayer();
-      await player.setVolume(_songVolume);
+      // Loops gaplessly on its own rather than us reseeking on completion
+      // — _updateSongVolume layers the fade in/out on top by watching
+      // position against duration, so each wrap-around still reads as a
+      // deliberate crossfade rather than a hard restart.
+      await player.setReleaseMode(ReleaseMode.loop);
+      await player.setVolume(0);
+      _songPositionSub = player.onPositionChanged.listen((position) {
+        _songPosition = position;
+        _updateSongVolume();
+      });
+      _songDurationSub = player.onDurationChanged.listen((duration) {
+        _songDuration = duration;
+      });
       await player.play(AssetSource('audio/drinkMomentSong.mp3'));
     } catch (error) {
       if (kDebugMode) {
@@ -75,36 +110,54 @@ class _DrinkMomentScreenState extends ConsumerState<DrinkMomentScreen> {
     }
   }
 
-  /// Ramps volume down over ~800ms instead of stopping outright. Reads
-  /// [_songPlayer] fresh each step (rather than capturing it once) so a
-  /// concurrent dispose() — e.g. the user tapping through mid-fade — just
-  /// stops the loop the next time it checks, instead of calling into an
-  /// already-disposed player.
-  Future<void> _fadeOutSong() async {
-    const steps = 8;
-    const stepDuration = Duration(milliseconds: 100);
-    for (var i = steps - 1; i >= 0; i--) {
-      final player = _songPlayer;
-      if (player == null) {
-        return;
-      }
-      try {
-        await player.setVolume(_songVolume * i / steps);
-      } catch (_) {
-        return;
-      }
-      await Future.delayed(stepDuration);
+  /// Applies the current mute flag and fade envelope to [_songPlayer]'s
+  /// volume. Called on every position tick (for the loop-boundary fade)
+  /// and whenever the mute toggle changes (using the last-known position),
+  /// so both stay driven through this single place.
+  void _updateSongVolume() {
+    final player = _songPlayer;
+    if (player == null) {
+      return;
     }
-    try {
-      await _songPlayer?.stop();
-    } catch (_) {
-      // Already gone — fine, that's the goal either way.
+    final muted = _musicMuted || _soundMuted;
+    final volume = muted ? 0.0 : _songVolume * _fadeFactor();
+    unawaited(player.setVolume(volume).catchError((_) {}));
+  }
+
+  /// 0.0-1.0 multiplier that ramps up over [_fadeWindow] from the very
+  /// start of the track, and back down over [_fadeWindow] before it wraps
+  /// — the "nice fade in/fade out on repeat" effect, layered on top of the
+  /// player's own gapless loop.
+  double _fadeFactor() {
+    final duration = _songDuration;
+    if (duration == null || duration <= _fadeWindow * 2) {
+      return 1.0;
     }
+    final fadeMs = _fadeWindow.inMilliseconds;
+    final msFromStart = _songPosition.inMilliseconds;
+    if (msFromStart < fadeMs) {
+      return (msFromStart / fadeMs).clamp(0.0, 1.0);
+    }
+    final msFromEnd = (duration - _songPosition).inMilliseconds;
+    if (msFromEnd < fadeMs) {
+      return (msFromEnd / fadeMs).clamp(0.0, 1.0);
+    }
+    return 1.0;
+  }
+
+  Future<void> _toggleMusicMuted() async {
+    final next = !_musicMuted;
+    setState(() => _musicMuted = next);
+    unawaited(ref.read(soundServiceProvider).play(SoundEffect.uiTap));
+    _updateSongVolume();
+    await ref.read(musicMutedProvider.notifier).set(next);
   }
 
   @override
   void dispose() {
     _timer?.cancel();
+    _songPositionSub?.cancel();
+    _songDurationSub?.cancel();
     _songPlayer?.dispose();
     super.dispose();
   }
@@ -133,6 +186,24 @@ class _DrinkMomentScreenState extends ConsumerState<DrinkMomentScreen> {
   Widget build(BuildContext context) {
     final colors = context.colors;
 
+    // Catches both a later toggle from Settings and each provider's own
+    // initial load finishing after initState already seeded these fields
+    // with a guessed default.
+    ref.listen<AsyncValue<bool>>(musicMutedProvider, (previous, next) {
+      final value = next.value;
+      if (value != null && value != _musicMuted) {
+        setState(() => _musicMuted = value);
+        _updateSongVolume();
+      }
+    });
+    ref.listen<AsyncValue<bool>>(soundMutedProvider, (previous, next) {
+      final value = next.value;
+      if (value != null && value != _soundMuted) {
+        setState(() => _soundMuted = value);
+        _updateSongVolume();
+      }
+    });
+
     return Scaffold(
       body: SafeArea(
         child: Padding(
@@ -141,12 +212,26 @@ class _DrinkMomentScreenState extends ConsumerState<DrinkMomentScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
-                'Time to hydrate.',
-                style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                  fontFamily: kHeadingFontFamily,
-                  fontWeight: FontWeight.w700,
-                ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    'Time to hydrate.',
+                    style: Theme.of(context).textTheme.headlineSmall
+                        ?.copyWith(
+                          fontFamily: kHeadingFontFamily,
+                          fontWeight: FontWeight.w700,
+                        ),
+                  ),
+                  _MusicMuteButton(
+                    // Reflects whether the song is actually audible right
+                    // now (also off if Settings' master Sound mute is on),
+                    // even though tapping it only ever flips this screen's
+                    // own music-only flag — see _toggleMusicMuted.
+                    muted: _musicMuted || _soundMuted,
+                    onPressed: _toggleMusicMuted,
+                  ),
+                ],
               ),
               const SizedBox(height: AppSpacing.sm),
               Text(
@@ -227,20 +312,34 @@ class _DrinkMomentScreenState extends ConsumerState<DrinkMomentScreen> {
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    PixelButton(
-                      onPressed: _handleDrank,
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          const PixelIcon(
-                            'assets/ui/icon_check.png',
-                            color: Colors.white,
-                            size: 26,
+                    // A Row (not Center) is what actually hugs the button to
+                    // its content width here — PixelButton's inner Container
+                    // sets `alignment: Alignment.center`, which makes it
+                    // expand to fill any *bounded* incoming constraint
+                    // (Center's included, even though it's loose). Only a
+                    // Row gives its non-flex child an *unbounded* main-axis
+                    // constraint, which is what lets the Container
+                    // shrink-wrap instead — same fix as the Meowdrate!
+                    // button in flood_home_screen.dart.
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        PixelButton(
+                          onPressed: _handleDrank,
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              const PixelIcon(
+                                'assets/ui/icon_check.png',
+                                color: Colors.white,
+                                size: 26,
+                              ),
+                              const SizedBox(width: AppSpacing.sm),
+                              const Text('I Meowdrated!'),
+                            ],
                           ),
-                          const SizedBox(width: AppSpacing.sm),
-                          const Text('I Meowdrated!'),
-                        ],
-                      ),
+                        ),
+                      ],
                     ),
                     TextButton(
                       onPressed: _handleSkip,
@@ -273,3 +372,38 @@ String _formatSeconds(int totalSeconds) {
   final seconds = (totalSeconds % 60).toString().padLeft(2, '0');
   return '$minutes:$seconds';
 }
+
+/// Quick access to the same music-mute setting Settings has, right where
+/// the song is actually playing — someone who likes the tap/chime sound
+/// effects but not the background song shouldn't have to leave this screen
+/// to quiet it. A plain Material glyph (no PixelIcon) to match the other
+/// bare functional icons elsewhere (e.g. the settings gear).
+class _MusicMuteButton extends StatelessWidget {
+  const _MusicMuteButton({required this.muted, required this.onPressed});
+
+  final bool muted;
+  final VoidCallback onPressed;
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = context.colors;
+    return MouseRegion(
+      cursor: SystemMouseCursors.click,
+      child: GestureDetector(
+        onTap: onPressed,
+        child: Tooltip(
+          message: muted ? 'Unmute music' : 'Mute music',
+          child: Padding(
+            padding: const EdgeInsets.all(AppSpacing.xs),
+            child: Icon(
+              muted ? Icons.volume_off_outlined : Icons.volume_up_outlined,
+              color: colors.textMuted,
+              size: 22,
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+

@@ -14,9 +14,9 @@ import '../models/hydration_entry.dart';
 /// that confirms "I Meowdrated!" in the Drink Moment flow (icon_check.png,
 /// same asset, same meaning: this one's done), strung together by a
 /// primary-tinted trail instead of a plain divider, so it reads as a
-/// little quest log rather than a spreadsheet. Clock times are replaced
-/// with relative ones ("12m ago") and pushed to a quiet trailing label —
-/// useful, but no longer the headline. Unbounded in count — once a day's
+/// little quest log rather than a spreadsheet. Each row's clock time
+/// ("3:45 PM") is pushed to a quiet trailing label — useful, but no
+/// longer the headline. Unbounded in count — once a day's
 /// worth of entries is taller than fits comfortably, the card scrolls
 /// internally (a fixed max height) rather than growing and pushing the
 /// rest of the home screen down the page.
@@ -83,17 +83,11 @@ class _Timeline extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Captured once per build rather than per row — these are today's
-    // entries only, so "now" barely moves between the first and last row,
-    // and a single shared reference keeps every "Xm ago" consistent with
-    // its neighbors even as the seconds tick by mid-build.
-    final now = DateTime.now();
     return Column(
       children: [
         for (var i = 0; i < entries.length; i++)
           _TimelineRow(
             entry: entries[i],
-            now: now,
             isLast: i == entries.length - 1,
           ),
       ],
@@ -104,12 +98,10 @@ class _Timeline extends StatelessWidget {
 class _TimelineRow extends StatelessWidget {
   const _TimelineRow({
     required this.entry,
-    required this.now,
     required this.isLast,
   });
 
   final HydrationEntry entry;
-  final DateTime now;
   final bool isLast;
 
   static const _nodeSize = 30.0;
@@ -175,7 +167,7 @@ class _TimelineRow extends StatelessWidget {
                   ),
                   const SizedBox(height: 2),
                   Text(
-                    _relativeTime(entry.timestamp, now),
+                    _clockTime(entry.timestamp),
                     style: TextStyle(color: colors.textMuted, fontSize: 12),
                   ),
                 ],
@@ -188,16 +180,11 @@ class _TimelineRow extends StatelessWidget {
   }
 }
 
-String _relativeTime(int timestampMs, DateTime now) {
+String _clockTime(int timestampMs) {
   final date = DateTime.fromMillisecondsSinceEpoch(timestampMs);
-  final diff = now.difference(date);
-  if (diff.inMinutes < 1) {
-    return 'Just now';
-  }
-  if (diff.inMinutes < 60) {
-    return '${diff.inMinutes}m ago';
-  }
-  final hours = diff.inHours;
-  final minutes = diff.inMinutes % 60;
-  return minutes == 0 ? '${hours}h ago' : '${hours}h ${minutes}m ago';
+  final hour24 = date.hour;
+  final hour12 = hour24 % 12 == 0 ? 12 : hour24 % 12;
+  final minute = date.minute.toString().padLeft(2, '0');
+  final period = hour24 < 12 ? 'AM' : 'PM';
+  return '$hour12:$minute $period';
 }

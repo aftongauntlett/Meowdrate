@@ -3,6 +3,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../features/settings/providers/sound_muted_providers.dart';
 import 'sound_effect.dart';
 
 /// Which effects double as a discrete "button click" moment (as opposed to
@@ -43,7 +44,15 @@ class SoundService {
   final Map<SoundEffect, List<AudioPlayer>> _pools = {};
   final Map<SoundEffect, int> _nextIndex = {};
 
+  /// The Settings "Sound" master mute (see [soundMutedProvider]), mirrored
+  /// here by [soundServiceProvider] so [play] can check it synchronously
+  /// without every call site needing to read the provider itself.
+  bool muted = false;
+
   Future<void> play(SoundEffect effect) async {
+    if (muted) {
+      return;
+    }
     try {
       final player = await _acquirePlayer(effect);
       // Fired together via Future.wait rather than sequentially — awaiting
@@ -99,5 +108,11 @@ class SoundService {
 final soundServiceProvider = Provider<SoundService>((ref) {
   final service = SoundService();
   ref.onDispose(service.dispose);
+  ref.listen<AsyncValue<bool>>(soundMutedProvider, (previous, next) {
+    final value = next.value;
+    if (value != null) {
+      service.muted = value;
+    }
+  }, fireImmediately: true);
   return service;
 });

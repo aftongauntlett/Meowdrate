@@ -173,26 +173,36 @@ class _FloodHomeScreenState extends ConsumerState<FloodHomeScreen> {
                 ),
               ),
               const SizedBox(height: AppSpacing.xl),
-              SizedBox(
-                width: double.infinity,
-                child: PixelButton(
-                  onPressed: _openDrinkMoment,
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      // A plain glyph (icon_plus.png) read as a smudge/dot
-                      // at this size once recolored solid white — a
-                      // recognizable water drop reads instantly as "drink."
-                      const Icon(
-                        Icons.water_drop,
-                        color: Colors.white,
-                        size: 24,
-                      ),
-                      const SizedBox(width: AppSpacing.sm),
-                      const Text('Meowdrate!'),
-                    ],
+              Row(
+                // A Row (not Center) is what actually hugs the button to its
+                // content width here — PixelButton's inner Container sets
+                // `alignment: Alignment.center`, which makes it expand to
+                // fill any *bounded* incoming constraint (Center's included,
+                // even though it's loose). Only a Row gives its non-flex
+                // child an *unbounded* main-axis constraint, which is what
+                // lets the Container shrink-wrap instead — same reason the
+                // Appearance chips below already hug their text.
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  PixelButton(
+                    onPressed: _openDrinkMoment,
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        // A plain glyph (icon_plus.png) read as a smudge/dot
+                        // at this size once recolored solid white — a
+                        // recognizable water drop reads instantly as "drink."
+                        const Icon(
+                          Icons.water_drop,
+                          color: Colors.white,
+                          size: 24,
+                        ),
+                        const SizedBox(width: AppSpacing.sm),
+                        const Text('Meowdrate!'),
+                      ],
+                    ),
                   ),
-                ),
+                ],
               ),
               const SizedBox(height: AppSpacing.xl),
               Text(

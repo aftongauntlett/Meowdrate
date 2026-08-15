@@ -10,17 +10,16 @@ import '../../../core/audio/sound_service.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_fonts.dart';
 import '../../../core/theme/app_spacing.dart';
-import '../../../core/widgets/confirm_dialog.dart';
 import '../../../core/widgets/pixel_button.dart';
 import '../../../core/widgets/pixel_icon.dart';
 import '../../../core/widgets/themed_card_decoration.dart';
 import '../../flood/providers/flood_providers.dart';
-import '../../hydration/providers/hydration_providers.dart';
 import '../../reminders/reminder_coordinator.dart';
 import '../../reminders/reminder_service.dart';
 import '../providers/daily_goal_providers.dart';
 import '../providers/reminders_enabled_providers.dart';
 import '../providers/settings_sheet_providers.dart';
+import '../providers/sound_muted_providers.dart';
 import '../providers/theme_mode_providers.dart';
 
 /// Settings opens as a modal sheet you dismiss, not a page you navigate
@@ -174,6 +173,7 @@ class SettingsScreen extends ConsumerWidget {
     final themeModeAsync = ref.watch(themeModeProvider);
     final floodAsync = ref.watch(floodStateProvider);
     final dailyGoalAsync = ref.watch(dailyGoalGlassesProvider);
+    final soundMutedAsync = ref.watch(soundMutedProvider);
 
     return ListView(
       padding: const EdgeInsets.fromLTRB(
@@ -183,155 +183,264 @@ class SettingsScreen extends ConsumerWidget {
         AppSpacing.xxl,
       ),
       children: [
-        _SettingsPanel(
-          title: 'Appearance',
-          description:
-              'Changes the app\'s colors, not the water scene — that shifts with '
-              'the time of day on its own.',
-          centerChild: true,
-          child: themeModeAsync.when(
-            data: (mode) => _AppearanceToggle(
-              mode: mode,
-              onChanged: (value) {
-                unawaited(
-                  ref.read(soundServiceProvider).play(SoundEffect.uiTap),
-                );
-                ref.read(themeModeProvider.notifier).setThemeMode(value);
-              },
+        _PeekPanel(
+          side: _PeekSide.left,
+          asset: 'assets/ui/cat_sitting_grey.png',
+          width: 46,
+          bottom: -16,
+          panel: _SettingsPanel(
+            title: 'Appearance',
+            description:
+                'Changes the app\'s colors, not the water scene — that shifts with '
+                'the time of day on its own.',
+            centerChild: true,
+            child: themeModeAsync.when(
+              data: (mode) => _AppearanceToggle(
+                mode: mode,
+                onChanged: (value) {
+                  unawaited(
+                    ref.read(soundServiceProvider).play(SoundEffect.uiTap),
+                  );
+                  ref.read(themeModeProvider.notifier).setThemeMode(value);
+                },
+              ),
+              loading: () => const SizedBox.shrink(),
+              error: (_, _) => const SizedBox.shrink(),
             ),
-            loading: () => const SizedBox.shrink(),
-            error: (_, _) => const SizedBox.shrink(),
           ),
         ),
         const SizedBox(height: AppSpacing.lg),
-        _SettingsPanel(
-          title: '# of Glasses a Day',
-          description:
-              'How many glasses make up a full day — the cat is saved once '
-              'you\'ve logged this many.',
-          centerChild: true,
-          child: dailyGoalAsync.when(
-            data: (glasses) => _GoalStepper(
-              glasses: glasses,
-              onChanged: (value) =>
-                  ref.read(dailyGoalGlassesProvider.notifier).set(value),
+        _PeekPanel(
+          side: _PeekSide.right,
+          asset: 'assets/ui/cat_stretch_white.png',
+          width: 40,
+          bottom: -14,
+          panel: _SettingsPanel(
+            title: '# of Glasses a Day',
+            description:
+                'How many glasses make up a full day — the cat is saved once '
+                'you\'ve logged this many.',
+            centerChild: true,
+            child: dailyGoalAsync.when(
+              data: (glasses) => _GoalStepper(
+                glasses: glasses,
+                onChanged: (value) =>
+                    ref.read(dailyGoalGlassesProvider.notifier).set(value),
+              ),
+              loading: () => const SizedBox.shrink(),
+              error: (_, _) => const SizedBox.shrink(),
             ),
-            loading: () => const SizedBox.shrink(),
-            error: (_, _) => const SizedBox.shrink(),
           ),
         ),
         const SizedBox(height: AppSpacing.lg),
-        const _SettingsPanel(
-          title: 'Reminders',
-          description:
-              'A nudge every few hours between 7am and 10pm — skipped if '
-              'you\'ve already logged a drink recently or hit today\'s goal.',
-          centerChild: true,
-          child: _RemindersSection(),
-        ),
-        const SizedBox(height: AppSpacing.lg),
-        _SettingsPanel(
-          title: 'Consistency',
-          description:
-              'Deliberately kept off the main screen — the goal is better '
-              'habits, not a number to keep feeding.',
-          centerChild: true,
-          child: floodAsync.when(
-            data: (flood) => _StreakChip(streak: flood.currentStreak),
-            loading: () => const SizedBox.shrink(),
-            error: (_, _) => const SizedBox.shrink(),
+        _PeekPanel(
+          side: _PeekSide.left,
+          asset: 'assets/ui/cat_curled_cream.png',
+          width: 54,
+          bottom: -16,
+          panel: const _SettingsPanel(
+            title: 'Reminders',
+            description:
+                'A nudge every few hours between 7am and 10pm — skipped if '
+                'you\'ve already logged a drink recently or hit today\'s goal.',
+            centerChild: true,
+            child: _RemindersSection(),
           ),
         ),
         const SizedBox(height: AppSpacing.lg),
-        Stack(
-          clipBehavior: Clip.none,
-          children: [
-            _SettingsPanel(
-              title: 'Credits',
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  _CreditLine(
-                    before: 'Cat sprites and UI kit by toffeecraft (',
-                    linkText: 'toffeecraft.itch.io/cat-pack',
-                    url: 'https://toffeecraft.itch.io/cat-pack',
-                    after: ').',
+        _PeekPanel(
+          side: _PeekSide.right,
+          asset: 'assets/ui/cat_peekbox_orange.png',
+          width: 44,
+          bottom: -16,
+          panel: _SettingsPanel(
+            title: 'Sound',
+            description:
+                'Mutes everything — sound effects and the Drink Moment '
+                'song. For music only, use the speaker icon on the Drink '
+                'Moment screen instead.',
+            centerChild: true,
+            child: soundMutedAsync.when(
+              data: (muted) => _SoundMuteToggle(
+                muted: muted,
+                onChanged: (value) {
+                  unawaited(
+                    ref.read(soundServiceProvider).play(SoundEffect.uiTap),
+                  );
+                  ref.read(soundMutedProvider.notifier).set(value);
+                },
+              ),
+              loading: () => const SizedBox.shrink(),
+              error: (_, _) => const SizedBox.shrink(),
+            ),
+          ),
+        ),
+        const SizedBox(height: AppSpacing.lg),
+        _PeekPanel(
+          side: _PeekSide.left,
+          asset: 'assets/ui/cat_sit_tuxedo.png',
+          width: 50,
+          bottom: -16,
+          panel: _SettingsPanel(
+            title: 'Consistency',
+            description:
+                'Deliberately kept off the main screen — the goal is better '
+                'habits, not a number to keep feeding.',
+            centerChild: true,
+            child: floodAsync.when(
+              data: (flood) => _StreakChip(streak: flood.currentStreak),
+              loading: () => const SizedBox.shrink(),
+              error: (_, _) => const SizedBox.shrink(),
+            ),
+          ),
+        ),
+        const SizedBox(height: AppSpacing.lg),
+        _PeekPanel(
+          side: _PeekSide.right,
+          asset: 'assets/ui/cat_whiskers_black.png',
+          width: 44,
+          bottom: -16,
+          panel: _SettingsPanel(
+            title: 'Credits',
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                _CreditLine(
+                  before: 'Cat sprites and UI kit by toffeecraft (',
+                  linkText: 'toffeecraft.itch.io/cat-pack',
+                  url: 'https://toffeecraft.itch.io/cat-pack',
+                  after: ').',
+                ),
+                const SizedBox(height: AppSpacing.xs),
+                _CreditRichLine(
+                  parts: const [
+                    (text: 'Music by ', url: null),
+                    (
+                      text: 'Krzysztof Szymanski',
+                      url:
+                          'https://pixabay.com/users/djartmusic-46653586/'
+                          '?utm_source=link-attribution&utm_medium=referral'
+                          '&utm_campaign=music&utm_content=301292',
+                    ),
+                    (text: ' from ', url: null),
+                    (
+                      text: 'Pixabay',
+                      url:
+                          'https://pixabay.com//?utm_source=link-attribution'
+                          '&utm_medium=referral&utm_campaign=music'
+                          '&utm_content=301292',
+                    ),
+                    (text: '.', url: null),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        ),
+        const SizedBox(height: AppSpacing.lg),
+        _PeekPanel(
+          side: _PeekSide.left,
+          asset: 'assets/ui/cat_prayer_cream.png',
+          width: 42,
+          bottom: -16,
+          panel: _SettingsPanel(
+            title: 'Support this app',
+            description:
+                "Built solo by a developer who struggles with drinking water "
+                "too. It's free to use — if it's helped you out, support is "
+                "always appreciated.",
+            // A Row, not a bare PixelButton, is what actually hugs the
+            // button to its content width here — see the matching comment
+            // on the Meowdrate! button in flood_home_screen.dart.
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                PixelButton(
+                  onPressed: () {
+                    unawaited(
+                      ref.read(soundServiceProvider).play(SoundEffect.uiTap),
+                    );
+                    unawaited(
+                      launchUrl(
+                        Uri.parse('https://ko-fi.com/prettyprettyprettygood'),
+                        mode: LaunchMode.externalApplication,
+                      ),
+                    );
+                  },
+                  child: const Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(Icons.favorite, size: 16),
+                      SizedBox(width: AppSpacing.xs),
+                      Text('Support on Ko-fi'),
+                    ],
                   ),
-                  const SizedBox(height: AppSpacing.xs),
-                  _CreditLine(
-                    before: '"Stars & Sines" by Xcreenplay (',
-                    linkText: 'freesound.org/s/536023',
-                    url: 'https://freesound.org/s/536023',
-                    after: '), licensed CC BY-NC 4.0.',
-                  ),
-                ],
+                ),
+              ],
+            ),
+          ),
+        ),
+        const SizedBox(height: AppSpacing.lg),
+        _PeekPanel(
+          side: _PeekSide.right,
+          asset: 'assets/ui/cat_boxnap_grey.png',
+          width: 46,
+          bottom: -16,
+          panel: _SettingsPanel(
+            title: 'About your data',
+            child: Text(
+              'No accounts, no cloud, nothing tracked. Everything lives on your '
+              'phone. If you switch phones or reinstall, your progress starts '
+              'over. That\'s the tradeoff for keeping this free and private.',
+              style: TextStyle(
+                color: colors.textMuted,
+                fontSize: 13,
+                height: 1.4,
               ),
             ),
-            // A small cat peeking over the card's edge — the one purely
-            // decorative touch in this sheet, kept to a single spot rather
-            // than scattered everywhere.
-            Positioned(
-              right: 12,
-              bottom: -14,
-              child: Image.asset(
-                'assets/ui/sleeping_cat.png',
-                width: 40,
-                filterQuality: FilterQuality.none,
-              ),
-            ),
-          ],
-        ),
-        const SizedBox(height: AppSpacing.lg),
-        _SettingsPanel(
-          title: 'Support this app',
-          description:
-              "Built solo by a developer who struggles with drinking water "
-              "too. It's free to use — if it's helped you out, support is "
-              "always appreciated.",
-          child: SizedBox(
-            width: double.infinity,
-            child: PixelButton(
-              onPressed: () {
-                unawaited(ref.read(soundServiceProvider).play(SoundEffect.uiTap));
-                unawaited(
-                  launchUrl(
-                    Uri.parse('https://ko-fi.com/prettyprettyprettygood'),
-                    mode: LaunchMode.externalApplication,
-                  ),
-                );
-              },
-              child: const Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Icon(Icons.favorite, size: 16),
-                  SizedBox(width: AppSpacing.xs),
-                  Text('Support on Ko-fi'),
-                ],
-              ),
-            ),
           ),
         ),
-        const SizedBox(height: AppSpacing.lg),
-        _SettingsPanel(
-          title: 'About your data',
-          child: Text(
-            'No accounts, no cloud, nothing tracked. Everything lives on your '
-            'phone. If you switch phones or reinstall, your progress starts '
-            'over. That\'s the tradeoff for keeping this free and private.',
-            style: TextStyle(
-              color: colors.textMuted,
-              fontSize: 13,
-              height: 1.4,
-            ),
+      ],
+    );
+  }
+}
+
+enum _PeekSide { left, right }
+
+/// Wraps a settings panel with a small cute glyph peeking over its bottom
+/// corner, alternating sides down the sheet — the same treatment the
+/// Credits panel originated (see its git history), just spread across every
+/// panel instead of confined to one spot.
+class _PeekPanel extends StatelessWidget {
+  const _PeekPanel({
+    required this.panel,
+    required this.side,
+    required this.asset,
+    required this.width,
+    required this.bottom,
+  });
+
+  final Widget panel;
+  final _PeekSide side;
+  final String asset;
+  final double width;
+  final double bottom;
+
+  @override
+  Widget build(BuildContext context) {
+    return Stack(
+      clipBehavior: Clip.none,
+      children: [
+        panel,
+        Positioned(
+          left: side == _PeekSide.left ? 12 : null,
+          right: side == _PeekSide.right ? 12 : null,
+          bottom: bottom,
+          child: Image.asset(
+            asset,
+            width: width,
+            filterQuality: FilterQuality.none,
           ),
-        ),
-        const SizedBox(height: AppSpacing.lg),
-        const _SettingsPanel(
-          title: 'Reset local data',
-          description:
-              'Clears everything logged today and fills the water back '
-              'up — your streak and past days are untouched.',
-          child: _ResetTodayButton(),
         ),
       ],
     );
@@ -437,6 +546,43 @@ class _CreditLine extends StatelessWidget {
               ),
           ),
           TextSpan(text: after),
+        ],
+      ),
+    );
+  }
+}
+
+/// Like [_CreditLine], but for attribution text with more than one linked
+/// segment (e.g. crediting both an artist and the site they're hosted on)
+/// — each part is either plain text (`url: null`) or a tappable link.
+class _CreditRichLine extends StatelessWidget {
+  const _CreditRichLine({required this.parts});
+
+  final List<({String text, String? url})> parts;
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = context.colors;
+    final baseStyle = TextStyle(color: colors.textMuted, fontSize: 13);
+    return Text.rich(
+      TextSpan(
+        style: baseStyle,
+        children: [
+          for (final part in parts)
+            part.url == null
+                ? TextSpan(text: part.text)
+                : TextSpan(
+                    text: part.text,
+                    style: TextStyle(
+                      color: colors.accent,
+                      decoration: TextDecoration.underline,
+                    ),
+                    recognizer: TapGestureRecognizer()
+                      ..onTap = () => launchUrl(
+                        Uri.parse(part.url!),
+                        mode: LaunchMode.externalApplication,
+                      ),
+                  ),
         ],
       ),
     );
@@ -675,36 +821,48 @@ class _RemindersSection extends ConsumerWidget {
   }
 }
 
-/// Clears today's logged drinks (see [HydrationController.resetToday]) —
-/// yesterday and earlier, and the streak, are untouched. Gated behind the
-/// same YES/NO cat dialog the debug panel's full reset uses.
-class _ResetTodayButton extends ConsumerWidget {
-  const _ResetTodayButton();
+/// Same pill-chip pair as [_AppearanceToggle]/[_RemindersSection]'s toggle
+/// — "muted" here is the persisted setting (everything off), so the chip
+/// selection is inverted from it (On == not muted).
+class _SoundMuteToggle extends StatelessWidget {
+  const _SoundMuteToggle({required this.muted, required this.onChanged});
+
+  final bool muted;
+  final ValueChanged<bool> onChanged;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    return SizedBox(
-      width: double.infinity,
-      child: PixelButton(
-        onPressed: () async {
-          unawaited(ref.read(soundServiceProvider).play(SoundEffect.uiTap));
-          final confirmed = await showDialog<bool>(
-            context: context,
-            builder: (_) => const ConfirmDialog(),
-          );
-          if (confirmed == true) {
-            await ref.read(hydrationControllerProvider).resetToday();
-          }
-        },
-        child: const Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(Icons.restart_alt, size: 16),
-            SizedBox(width: AppSpacing.xs),
-            Text('Reset today\'s progress'),
-          ],
+  Widget build(BuildContext context) {
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        PixelButton(
+          height: 44,
+          onPressed: () => onChanged(true),
+          muted: !muted,
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: const [
+              Icon(Icons.volume_off_outlined, size: 16),
+              SizedBox(width: AppSpacing.xs),
+              Text('Off'),
+            ],
+          ),
         ),
-      ),
+        const SizedBox(width: AppSpacing.sm),
+        PixelButton(
+          height: 44,
+          onPressed: () => onChanged(false),
+          muted: muted,
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: const [
+              Icon(Icons.volume_up_outlined, size: 16),
+              SizedBox(width: AppSpacing.xs),
+              Text('On'),
+            ],
+          ),
+        ),
+      ],
     );
   }
 }
