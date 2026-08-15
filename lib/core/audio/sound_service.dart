@@ -22,40 +22,36 @@ const _tapEffects = {SoundEffect.uiTap, SoundEffect.uiTapNegative};
 /// platforms (web, desktop) just no-op/throw and are swallowed the same
 /// way as a missing sound file.
 class SoundService {
-  // A single shared AudioPlayer dropped a tap's sound whenever two calls
-  // landed close together (e.g. a quick double-tap): the second play()
-  // races the first's still-in-flight source-load/"prepared" setup on the
-  // same player and can lose silently. Round-robining across a small pool
-  // gives each near-simultaneous call its own player instead.
-  static const _poolSize = 4;
-  List<AudioPlayer>? _players;
-  int _nextPlayerIndex = 0;
+  // Round-robining across a generic pool (the previous approach here)
+  // wasn't enough: every play() call still did AudioPlayer.play(source),
+  // which re-decodes the mp3 from the asset bundle from scratch on every
+  // single call. That's cheap on a simulator but measurably slow on real
+  // hardware — narratorBlip alone fires every ~72ms while a line types
+  // out, so repeatedly decoding piled up enough platform-channel work to
+  // visibly stall the UI thread (the narrator's reveal stuttering) and,
+  // when a call landed on a player still mid-decode from a previous call,
+  // silently dropped that sound (missed tap clicks).
+  //
+  // Fix: decode each effect's asset exactly once per player (via
+  // setSource, at pool-creation time) and reuse it — every actual play()
+  // call after that is just a cheap stop()+resume() on an already-decoded
+  // player, no asset IO involved. Kept per-effect (not shared across
+  // effects) with a couple of players each, so a burst of the same
+  // rapid-fire effect (narratorBlip) still has a free player to land on
+  // instead of two calls racing the same one.
+  static const _playersPerEffect = 3;
+  final Map<SoundEffect, List<AudioPlayer>> _pools = {};
+  final Map<SoundEffect, int> _nextIndex = {};
 
   Future<void> play(SoundEffect effect) async {
     try {
-      // Constructed lazily, inside the try block: touching audioplayers at
-      // all requires platform channels, which aren't available in every
-      // environment (e.g. plain `test()` with no Flutter binding) — that
-      // failure should be swallowed exactly like a missing asset file.
-      final players = _players ??= List.generate(
-        _poolSize,
-        (_) => AudioPlayer(),
-      );
-      final player = players[_nextPlayerIndex];
-      _nextPlayerIndex = (_nextPlayerIndex + 1) % players.length;
-      // PlayerMode.lowLatency (audioplayers' dedicated short-SFX backend,
-      // e.g. SoundPool on Android) instead of the default mediaPlayer mode
-      // — these are one-shot UI/narrator blips fired on every tap or
-      // typewriter character, and mediaPlayer's per-play buffering was
-      // audible as a delay between tap and sound.
-      //
+      final player = await _acquirePlayer(effect);
       // Fired together via Future.wait rather than sequentially — awaiting
       // the haptic first would add its own platform-channel round trip
-      // ahead of the sound, reintroducing the delay that motivated
-      // lowLatency in the first place.
+      // ahead of the sound.
       await Future.wait([
         if (_tapEffects.contains(effect)) HapticFeedback.lightImpact(),
-        player.play(AssetSource(effect.assetPath), mode: PlayerMode.lowLatency),
+        player.stop().then((_) => player.resume()),
       ]);
     } catch (error) {
       if (kDebugMode) {
@@ -64,9 +60,38 @@ class SoundService {
     }
   }
 
+  Future<AudioPlayer> _acquirePlayer(SoundEffect effect) async {
+    // Constructed lazily, inside play()'s try block: touching audioplayers
+    // at all requires platform channels, which aren't available in every
+    // environment (e.g. plain `test()` with no Flutter binding) — that
+    // failure should be swallowed exactly like a missing asset file.
+    var pool = _pools[effect];
+    if (pool == null) {
+      pool = [];
+      for (var i = 0; i < _playersPerEffect; i++) {
+        final player = AudioPlayer();
+        // lowLatency picks audioplayers' dedicated short-SFX native
+        // backend (e.g. SoundPool on Android) instead of the default
+        // mediaPlayer one. ReleaseMode.stop keeps the decoded audio
+        // resident after playback instead of releasing it, which is what
+        // makes the stop()+resume() reuse above cheap.
+        await player.setPlayerMode(PlayerMode.lowLatency);
+        await player.setReleaseMode(ReleaseMode.stop);
+        await player.setSource(AssetSource(effect.assetPath));
+        pool.add(player);
+      }
+      _pools[effect] = pool;
+    }
+    final index = (_nextIndex[effect] ?? 0) % pool.length;
+    _nextIndex[effect] = index + 1;
+    return pool[index];
+  }
+
   void dispose() {
-    for (final player in _players ?? const <AudioPlayer>[]) {
-      player.dispose();
+    for (final pool in _pools.values) {
+      for (final player in pool) {
+        player.dispose();
+      }
     }
   }
 }
