@@ -3,7 +3,7 @@
 const goalMetLines = <String>[
   'Goal met. I\'m choosing to be moved by this.',
   'Fully hydrated. I\'ve alerted no one, but I\'m quietly pleased.',
-  'The flood has cleared. The cat owe you, and frankly, so do I.',
+  'Congrats, you did it. The cat owes you, and frankly, so do I.',
   'Goal complete. Mark this day. I certainly will.',
   'You actually finished. I had a bet against this. I lost.',
   'The water\'s gone and so is my excuse to be dramatic about it. For today.',

@@ -38,6 +38,9 @@ dependencies:
   shared_preferences: ^2.5.5
   flutter_local_notifications: ^22.3.0
   audioplayers: ^6.5.1
+  timezone: ^0.11.1
+  flutter_timezone: ^5.1.0
+  url_launcher: ^6.3.2
 dev_dependencies:
   flutter_test:
     sdk: flutter
@@ -63,6 +66,7 @@ flutter:
   assets:
     - assets/audio/
     - assets/creatures/
+    - assets/ui/
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images
@@ -89,3 +93,22 @@ flutter:
   #
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/to/font-from-package
+
+  fonts:
+    # UI/body text. A variable font — the same file is declared at several
+    # weights and Flutter/Skia samples the wght axis, so this isn't a typo.
+    - family: Inter
+      fonts:
+        - asset: assets/fonts/Inter-Regular.ttf
+        - asset: assets/fonts/Inter-Regular.ttf
+          weight: 500
+        - asset: assets/fonts/Inter-Regular.ttf
+          weight: 600
+        - asset: assets/fonts/Inter-Regular.ttf
+          weight: 700
+    # Narrator dialogue only — see narrator/widgets/typewriter_text.dart.
+    - family: Courier Prime
+      fonts:
+        - asset: assets/fonts/CourierPrime-Regular.ttf
+        - asset: assets/fonts/CourierPrime-Bold.ttf
+          weight: 700

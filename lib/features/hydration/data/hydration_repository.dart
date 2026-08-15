@@ -41,6 +41,23 @@ class HydrationRepository {
     await _store.writeJson(_storageKey, {'drinks': <Map<String, dynamic>>[]});
   }
 
+  /// Drops only today's entries, keeping prior days' history (and the
+  /// streak it's built on) intact.
+  Future<void> clearToday({DateTime? now}) async {
+    final drinks = await getAllDrinks();
+    final start = _startOfDay(now ?? DateTime.now());
+    final end = start.add(const Duration(days: 1));
+
+    final kept = drinks.where((d) {
+      final at = DateTime.fromMillisecondsSinceEpoch(d.timestamp);
+      return at.isBefore(start) || !at.isBefore(end);
+    }).toList();
+
+    await _store.writeJson(_storageKey, {
+      'drinks': kept.map((d) => d.toJson()).toList(),
+    });
+  }
+
   Future<List<HydrationEntry>> getDrinksToday({DateTime? now}) async {
     final drinks = await getAllDrinks();
     final start = _startOfDay(now ?? DateTime.now());
@@ -62,9 +79,20 @@ class HydrationRepository {
     return DrinksTodaySummary(
       count: drinksToday.length,
       totalAmountMl: totalAmountMl,
-      recent: drinksToday.take(5).toList(),
+      // Every drink today, not just the last few — the Recent card scrolls
+      // internally instead of capping the list (see RecentDrinksList).
+      recent: drinksToday,
     );
   }
 
-  DateTime _startOfDay(DateTime now) => DateTime(now.year, now.month, now.day);
+  /// The "day" for hydration purposes runs 2am-to-2am, not midnight-to-
+  /// midnight — a drink logged at 1am still counts toward the day that's
+  /// ending, rather than starting a fresh "today" (and a fresh flood/recent
+  /// list) at the stroke of midnight.
+  DateTime _startOfDay(DateTime now) {
+    final todayBoundary = DateTime(now.year, now.month, now.day, 2);
+    return now.isBefore(todayBoundary)
+        ? todayBoundary.subtract(const Duration(days: 1))
+        : todayBoundary;
+  }
 }

@@ -6,6 +6,7 @@ import '../../../core/audio/sound_effect.dart';
 import '../../../core/audio/sound_service.dart';
 import '../../../core/storage/local_store.dart';
 import '../../flood/providers/flood_providers.dart';
+import '../../reminders/reminder_coordinator.dart';
 import '../data/hydration_repository.dart';
 import '../hydration_constants.dart';
 import '../models/hydration_entry.dart';
@@ -63,6 +64,15 @@ class HydrationController {
           totalMlToday: summary.totalAmountMl,
         );
     unawaited(_ref.read(soundServiceProvider).play(SoundEffect.drinkLogged));
+
+    // Logging a drink is the one moment reminders actually need to react
+    // to immediately — push the next nudge out, or silence it entirely if
+    // this was the one that hit today's goal.
+    try {
+      await _ref.read(reminderCoordinatorProvider).reconcile();
+    } catch (_) {
+      // Notifications aren't available on this platform/environment.
+    }
   }
 
   /// Debug-only: backdates a drink entry (e.g. "4 hours ago") to exercise
@@ -72,6 +82,16 @@ class HydrationController {
     await _ref
         .read(hydrationRepositoryProvider)
         .logDrink(amountMl, at: DateTime.now().subtract(ago));
+    await _ref.read(hydrationSummaryProvider.notifier).refresh();
+    _ref.invalidate(lastDrinkAtProvider);
+  }
+
+  /// Clears today's logged drinks only — yesterday and earlier (and the
+  /// streak they've built) are untouched. The flood level corrects itself
+  /// on the next read since it's derived live from today's total rather
+  /// than stored.
+  Future<void> resetToday() async {
+    await _ref.read(hydrationRepositoryProvider).clearToday();
     await _ref.read(hydrationSummaryProvider.notifier).refresh();
     _ref.invalidate(lastDrinkAtProvider);
   }

@@ -20,17 +20,17 @@ class AppTheme {
               surface: colors.background,
               primary: colors.primary,
               onPrimary: colors.background,
-              secondary: colors.gold,
+              secondary: colors.accent,
               onSurface: colors.text,
             )
           : ColorScheme.light(
               surface: colors.background,
               primary: colors.primary,
               onPrimary: colors.background,
-              secondary: colors.gold,
+              secondary: colors.accent,
               onSurface: colors.text,
             ),
-      fontFamily: 'Roboto',
+      fontFamily: 'Inter',
       extensions: [colors],
     );
 
@@ -54,10 +54,24 @@ class AppTheme {
           disabledBackgroundColor: colors.surface,
           disabledForegroundColor: colors.textMuted,
           padding: const EdgeInsets.symmetric(vertical: AppSpacing.md),
+          elevation: 0,
+          // A chunky, slightly hand-drawn shape instead of a squared-off
+          // website button — uneven corner radii and a thick contrast
+          // outline read as "game UI" rather than "form submit".
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(AppRadius.md),
+            borderRadius: const BorderRadius.only(
+              topLeft: Radius.circular(22),
+              topRight: Radius.circular(30),
+              bottomLeft: Radius.circular(30),
+              bottomRight: Radius.circular(20),
+            ),
+            side: BorderSide(color: colors.background.withValues(alpha: 0.85), width: 2.5),
           ),
-          textStyle: const TextStyle(fontSize: 16, fontWeight: FontWeight.w700),
+          textStyle: const TextStyle(
+            fontSize: 16,
+            fontWeight: FontWeight.w800,
+            letterSpacing: 0.3,
+          ),
         ),
       ),
       textButtonTheme: TextButtonThemeData(

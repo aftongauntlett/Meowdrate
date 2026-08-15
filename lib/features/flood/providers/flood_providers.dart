@@ -5,8 +5,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/audio/sound_effect.dart';
 import '../../../core/audio/sound_service.dart';
 import '../../../core/utils/iso_date.dart';
-import '../../hydration/hydration_constants.dart';
 import '../../hydration/providers/hydration_providers.dart';
+import '../../settings/providers/daily_goal_providers.dart';
 import '../data/flood_repository.dart';
 import '../models/flood_state.dart';
 
@@ -42,7 +42,8 @@ final floodLevelProvider = Provider<double>((ref) {
   }
 
   final totalMl = ref.watch(hydrationSummaryProvider).value?.totalAmountMl ?? 0;
-  final progress = (totalMl / kDailyGoalMl).clamp(0.0, 1.0);
+  final goalMl = ref.watch(dailyGoalMlProvider);
+  final progress = (totalMl / goalMl).clamp(0.0, 1.0);
   return 1.0 - progress;
 });
 
@@ -85,7 +86,8 @@ class FloodNotifier extends AsyncNotifier<FloodState> {
       lifetimeCups: current.lifetimeCups + 1,
     );
 
-    if (totalMlToday >= kDailyGoalMl && current.lastGoalMetDate != today) {
+    final goalMl = ref.read(dailyGoalMlProvider);
+    if (totalMlToday >= goalMl && current.lastGoalMetDate != today) {
       final yesterday = isoDate(DateTime.now().subtract(const Duration(days: 1)));
       final newStreak =
           current.lastGoalMetDate == yesterday ? current.currentStreak + 1 : 1;

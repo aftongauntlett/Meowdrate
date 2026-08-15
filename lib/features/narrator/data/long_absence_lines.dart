@@ -5,7 +5,5 @@ const longAbsenceLines = <String>[
   'You\'re back. The cat missed you. I remained neutral.',
   'Well, well. Look who remembered we exist.',
   'It\'s been a while. The cat assumed the worst. So did I, but with less sincerity.',
-  'You return. Like a prodigal, but with worse hydration habits.',
-  'I kept your spot. Mostly out of spite.',
   'Ah, a familiar face. Or app icon, technically.',
 ];

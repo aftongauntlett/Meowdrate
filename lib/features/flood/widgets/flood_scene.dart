@@ -9,6 +9,9 @@ import '../../../core/time_of_day/time_of_day_band.dart';
 import '../../creatures/providers/creature_providers.dart';
 import '../../creatures/widgets/creature_reveal.dart';
 import '../../narrator/providers/narrator_providers.dart';
+import '../../narrator/widgets/typewriter_text.dart';
+import '../../settings/providers/settings_sheet_providers.dart';
+import '../painters/clouds_painter.dart';
 import '../painters/stars_painter.dart';
 import '../painters/water_painter.dart';
 import '../providers/flood_providers.dart';
@@ -42,6 +45,14 @@ class _FloodSceneState extends ConsumerState<FloodScene>
   final ValueNotifier<double> _elapsedSeconds = ValueNotifier(0);
   late final Ticker _ticker;
 
+  /// The narrator line last shown while the Settings sheet was closed. Held
+  /// onto (rather than always reading currentNarratorLineProvider live) so
+  /// that a settings change made while the sheet is open — e.g. the daily
+  /// goal stepper shifting which line the narrator would pick — doesn't
+  /// restart TypewriterText and its blip sound behind the sheet; see
+  /// settingsSheetOpenProvider.
+  String? _frozenNarratorLine;
+
   @override
   void initState() {
     super.initState();
@@ -62,7 +73,12 @@ class _FloodSceneState extends ConsumerState<FloodScene>
     final level = ref.watch(floodLevelProvider);
     final creature = ref.watch(creatureOfTheDayProvider);
     final mood = ref.watch(moodBandProvider);
-    final narratorLine = ref.watch(currentNarratorLineProvider);
+    final liveNarratorLine = ref.watch(currentNarratorLineProvider);
+    final settingsOpen = ref.watch(settingsSheetOpenProvider);
+    if (!settingsOpen) {
+      _frozenNarratorLine = liveNarratorLine;
+    }
+    final narratorLine = _frozenNarratorLine ?? liveNarratorLine;
     final band = ref.watch(timeOfDayBandProvider);
 
     return ClipRRect(
@@ -89,6 +105,22 @@ class _FloodSceneState extends ConsumerState<FloodScene>
                     CustomPaint(painter: StarsPainter(elapsedSeconds: elapsedSeconds)),
               ),
             ),
+            AnimatedOpacity(
+              duration: const Duration(seconds: 1),
+              opacity: _cloudOpacity(band),
+              child: ValueListenableBuilder<double>(
+                valueListenable: _elapsedSeconds,
+                builder: (context, elapsedSeconds, _) =>
+                    CustomPaint(painter: CloudsPainter(elapsedSeconds: elapsedSeconds)),
+              ),
+            ),
+            // Creature drawn *under* the water layer below, not over it —
+            // WaterPainter only fills from the wave line down, so whatever
+            // portion of the creature falls below that line reads as
+            // genuinely behind/in the water, while the portion above it
+            // stays completely clear. As `level` drops the wave line drops
+            // with it, so more of the creature moves into the clear zone.
+            Center(child: CreatureReveal(creature: creature, mood: mood)),
             ValueListenableBuilder<double>(
               valueListenable: _elapsedSeconds,
               builder: (context, elapsedSeconds, _) => CustomPaint(
@@ -98,15 +130,18 @@ class _FloodSceneState extends ConsumerState<FloodScene>
                 ),
               ),
             ),
-            Center(child: CreatureReveal(creature: creature, mood: mood)),
             Positioned(
               bottom: 16,
               left: 16,
               right: 16,
-              child: Text(
+              child: TypewriterText(
                 narratorLine,
                 textAlign: TextAlign.center,
-                style: const TextStyle(color: _onSceneText, fontWeight: FontWeight.w600),
+                style: const TextStyle(
+                  color: _onSceneText,
+                  fontFamily: 'Courier Prime',
+                  fontWeight: FontWeight.w700,
+                ),
               ),
             ),
           ],
@@ -120,7 +155,7 @@ class _FloodSceneState extends ConsumerState<FloodScene>
       case TimeOfDayBand.dawn:
         return const [Color(0xFF3A2A40), Color(0xFF7A4B4B)];
       case TimeOfDayBand.day:
-        return const [Color(0xFF1B3A4B), Color(0xFF2E5F73)];
+        return const [Color(0xFF6EC6F0), Color(0xFF2C86BF)];
       case TimeOfDayBand.dusk:
         return const [Color(0xFF2A1B3A), Color(0xFF8A4B3A)];
       case TimeOfDayBand.night:
@@ -136,6 +171,19 @@ class _FloodSceneState extends ConsumerState<FloodScene>
       case TimeOfDayBand.dusk:
         return 0.4;
       case TimeOfDayBand.day:
+        return 0.0;
+    }
+  }
+
+  /// Only day gets clouds — dawn/dusk are brief transitional bands rather
+  /// than a "look" of their own, and night already has stars.
+  double _cloudOpacity(TimeOfDayBand band) {
+    switch (band) {
+      case TimeOfDayBand.day:
+        return 1.0;
+      case TimeOfDayBand.dawn:
+      case TimeOfDayBand.dusk:
+      case TimeOfDayBand.night:
         return 0.0;
     }
   }
