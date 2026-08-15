@@ -1,4 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <color name="ic_launcher_background">#1897B3</color>
+
+    <!-- Hydration widget palette, mirrored from AppColors.light in
+         lib/core/theme/app_colors.dart so the widget reads as the same app
+         as the in-app card treatment. -->
+    <color name="widget_background">#FFFFFF</color>
+    <color name="widget_text">#12172B</color>
+    <color name="widget_text_muted">#5C6478</color>
+    <color name="widget_border">#1F12172B</color>
 </resources>

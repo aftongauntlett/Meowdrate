@@ -6,6 +6,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/audio/sound_effect.dart';
 import '../../../core/audio/sound_service.dart';
+import '../../../core/home_widget/home_widget_sync_service.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_fonts.dart';
 import '../../../core/theme/app_spacing.dart';
@@ -43,6 +44,14 @@ class _FloodHomeScreenState extends ConsumerState<FloodHomeScreen> {
     unawaited(
       ref.read(reminderCoordinatorProvider).reconcile().catchError((_) {
         // Notifications aren't available on this platform/environment.
+      }),
+    );
+    // Also covers the day rolling over while the app was closed — the
+    // widget would otherwise show yesterday's count until the OS's next
+    // ~30min refresh tick.
+    unawaited(
+      ref.read(homeWidgetSyncServiceProvider).sync().catchError((_) {
+        // Home-screen widgets aren't available on this platform/environment.
       }),
     );
   }

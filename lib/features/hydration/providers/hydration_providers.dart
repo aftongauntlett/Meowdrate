@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/audio/sound_effect.dart';
 import '../../../core/audio/sound_service.dart';
+import '../../../core/home_widget/home_widget_sync_service.dart';
 import '../../../core/storage/local_store.dart';
 import '../../flood/providers/flood_providers.dart';
 import '../../reminders/reminder_coordinator.dart';
@@ -73,6 +74,8 @@ class HydrationController {
     } catch (_) {
       // Notifications aren't available on this platform/environment.
     }
+
+    await _syncHomeWidget();
   }
 
   /// Debug-only: backdates a drink entry (e.g. "4 hours ago") to exercise
@@ -94,6 +97,7 @@ class HydrationController {
     await _ref.read(hydrationRepositoryProvider).clearToday();
     await _ref.read(hydrationSummaryProvider.notifier).refresh();
     _ref.invalidate(lastDrinkAtProvider);
+    await _syncHomeWidget();
   }
 
   /// Debug-only: wipes all local hydration + flood data, for testing the
@@ -103,6 +107,15 @@ class HydrationController {
     await _ref.read(floodStateProvider.notifier).debugReset();
     await _ref.read(hydrationSummaryProvider.notifier).refresh();
     _ref.invalidate(lastDrinkAtProvider);
+    await _syncHomeWidget();
+  }
+
+  Future<void> _syncHomeWidget() async {
+    try {
+      await _ref.read(homeWidgetSyncServiceProvider).sync();
+    } catch (_) {
+      // Home-screen widgets aren't available on this platform/environment.
+    }
   }
 }
 

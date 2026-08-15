@@ -18,3 +18,18 @@ const pochi = Creature(
   frameSize: 64,
   frameDuration: Duration(milliseconds: 220),
 );
+
+/// One-off poses for the drink-moment countdown (via
+/// SpriteAnimation.clipOverride), picked at random rather than tied to
+/// mood — not part of Pochi's regular sad/neutral/happy set, since
+/// they're sourced from a different pack (RetroCatsPaid) rather than the
+/// toffeecraft sprites the mood clips above use. See
+/// assets/creatures/README.md.
+const pochiDrinkPoses = [
+  SpriteClip(spriteAsset: 'creatures/pochi_drink_idle.png', frameCount: 6),
+  SpriteClip(spriteAsset: 'creatures/pochi_drink_excited.png', frameCount: 3),
+  SpriteClip(spriteAsset: 'creatures/pochi_drink_happy.png', frameCount: 10),
+  SpriteClip(spriteAsset: 'creatures/pochi_drink_run.png', frameCount: 6),
+  SpriteClip(spriteAsset: 'creatures/pochi_drink_box2.png', frameCount: 10),
+  SpriteClip(spriteAsset: 'creatures/pochi_drink_relaxing.png', frameCount: 8),
+];

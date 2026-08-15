@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="hydration_widget_label">Meowdrate</string>
+    <string name="hydration_widget_description">Today\'s glass count, with Pochi reacting to your progress</string>
+    <string name="hydration_widget_caption">glasses today</string>
+</resources>

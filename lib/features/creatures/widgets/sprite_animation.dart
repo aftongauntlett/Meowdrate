@@ -15,11 +15,23 @@ import '../models/mood_band.dart';
 /// bounce when happy. Nearest-neighbor scaled so the pixel art stays
 /// crisp.
 class SpriteAnimation extends StatefulWidget {
-  const SpriteAnimation({super.key, required this.creature, required this.mood, this.scale = 4});
+  const SpriteAnimation({
+    super.key,
+    required this.creature,
+    required this.mood,
+    this.scale = 4,
+    this.clipOverride,
+  });
 
   final Creature creature;
   final MoodBand mood;
   final double scale;
+
+  /// Plays this clip instead of `creature.clipFor(mood)` — mood still
+  /// drives the tint/speed/bounce below. For a one-off animation (e.g. a
+  /// screen-specific pose) that shouldn't change what the mood normally
+  /// renders elsewhere.
+  final SpriteClip? clipOverride;
 
   @override
   State<SpriteAnimation> createState() => _SpriteAnimationState();
@@ -33,7 +45,7 @@ class _SpriteAnimationState extends State<SpriteAnimation>
   double _elapsedSeconds = 0;
   late final Ticker _ticker;
 
-  SpriteClip get _clip => widget.creature.clipFor(widget.mood);
+  SpriteClip get _clip => widget.clipOverride ?? widget.creature.clipFor(widget.mood);
 
   @override
   void initState() {
@@ -45,8 +57,7 @@ class _SpriteAnimationState extends State<SpriteAnimation>
   @override
   void didUpdateWidget(covariant SpriteAnimation oldWidget) {
     super.didUpdateWidget(oldWidget);
-    final newClip = widget.creature.clipFor(widget.mood);
-    if (newClip.spriteAsset != _loadedAsset) {
+    if (_clip.spriteAsset != _loadedAsset) {
       _frame = 0;
       _loadImage();
     }

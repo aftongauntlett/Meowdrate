@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:math' as math;
 
 import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/foundation.dart';
@@ -32,6 +33,10 @@ class _DrinkMomentScreenState extends ConsumerState<DrinkMomentScreen> {
   late int _remainingSeconds = kDrinkMomentSeconds;
   Timer? _timer;
   AudioPlayer? _songPlayer;
+
+  // Picked once per visit (not per rebuild) so it doesn't shuffle under
+  // the user mid-countdown — a fresh roll each time this screen opens.
+  late final _pose = pochiDrinkPoses[math.Random().nextInt(pochiDrinkPoses.length)];
 
   @override
   void initState() {
@@ -211,6 +216,7 @@ class _DrinkMomentScreenState extends ConsumerState<DrinkMomentScreen> {
                     SpriteAnimation(
                       creature: pochi,
                       mood: MoodBand.happy,
+                      clipOverride: _pose,
                       scale: 2.2,
                     ),
                   ],
