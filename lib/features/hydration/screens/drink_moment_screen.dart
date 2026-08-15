@@ -5,6 +5,8 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../core/audio/sound_effect.dart';
+import '../../../core/audio/sound_service.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_fonts.dart';
 import '../../../core/theme/app_spacing.dart';
@@ -36,7 +38,10 @@ class _DrinkMomentScreenState extends ConsumerState<DrinkMomentScreen> {
     super.initState();
     _timer = Timer.periodic(const Duration(seconds: 1), (_) {
       setState(() {
-        _remainingSeconds = (_remainingSeconds - 1).clamp(0, kDrinkMomentSeconds);
+        _remainingSeconds = (_remainingSeconds - 1).clamp(
+          0,
+          kDrinkMomentSeconds,
+        );
       });
       if (_remainingSeconds == 0) {
         _timer?.cancel();
@@ -105,6 +110,7 @@ class _DrinkMomentScreenState extends ConsumerState<DrinkMomentScreen> {
   // a lock. Someone who's already finished their sips shouldn't have to
   // stand around waiting for the number to hit zero.
   Future<void> _handleDrank() async {
+    unawaited(ref.read(soundServiceProvider).play(SoundEffect.uiTap));
     _timer?.cancel();
     await ref.read(hydrationControllerProvider).logDrink();
     if (!mounted) {
@@ -114,6 +120,7 @@ class _DrinkMomentScreenState extends ConsumerState<DrinkMomentScreen> {
   }
 
   void _handleSkip() {
+    unawaited(ref.read(soundServiceProvider).play(SoundEffect.uiTapNegative));
     Navigator.of(context).pop(false);
   }
 
@@ -124,24 +131,26 @@ class _DrinkMomentScreenState extends ConsumerState<DrinkMomentScreen> {
     return Scaffold(
       body: SafeArea(
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: AppSpacing.xl).copyWith(
-            top: AppSpacing.xxl,
-            bottom: AppSpacing.xl,
-          ),
+          padding: const EdgeInsets.symmetric(horizontal: AppSpacing.xl)
+              .copyWith(top: AppSpacing.xxl, bottom: AppSpacing.xl),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
                 'Time to hydrate.',
                 style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                      fontFamily: kHeadingFontFamily,
-                      fontWeight: FontWeight.w700,
-                    ),
+                  fontFamily: kHeadingFontFamily,
+                  fontWeight: FontWeight.w700,
+                ),
               ),
               const SizedBox(height: AppSpacing.sm),
               Text(
                 'Take a few sips. I\'ll be here the whole time, watching.',
-                style: TextStyle(color: colors.textMuted, fontSize: 16, height: 1.4),
+                style: TextStyle(
+                  color: colors.textMuted,
+                  fontSize: 16,
+                  height: 1.4,
+                ),
               ),
               const Spacer(),
               Center(
@@ -199,7 +208,11 @@ class _DrinkMomentScreenState extends ConsumerState<DrinkMomentScreen> {
                     // card's bottom edge — the earlier version had them
                     // touching.
                     const SizedBox(height: AppSpacing.lg),
-                    SpriteAnimation(creature: pochi, mood: MoodBand.happy, scale: 2.2),
+                    SpriteAnimation(
+                      creature: pochi,
+                      mood: MoodBand.happy,
+                      scale: 2.2,
+                    ),
                   ],
                 ),
               ),
@@ -228,7 +241,11 @@ class _DrinkMomentScreenState extends ConsumerState<DrinkMomentScreen> {
                       child: Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          PixelIcon('assets/ui/icon_x.png', color: colors.textMuted, size: 20),
+                          PixelIcon(
+                            'assets/ui/icon_x.png',
+                            color: colors.textMuted,
+                            size: 20,
+                          ),
                           const SizedBox(width: AppSpacing.xs),
                           const Text('Skip'),
                         ],

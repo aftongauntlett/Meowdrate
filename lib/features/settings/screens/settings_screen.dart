@@ -283,6 +283,36 @@ class SettingsScreen extends ConsumerWidget {
         ),
         const SizedBox(height: AppSpacing.lg),
         _SettingsPanel(
+          title: 'Support this app',
+          description:
+              "Built solo by a developer who struggles with drinking water "
+              "too. It's free to use — if it's helped you out, support is "
+              "always appreciated.",
+          child: SizedBox(
+            width: double.infinity,
+            child: PixelButton(
+              onPressed: () {
+                unawaited(ref.read(soundServiceProvider).play(SoundEffect.uiTap));
+                unawaited(
+                  launchUrl(
+                    Uri.parse('https://ko-fi.com/prettyprettyprettygood'),
+                    mode: LaunchMode.externalApplication,
+                  ),
+                );
+              },
+              child: const Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(Icons.favorite, size: 16),
+                  SizedBox(width: AppSpacing.xs),
+                  Text('Support on Ko-fi'),
+                ],
+              ),
+            ),
+          ),
+        ),
+        const SizedBox(height: AppSpacing.lg),
+        _SettingsPanel(
           title: 'About your data',
           child: Text(
             'No accounts, no cloud, nothing tracked. Everything lives on your '

@@ -70,7 +70,8 @@ final currentNarratorLineProvider = Provider<String>((ref) {
   }
 
   if (occurrence == 0) {
-    return ref.watch(openingLineOverrideProvider) ?? 'Keep drinking to help the cat!';
+    return ref.watch(openingLineOverrideProvider) ??
+        "Welcome. Cats hate water... help the cat, drink the water!";
   }
   return selectNarratorLine(NarratorTrigger.drinkLogged, occurrence: occurrence);
 });

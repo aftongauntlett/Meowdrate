@@ -92,6 +92,7 @@ class _TypewriterTextState extends ConsumerState<TypewriterText> {
   }
 
   void _skipToEnd() {
+    unawaited(ref.read(soundServiceProvider).play(SoundEffect.uiTap));
     _timer?.cancel();
     setState(() => _visibleChars = widget.text.length);
   }

@@ -56,7 +56,9 @@ class _FloodHomeScreenState extends ConsumerState<FloodHomeScreen> {
       return;
     }
 
-    final event = ref.read(floodStateProvider.notifier).consumePendingRolloverEvent();
+    final event = ref
+        .read(floodStateProvider.notifier)
+        .consumePendingRolloverEvent();
     final trigger = switch (event) {
       DayRolloverEvent.goalMissed => NarratorTrigger.goalMissed,
       DayRolloverEvent.longAbsence => NarratorTrigger.longAbsence,
@@ -69,17 +71,18 @@ class _FloodHomeScreenState extends ConsumerState<FloodHomeScreen> {
   }
 
   Future<void> _openDrinkMoment() async {
+    unawaited(ref.read(soundServiceProvider).play(SoundEffect.uiTap));
     // Slides up like the Settings sheet, rather than the platform-default
     // horizontal push — the two full-screen overlays in this app should
     // feel like the same kind of thing entering.
-    await Navigator.of(context).push<bool>(
-      SlideUpRoute(builder: (_) => const DrinkMomentScreen()),
-    );
+    await Navigator.of(context)
+        .push<bool>(SlideUpRoute(builder: (_) => const DrinkMomentScreen()));
     // The flood scene's own caption already updates the moment a drink is
     // logged, so there's no separate confirmation toast here.
   }
 
   void _openDebugPanel() {
+    unawaited(ref.read(soundServiceProvider).play(SoundEffect.uiTap));
     showModalBottomSheet(
       context: context,
       backgroundColor: context.colors.surface,
@@ -88,7 +91,9 @@ class _FloodHomeScreenState extends ConsumerState<FloodHomeScreen> {
       // which made "Next narrator line" look like a no-op — the state was
       // updating, just hidden behind the sheet.
       isScrollControlled: true,
-      constraints: BoxConstraints(maxHeight: MediaQuery.of(context).size.height * 0.6),
+      constraints: BoxConstraints(
+        maxHeight: MediaQuery.of(context).size.height * 0.6,
+      ),
       builder: (_) => const DebugPanel(),
     );
   }
@@ -97,17 +102,17 @@ class _FloodHomeScreenState extends ConsumerState<FloodHomeScreen> {
   Widget build(BuildContext context) {
     final colors = context.colors;
     final summaryAsync = ref.watch(hydrationSummaryProvider);
-    final goalGlasses = ref.watch(dailyGoalGlassesProvider).value ?? kDefaultDailyGoalGlasses;
+    final goalGlasses =
+        ref.watch(dailyGoalGlassesProvider).value ?? kDefaultDailyGoalGlasses;
 
     return Scaffold(
       body: SafeArea(
         child: RefreshIndicator(
-          onRefresh: () => ref.read(hydrationSummaryProvider.notifier).refresh(),
+          onRefresh: () =>
+              ref.read(hydrationSummaryProvider.notifier).refresh(),
           child: ListView(
-            padding: const EdgeInsets.symmetric(horizontal: AppSpacing.xl).copyWith(
-              top: AppSpacing.md,
-              bottom: AppSpacing.xxl,
-            ),
+            padding: const EdgeInsets.symmetric(horizontal: AppSpacing.xl)
+                .copyWith(top: AppSpacing.md, bottom: AppSpacing.xxl),
             children: [
               // No app-name navbar — the flood scene is the screen, same as
               // how Finch/Focus Friend never re-announce their own name
@@ -124,7 +129,11 @@ class _FloodHomeScreenState extends ConsumerState<FloodHomeScreen> {
                       icon: Icons.settings_outlined,
                       tooltip: 'Settings',
                       onPressed: () {
-                        unawaited(ref.read(soundServiceProvider).play(SoundEffect.uiTap));
+                        unawaited(
+                          ref
+                              .read(soundServiceProvider)
+                              .play(SoundEffect.uiTap),
+                        );
                         showSettingsSheet(context);
                       },
                     ),
@@ -143,11 +152,16 @@ class _FloodHomeScreenState extends ConsumerState<FloodHomeScreen> {
               ),
               const SizedBox(height: AppSpacing.sm),
               summaryAsync.when(
-                data: (summary) => _GlassCounter(summary: summary, goalGlasses: goalGlasses),
-                loading: () =>
-                    _GlassCounter(summary: DrinksTodaySummary.empty, goalGlasses: goalGlasses),
-                error: (_, _) =>
-                    _GlassCounter(summary: DrinksTodaySummary.empty, goalGlasses: goalGlasses),
+                data: (summary) =>
+                    _GlassCounter(summary: summary, goalGlasses: goalGlasses),
+                loading: () => _GlassCounter(
+                  summary: DrinksTodaySummary.empty,
+                  goalGlasses: goalGlasses,
+                ),
+                error: (_, _) => _GlassCounter(
+                  summary: DrinksTodaySummary.empty,
+                  goalGlasses: goalGlasses,
+                ),
               ),
               const SizedBox(height: AppSpacing.xl),
               SizedBox(
@@ -160,7 +174,11 @@ class _FloodHomeScreenState extends ConsumerState<FloodHomeScreen> {
                       // A plain glyph (icon_plus.png) read as a smudge/dot
                       // at this size once recolored solid white — a
                       // recognizable water drop reads instantly as "drink."
-                      const Icon(Icons.water_drop, color: Colors.white, size: 24),
+                      const Icon(
+                        Icons.water_drop,
+                        color: Colors.white,
+                        size: 24,
+                      ),
                       const SizedBox(width: AppSpacing.sm),
                       const Text('Meowdrate!'),
                     ],
@@ -196,7 +214,11 @@ class _FloodHomeScreenState extends ConsumerState<FloodHomeScreen> {
 /// behind it for guaranteed legibility against a background we don't
 /// control the color of.
 class _SceneCornerButton extends StatelessWidget {
-  const _SceneCornerButton({required this.icon, required this.tooltip, required this.onPressed});
+  const _SceneCornerButton({
+    required this.icon,
+    required this.tooltip,
+    required this.onPressed,
+  });
 
   final IconData icon;
   final String tooltip;

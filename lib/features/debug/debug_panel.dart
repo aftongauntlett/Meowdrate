@@ -1,6 +1,10 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../core/audio/sound_effect.dart';
+import '../../core/audio/sound_service.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_spacing.dart';
 import '../../core/time_of_day/providers/time_of_day_providers.dart';
@@ -24,9 +28,15 @@ class DebugPanel extends ConsumerWidget {
     final colors = context.colors;
     final controller = ref.read(hydrationControllerProvider);
     final floodNotifier = ref.read(floodStateProvider.notifier);
-    final floodLevelOverride = ref.read(debugFloodLevelOverrideProvider.notifier);
-    final narratorOccurrenceOverride = ref.read(debugNarratorOccurrenceOverrideProvider.notifier);
-    final currentNarratorOccurrence = ref.watch(debugNarratorOccurrenceOverrideProvider);
+    final floodLevelOverride = ref.read(
+      debugFloodLevelOverrideProvider.notifier,
+    );
+    final narratorOccurrenceOverride = ref.read(
+      debugNarratorOccurrenceOverrideProvider.notifier,
+    );
+    final currentNarratorOccurrence = ref.watch(
+      debugNarratorOccurrenceOverrideProvider,
+    );
     final timeOverride = ref.read(debugTimeOverrideProvider.notifier);
     final goalMl = ref.watch(dailyGoalMlProvider);
 
@@ -83,7 +93,9 @@ class DebugPanel extends ConsumerWidget {
                   label: 'Next narrator line',
                   onPressed: () {
                     final next =
-                        ((currentNarratorOccurrence ?? 0) % drinkLoggedLines.length) + 1;
+                        ((currentNarratorOccurrence ?? 0) %
+                            drinkLoggedLines.length) +
+                        1;
                     narratorOccurrenceOverride.setOverride(next);
                     // Pops the sheet so the change is actually visible — see
                     // _previewLine's note on why this sheet was hiding the
@@ -93,11 +105,13 @@ class DebugPanel extends ConsumerWidget {
                 ),
                 _DebugButton(
                   label: 'Preview goal-missed line',
-                  onPressed: () => _previewLine(context, ref, NarratorTrigger.goalMissed),
+                  onPressed: () =>
+                      _previewLine(context, ref, NarratorTrigger.goalMissed),
                 ),
                 _DebugButton(
                   label: 'Preview long-absence line',
-                  onPressed: () => _previewLine(context, ref, NarratorTrigger.longAbsence),
+                  onPressed: () =>
+                      _previewLine(context, ref, NarratorTrigger.longAbsence),
                 ),
                 _DebugButton(
                   label: 'Dawn',
@@ -149,13 +163,19 @@ class DebugPanel extends ConsumerWidget {
 /// Also zeroes the drink-count override so the opening-caption branch is
 /// the one that wins, and pops the debug sheet so the flood scene underneath
 /// is actually visible.
-void _previewLine(BuildContext context, WidgetRef ref, NarratorTrigger trigger) {
+void _previewLine(
+  BuildContext context,
+  WidgetRef ref,
+  NarratorTrigger trigger,
+) {
   ref.read(debugNarratorOccurrenceOverrideProvider.notifier).setOverride(0);
-  ref.read(openingLineOverrideProvider.notifier).set(selectNarratorLine(trigger));
+  ref
+      .read(openingLineOverrideProvider.notifier)
+      .set(selectNarratorLine(trigger));
   Navigator.of(context).pop();
 }
 
-class _DebugButton extends StatelessWidget {
+class _DebugButton extends ConsumerWidget {
   const _DebugButton({
     required this.label,
     required this.onPressed,
@@ -167,14 +187,19 @@ class _DebugButton extends StatelessWidget {
   final bool isDestructive;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final colors = context.colors;
     return OutlinedButton(
       style: OutlinedButton.styleFrom(
         foregroundColor: isDestructive ? Colors.redAccent : colors.text,
-        side: BorderSide(color: isDestructive ? Colors.redAccent : colors.border),
+        side: BorderSide(
+          color: isDestructive ? Colors.redAccent : colors.border,
+        ),
       ),
-      onPressed: onPressed,
+      onPressed: () {
+        unawaited(ref.read(soundServiceProvider).play(SoundEffect.uiTap));
+        onPressed();
+      },
       child: Text(label),
     );
   }
