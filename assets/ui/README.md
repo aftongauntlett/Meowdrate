@@ -14,6 +14,9 @@ Four sources, all at native resolution with nearest-neighbor scaling
 - `RetroCatsPaid.zip` (repo root) → `Cats/AllCats*.png` — a separate,
   more detailed/shaded cat sprite pack, six palette variants of the same
   sheet of poses. **Credit unknown**, same caveat as PastelUi above.
+  The same pack's `CatItems/Decorations/CatRoomDecorations.png` sheet
+  also has a grid of pet bowls (food and water, four color variants
+  each) — that's where `water_bowl.png` is cropped from.
 
 | File | Source | Used for |
 |------|--------|----------|
@@ -25,6 +28,7 @@ Four sources, all at native resolution with nearest-neighbor scaling
 | `icon_x.png` | CatUIPaid, bare X glyph | "Skip" (Drink Moment) |
 | `confirm_dialog_cat.png` | CatUIPaid, sleeping-cat YES/NO dialog | "Reset all local data" confirmation (debug panel) |
 | `sleeping_cat.png` | CatUIFree, sleeping cat illustration | "No drinks yet" empty state (Recent) |
+| `water_bowl.png` | RetroCatsPaid, light-blue water bowl, cropped from `CatRoomDecorations.png` | Trailing icon on each Recent timeline row, next to "Meowdrated" + the clock time |
 | `cat_sitting_grey.png` / `cat_stretch_white.png` / `cat_curled_cream.png` / `cat_peekbox_orange.png` / `cat_sit_tuxedo.png` / `cat_whiskers_black.png` / `cat_prayer_cream.png` / `cat_boxnap_grey.png` | RetroCatsPaid, one pose each, cropped from `AllCats*.png` | Peek over the 8 Settings panels (Appearance / Glasses / Reminders / Sound / Consistency / Credits / Support / About your data, respectively) — a distinct pose and color per card instead of repeating one silhouette in different colors, replacing the earlier `curled_cat_*`/`awake_cat_*`/`paw_print.png` (CatUIPaid) set. The old set is gone from disk; `CatUIPaid.zip` in the repo root still has the source crop coordinates if it's ever wanted again. |
 
 `sleeping_cat.png` is cropped tight to its content (43×32) — it used to

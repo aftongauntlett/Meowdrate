@@ -1,1 +1,1 @@
-enum NarratorTrigger { drinkLogged, goalMet, goalMissed, longAbsence }
+enum NarratorTrigger { drinkLogged, goalMet, goalMissed, longAbsence, appReturn }

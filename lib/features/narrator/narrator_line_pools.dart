@@ -1,3 +1,4 @@
+import 'data/app_return_lines.dart';
 import 'data/drink_logged_lines.dart';
 import 'data/goal_met_lines.dart';
 import 'data/goal_missed_lines.dart';
@@ -9,4 +10,5 @@ const narratorLinePools = <NarratorTrigger, List<String>>{
   NarratorTrigger.goalMet: goalMetLines,
   NarratorTrigger.goalMissed: goalMissedLines,
   NarratorTrigger.longAbsence: longAbsenceLines,
+  NarratorTrigger.appReturn: appReturnLines,
 };

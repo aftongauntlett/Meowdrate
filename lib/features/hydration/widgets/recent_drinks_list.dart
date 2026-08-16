@@ -153,22 +153,39 @@ class _TimelineRow extends StatelessWidget {
                 top: 4,
                 bottom: isLast ? 0 : AppSpacing.lg,
               ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  Text(
-                    'Meowdrated',
-                    style: TextStyle(
-                      fontFamily: kHeadingFontFamily,
-                      fontWeight: FontWeight.w700,
-                      fontSize: 15,
-                      color: colors.text,
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Meowdrated',
+                          style: TextStyle(
+                            fontFamily: kHeadingFontFamily,
+                            fontWeight: FontWeight.w700,
+                            fontSize: 15,
+                            color: colors.text,
+                          ),
+                        ),
+                        const SizedBox(height: 2),
+                        Text(
+                          _clockTime(entry.timestamp),
+                          style: TextStyle(color: colors.textMuted, fontSize: 12),
+                        ),
+                      ],
                     ),
                   ),
-                  const SizedBox(height: 2),
-                  Text(
-                    _clockTime(entry.timestamp),
-                    style: TextStyle(color: colors.textMuted, fontSize: 12),
+                  // RetroCatsPaid's water bowl (CatRoomDecorations.png,
+                  // light-blue variant) — same pack as the Settings peek
+                  // cats, at native color like the other fixed game-art
+                  // pieces (btn_pill_blue.png, panel_card.png) rather than
+                  // tinted via PixelIcon.
+                  Image.asset(
+                    'assets/ui/water_bowl.png',
+                    width: 32,
+                    filterQuality: FilterQuality.none,
                   ),
                 ],
               ),

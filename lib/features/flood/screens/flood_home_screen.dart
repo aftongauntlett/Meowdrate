@@ -33,10 +33,12 @@ class FloodHomeScreen extends ConsumerStatefulWidget {
   ConsumerState<FloodHomeScreen> createState() => _FloodHomeScreenState();
 }
 
-class _FloodHomeScreenState extends ConsumerState<FloodHomeScreen> {
+class _FloodHomeScreenState extends ConsumerState<FloodHomeScreen>
+    with WidgetsBindingObserver {
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
     _checkRolloverEvent();
     // Reminders are single-shot, not daily-repeating (see ReminderService),
     // so if the app was closed across a day rollover — or the last batch
@@ -56,9 +58,29 @@ class _FloodHomeScreenState extends ConsumerState<FloodHomeScreen> {
     );
   }
 
-  /// If the app noticed a missed goal or a long absence while catching up
-  /// on missed days, that line becomes today's opening caption in the
-  /// flood scene itself — no separate popup.
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  // Fires on genuine foreground transitions (unminimized, switched back
+  // to, unlocked) — not on cold launch, since Flutter only calls this on a
+  // *change* of lifecycle state. Cold launch's greeting is handled by
+  // _checkRolloverEvent from initState instead.
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) {
+      ref
+          .read(openingLineOverrideProvider.notifier)
+          .set(selectNarratorLine(NarratorTrigger.appReturn));
+    }
+  }
+
+  /// Sets today's opening caption: a goal-missed/long-absence line if the
+  /// app noticed one while catching up on missed days, otherwise a plain
+  /// "welcome back" line — either way, a greeting rather than a rerun of
+  /// whatever drink-logged line was showing when the app was last closed.
   Future<void> _checkRolloverEvent() async {
     await ref.read(floodStateProvider.future);
     if (!mounted) {
@@ -71,12 +93,12 @@ class _FloodHomeScreenState extends ConsumerState<FloodHomeScreen> {
     final trigger = switch (event) {
       DayRolloverEvent.goalMissed => NarratorTrigger.goalMissed,
       DayRolloverEvent.longAbsence => NarratorTrigger.longAbsence,
-      DayRolloverEvent.none => null,
+      DayRolloverEvent.none => NarratorTrigger.appReturn,
     };
 
     ref
         .read(openingLineOverrideProvider.notifier)
-        .set(trigger == null ? null : selectNarratorLine(trigger));
+        .set(selectNarratorLine(trigger));
   }
 
   Future<void> _openDrinkMoment() async {
@@ -84,10 +106,15 @@ class _FloodHomeScreenState extends ConsumerState<FloodHomeScreen> {
     // Slides up like the Settings sheet, rather than the platform-default
     // horizontal push — the two full-screen overlays in this app should
     // feel like the same kind of thing entering.
-    await Navigator.of(context)
+    final logged = await Navigator.of(context)
         .push<bool>(SlideUpRoute(builder: (_) => const DrinkMomentScreen()));
     // The flood scene's own caption already updates the moment a drink is
-    // logged, so there's no separate confirmation toast here.
+    // logged, so there's no separate confirmation toast here — but the
+    // greeting override has to step aside first, or it'd keep showing
+    // instead of that drink's own reaction line.
+    if (logged ?? false) {
+      ref.read(openingLineOverrideProvider.notifier).set(null);
+    }
   }
 
   void _openDebugPanel() {

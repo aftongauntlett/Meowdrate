@@ -114,6 +114,11 @@ class DebugPanel extends ConsumerWidget {
                       _previewLine(context, ref, NarratorTrigger.longAbsence),
                 ),
                 _DebugButton(
+                  label: 'Preview welcome-back line',
+                  onPressed: () =>
+                      _previewLine(context, ref, NarratorTrigger.appReturn),
+                ),
+                _DebugButton(
                   label: 'Dawn',
                   onPressed: () => timeOverride.setOverride(6),
                 ),

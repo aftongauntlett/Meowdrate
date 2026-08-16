@@ -27,10 +27,12 @@ final debugNarratorOccurrenceOverrideProvider =
   DebugNarratorOccurrenceOverride.new,
 );
 
-/// A goal-missed/long-absence line noticed on this app open (see
-/// FloodNotifier.consumePendingRolloverEvent), shown as the flood scene's
-/// opening caption instead of a separate popup. Set once by
-/// FloodHomeScreen at startup; null on days with nothing to report.
+/// A greeting line — either a goal-missed/long-absence line noticed on
+/// this app open (see FloodNotifier.consumePendingRolloverEvent) or a
+/// plain appReturn line — shown as the flood scene's caption instead of
+/// whatever was last logged. Set by FloodHomeScreen on cold launch and on
+/// every foreground resume; cleared once a drink is logged so that
+/// action's own reaction line can take over.
 class OpeningLineOverride extends Notifier<String?> {
   @override
   String? build() => null;
@@ -41,12 +43,19 @@ class OpeningLineOverride extends Notifier<String?> {
 final openingLineOverrideProvider =
     NotifierProvider<OpeningLineOverride, String?>(OpeningLineOverride.new);
 
-/// The line shown in the flood scene right now: a goal-met line once
-/// today's flood is fully cleared, otherwise a drink-logged line keyed to
-/// how many drinks have been logged today — or, before the first one,
-/// either a leftover goal-missed/long-absence line from opening the app
-/// (see openingLineOverrideProvider) or a neutral prompt.
+/// The line shown in the flood scene right now: an opening-line override
+/// (see openingLineOverrideProvider) takes priority over everything else,
+/// since it's what makes each app open/return feel like a greeting rather
+/// than a rerun of whatever was last logged. Failing that: a goal-met line
+/// once today's flood is fully cleared, otherwise a drink-logged line keyed
+/// to how many drinks have been logged today, or a neutral prompt before
+/// the first one.
 final currentNarratorLineProvider = Provider<String>((ref) {
+  final openingLine = ref.watch(openingLineOverrideProvider);
+  if (openingLine != null) {
+    return openingLine;
+  }
+
   final level = ref.watch(floodLevelProvider);
   final override = ref.watch(debugNarratorOccurrenceOverrideProvider);
   final drinkCount = ref.watch(hydrationSummaryProvider).value?.count ?? 0;
@@ -70,8 +79,7 @@ final currentNarratorLineProvider = Provider<String>((ref) {
   }
 
   if (occurrence == 0) {
-    return ref.watch(openingLineOverrideProvider) ??
-        "Welcome. Cats hate water... help the cat, drink the water!";
+    return "Welcome. Cats hate water... help the cat, drink the water!";
   }
   return selectNarratorLine(NarratorTrigger.drinkLogged, occurrence: occurrence);
 });
