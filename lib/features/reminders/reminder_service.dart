@@ -107,7 +107,7 @@ class ReminderService {
     await _ensureTimeZone();
     await cancelReminders();
 
-    var next = _clampIntoWindow(referenceTime.add(interval), startHour: startHour, endHour: endHour);
+    var next = clampIntoWindow(referenceTime.add(interval), startHour: startHour, endHour: endHour);
     for (var i = 0; i < _maxScheduledSlots; i++) {
       await _plugin.zonedSchedule(
         id: _baseNotificationId + i,
@@ -125,7 +125,7 @@ class ReminderService {
         ),
         androidScheduleMode: AndroidScheduleMode.inexactAllowWhileIdle,
       );
-      next = _clampIntoWindow(next.add(interval), startHour: startHour, endHour: endHour);
+      next = clampIntoWindow(next.add(interval), startHour: startHour, endHour: endHour);
     }
   }
 
@@ -143,7 +143,8 @@ class ReminderService {
 /// Pushes [dt] forward into the next moment that falls inside
 /// [startHour]..[endHour] (inclusive, local time) — before the window
 /// moves it to today's start, after it rolls to tomorrow's start.
-DateTime _clampIntoWindow(DateTime dt, {required int startHour, required int endHour}) {
+@visibleForTesting
+DateTime clampIntoWindow(DateTime dt, {required int startHour, required int endHour}) {
   if (dt.hour < startHour) {
     return DateTime(dt.year, dt.month, dt.day, startHour);
   }

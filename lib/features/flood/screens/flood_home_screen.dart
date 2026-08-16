@@ -211,22 +211,34 @@ class _FloodHomeScreenState extends ConsumerState<FloodHomeScreen>
                 // Appearance chips below already hug their text.
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  PixelButton(
-                    onPressed: _openDrinkMoment,
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        // A plain glyph (icon_plus.png) read as a smudge/dot
-                        // at this size once recolored solid white — a
-                        // recognizable water drop reads instantly as "drink."
-                        const Icon(
-                          Icons.water_drop,
-                          color: Colors.white,
-                          size: 24,
-                        ),
-                        const SizedBox(width: AppSpacing.sm),
-                        const Text('Meowdrate!'),
-                      ],
+                  // Flexible (not just the Row above) is what keeps this
+                  // from overflowing at large system text-scale settings —
+                  // without it PixelButton renders at its natural,
+                  // unconstrained width even when that's wider than the
+                  // screen.
+                  Flexible(
+                    child: PixelButton(
+                      onPressed: _openDrinkMoment,
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          // A plain glyph (icon_plus.png) read as a smudge/dot
+                          // at this size once recolored solid white — a
+                          // recognizable water drop reads instantly as "drink."
+                          const Icon(
+                            Icons.water_drop,
+                            color: Colors.white,
+                            size: 24,
+                          ),
+                          const SizedBox(width: AppSpacing.sm),
+                          const Flexible(
+                            child: Text(
+                              'Meowdrate!',
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                 ],

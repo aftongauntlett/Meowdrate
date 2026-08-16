@@ -34,6 +34,10 @@ class ConfirmDialog extends ConsumerWidget {
                       'assets/ui/confirm_dialog_cat.png',
                       fit: BoxFit.fill,
                       filterQuality: FilterQuality.none,
+                      // Decorative — the Yes/No regions below carry their
+                      // own Semantics labels, so this background art would
+                      // otherwise be announced as a blank, unlabeled image.
+                      excludeFromSemantics: true,
                     ),
                   ),
                   Positioned(
@@ -41,17 +45,21 @@ class ConfirmDialog extends ConsumerWidget {
                     top: h * 0.62,
                     width: w * 0.33,
                     height: h * 0.28,
-                    child: MouseRegion(
-                      cursor: SystemMouseCursors.click,
-                      child: GestureDetector(
-                        onTap: () {
-                          unawaited(
-                            ref
-                                .read(soundServiceProvider)
-                                .play(SoundEffect.uiTap),
-                          );
-                          Navigator.of(context).pop(true);
-                        },
+                    child: Semantics(
+                      button: true,
+                      label: 'Yes',
+                      child: MouseRegion(
+                        cursor: SystemMouseCursors.click,
+                        child: GestureDetector(
+                          onTap: () {
+                            unawaited(
+                              ref
+                                  .read(soundServiceProvider)
+                                  .play(SoundEffect.uiTap),
+                            );
+                            Navigator.of(context).pop(true);
+                          },
+                        ),
                       ),
                     ),
                   ),
@@ -60,17 +68,21 @@ class ConfirmDialog extends ConsumerWidget {
                     top: h * 0.62,
                     width: w * 0.33,
                     height: h * 0.28,
-                    child: MouseRegion(
-                      cursor: SystemMouseCursors.click,
-                      child: GestureDetector(
-                        onTap: () {
-                          unawaited(
-                            ref
-                                .read(soundServiceProvider)
-                                .play(SoundEffect.uiTapNegative),
-                          );
-                          Navigator.of(context).pop(false);
-                        },
+                    child: Semantics(
+                      button: true,
+                      label: 'No',
+                      child: MouseRegion(
+                        cursor: SystemMouseCursors.click,
+                        child: GestureDetector(
+                          onTap: () {
+                            unawaited(
+                              ref
+                                  .read(soundServiceProvider)
+                                  .play(SoundEffect.uiTapNegative),
+                            );
+                            Navigator.of(context).pop(false);
+                          },
+                        ),
                       ),
                     ),
                   ),

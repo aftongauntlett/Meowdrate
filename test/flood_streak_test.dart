@@ -105,6 +105,40 @@ void main() {
     );
   });
 
+  test('opening the app the day after meeting the goal preserves the streak', () async {
+    SharedPreferences.setMockInitialValues({
+      'flood.state.v1': _stateJson(
+        currentStreak: 3,
+        lastGoalMetDate: yesterday,
+        lastSeenDate: yesterday,
+      ),
+    });
+    final container = _testContainer();
+    addTearDown(container.dispose);
+
+    final state = await container.read(floodStateProvider.future);
+
+    expect(state.currentStreak, 3);
+    expect(
+      container.read(floodStateProvider.notifier).consumePendingRolloverEvent(),
+      DayRolloverEvent.none,
+    );
+  });
+
+  test('first-ever launch with no saved state starts clean, no crash', () async {
+    SharedPreferences.setMockInitialValues({});
+    final container = _testContainer();
+    addTearDown(container.dispose);
+
+    final state = await container.read(floodStateProvider.future);
+
+    expect(state.currentStreak, 0);
+    expect(
+      container.read(floodStateProvider.notifier).consumePendingRolloverEvent(),
+      DayRolloverEvent.none,
+    );
+  });
+
   test('opening the app after a long absence reports a long-absence event', () async {
     SharedPreferences.setMockInitialValues({
       'flood.state.v1': _stateJson(

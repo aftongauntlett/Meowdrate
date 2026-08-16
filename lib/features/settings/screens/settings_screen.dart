@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -141,21 +140,25 @@ class _CloseButtonState extends State<_CloseButton> {
   @override
   Widget build(BuildContext context) {
     final colors = context.colors;
-    return MouseRegion(
-      cursor: SystemMouseCursors.click,
-      child: GestureDetector(
-        onTapDown: (_) => setState(() => _pressed = true),
-        onTapCancel: () => setState(() => _pressed = false),
-        onTapUp: (_) => setState(() => _pressed = false),
-        onTap: widget.onPressed,
-        child: Opacity(
-          opacity: _pressed ? 0.6 : 1.0,
-          child: Padding(
-            padding: const EdgeInsets.all(AppSpacing.xs),
-            child: PixelIcon(
-              'assets/ui/icon_x.png',
-              color: colors.textMuted,
-              size: 22,
+    return Semantics(
+      button: true,
+      label: 'Close',
+      child: MouseRegion(
+        cursor: SystemMouseCursors.click,
+        child: GestureDetector(
+          onTapDown: (_) => setState(() => _pressed = true),
+          onTapCancel: () => setState(() => _pressed = false),
+          onTapUp: (_) => setState(() => _pressed = false),
+          onTap: widget.onPressed,
+          child: Opacity(
+            opacity: _pressed ? 0.6 : 1.0,
+            child: Padding(
+              padding: const EdgeInsets.all(AppSpacing.sm),
+              child: PixelIcon(
+                'assets/ui/icon_x.png',
+                color: colors.textMuted,
+                size: 24,
+              ),
             ),
           ),
         ),
@@ -355,25 +358,32 @@ class SettingsScreen extends ConsumerWidget {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                PixelButton(
-                  onPressed: () {
-                    unawaited(
-                      ref.read(soundServiceProvider).play(SoundEffect.uiTap),
-                    );
-                    unawaited(
-                      launchUrl(
-                        Uri.parse('https://ko-fi.com/prettyprettyprettygood'),
-                        mode: LaunchMode.externalApplication,
-                      ),
-                    );
-                  },
-                  child: const Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Icon(Icons.favorite, size: 16),
-                      SizedBox(width: AppSpacing.xs),
-                      Text('Support on Ko-fi'),
-                    ],
+                Flexible(
+                  child: PixelButton(
+                    onPressed: () {
+                      unawaited(
+                        ref.read(soundServiceProvider).play(SoundEffect.uiTap),
+                      );
+                      unawaited(
+                        launchUrl(
+                          Uri.parse('https://ko-fi.com/prettyprettyprettygood'),
+                          mode: LaunchMode.externalApplication,
+                        ),
+                      );
+                    },
+                    child: const Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(Icons.favorite, size: 16),
+                        SizedBox(width: AppSpacing.xs),
+                        Flexible(
+                          child: Text(
+                            'Support on Ko-fi',
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               ],
@@ -533,23 +543,48 @@ class _CreditLine extends StatelessWidget {
         style: baseStyle,
         children: [
           TextSpan(text: before),
-          TextSpan(
-            text: linkText,
-            style: TextStyle(
-              color: colors.accent,
-              decoration: TextDecoration.underline,
-            ),
-            recognizer: TapGestureRecognizer()
-              ..onTap = () => launchUrl(
-                Uri.parse(url),
-                mode: LaunchMode.externalApplication,
-              ),
-          ),
+          _linkSpan(text: linkText, url: url, colors: colors, baseStyle: baseStyle),
           TextSpan(text: after),
         ],
       ),
     );
   }
+}
+
+/// A tappable [WidgetSpan] with proper link semantics (announced and
+/// targetable as a link by TalkBack/VoiceOver), for embedding inside a
+/// [Text.rich] alongside plain [TextSpan]s. Replaces the earlier approach of
+/// a [TextSpan] with a bare [TapGestureRecognizer], which is tappable but
+/// invisible to assistive tech — a [TextSpan] can't carry [Semantics] on its
+/// own, only a widget can.
+WidgetSpan _linkSpan({
+  required String text,
+  required String url,
+  required AppColors colors,
+  required TextStyle baseStyle,
+}) {
+  return WidgetSpan(
+    alignment: PlaceholderAlignment.baseline,
+    baseline: TextBaseline.alphabetic,
+    child: Semantics(
+      link: true,
+      label: text,
+      child: MouseRegion(
+        cursor: SystemMouseCursors.click,
+        child: GestureDetector(
+          onTap: () =>
+              launchUrl(Uri.parse(url), mode: LaunchMode.externalApplication),
+          child: Text(
+            text,
+            style: baseStyle.copyWith(
+              color: colors.accent,
+              decoration: TextDecoration.underline,
+            ),
+          ),
+        ),
+      ),
+    ),
+  );
 }
 
 /// Like [_CreditLine], but for attribution text with more than one linked
@@ -571,17 +606,11 @@ class _CreditRichLine extends StatelessWidget {
           for (final part in parts)
             part.url == null
                 ? TextSpan(text: part.text)
-                : TextSpan(
+                : _linkSpan(
                     text: part.text,
-                    style: TextStyle(
-                      color: colors.accent,
-                      decoration: TextDecoration.underline,
-                    ),
-                    recognizer: TapGestureRecognizer()
-                      ..onTap = () => launchUrl(
-                        Uri.parse(part.url!),
-                        mode: LaunchMode.externalApplication,
-                      ),
+                    url: part.url!,
+                    colors: colors,
+                    baseStyle: baseStyle,
                   ),
         ],
       ),
@@ -597,8 +626,13 @@ class _AppearanceToggle extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      mainAxisSize: MainAxisSize.min,
+    // Wrap (not Row) so at a large system text-scale setting, where the
+    // three chips no longer fit on one line, the third one flows onto a
+    // second line instead of overflowing off the edge of the panel.
+    return Wrap(
+      alignment: WrapAlignment.center,
+      spacing: AppSpacing.sm,
+      runSpacing: AppSpacing.sm,
       children: [
         _AppearanceChip(
           label: 'System',
@@ -606,14 +640,12 @@ class _AppearanceToggle extends StatelessWidget {
           selected: mode == ThemeMode.system,
           onPressed: () => onChanged(ThemeMode.system),
         ),
-        const SizedBox(width: AppSpacing.sm),
         _AppearanceChip(
           label: 'Light',
           icon: Icons.light_mode,
           selected: mode == ThemeMode.light,
           onPressed: () => onChanged(ThemeMode.light),
         ),
-        const SizedBox(width: AppSpacing.sm),
         _AppearanceChip(
           label: 'Dark',
           icon: Icons.dark_mode,
@@ -651,7 +683,7 @@ class _AppearanceChip extends StatelessWidget {
         children: [
           Icon(icon, size: 16),
           const SizedBox(width: AppSpacing.xs),
-          Text(label),
+          Flexible(child: Text(label, overflow: TextOverflow.ellipsis)),
         ],
       ),
     );
@@ -672,6 +704,7 @@ class _GoalStepper extends ConsumerWidget {
       children: [
         _StepperButton(
           assetPath: 'assets/ui/icon_button_minus.png',
+          semanticLabel: 'Decrease daily glass goal',
           onPressed: glasses > kMinDailyGoalGlasses
               ? () {
                   unawaited(
@@ -698,6 +731,7 @@ class _GoalStepper extends ConsumerWidget {
         ),
         _StepperButton(
           assetPath: 'assets/ui/icon_button_plus.png',
+          semanticLabel: 'Increase daily glass goal',
           onPressed: glasses < kMaxDailyGoalGlasses
               ? () {
                   unawaited(
@@ -713,9 +747,14 @@ class _GoalStepper extends ConsumerWidget {
 }
 
 class _StepperButton extends StatelessWidget {
-  const _StepperButton({required this.assetPath, required this.onPressed});
+  const _StepperButton({
+    required this.assetPath,
+    required this.semanticLabel,
+    required this.onPressed,
+  });
 
   final String assetPath;
+  final String semanticLabel;
   final VoidCallback? onPressed;
 
   @override
@@ -726,18 +765,24 @@ class _StepperButton extends StatelessWidget {
     // needed on top of it, that was the "CSS-drawn" chrome that made the
     // bare-glyph version look unfinished. MouseRegion alone (no InkWell)
     // still gets it the pointer-on-hover cursor the other buttons have.
-    return MouseRegion(
-      cursor: enabled ? SystemMouseCursors.click : MouseCursor.defer,
-      child: GestureDetector(
-        onTap: onPressed,
-        child: Opacity(
-          opacity: enabled ? 1.0 : 0.4,
-          child: Image.asset(
-            assetPath,
-            width: 34,
-            height: 34,
-            fit: BoxFit.contain,
-            filterQuality: FilterQuality.none,
+    return Semantics(
+      button: true,
+      enabled: enabled,
+      label: semanticLabel,
+      child: MouseRegion(
+        cursor: enabled ? SystemMouseCursors.click : MouseCursor.defer,
+        child: GestureDetector(
+          onTap: onPressed,
+          child: Opacity(
+            opacity: enabled ? 1.0 : 0.4,
+            child: Image.asset(
+              assetPath,
+              width: 34,
+              height: 34,
+              fit: BoxFit.contain,
+              filterQuality: FilterQuality.none,
+              excludeFromSemantics: true,
+            ),
           ),
         ),
       ),
@@ -785,9 +830,13 @@ class _RemindersSection extends ConsumerWidget {
     // Same pill-chip language as the Appearance toggle above (a PixelButton
     // pair, one dimmed) instead of a stock Material Switch — the Switch was
     // the one control on this sheet that didn't look like it belonged to
-    // the same UI kit as everything else.
-    return Row(
-      mainAxisSize: MainAxisSize.min,
+    // the same UI kit as everything else. Wrap (not Row), same reason as
+    // the Appearance toggle: keeps a large system text-scale setting from
+    // overflowing instead of flowing the second chip onto its own line.
+    return Wrap(
+      alignment: WrapAlignment.center,
+      spacing: AppSpacing.sm,
+      runSpacing: AppSpacing.sm,
       children: [
         PixelButton(
           height: 44,
@@ -802,7 +851,6 @@ class _RemindersSection extends ConsumerWidget {
             ],
           ),
         ),
-        const SizedBox(width: AppSpacing.sm),
         PixelButton(
           height: 44,
           onPressed: () => _toggle(ref, context, true),
@@ -832,8 +880,11 @@ class _SoundMuteToggle extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      mainAxisSize: MainAxisSize.min,
+    // Wrap (not Row) — see _AppearanceToggle/_RemindersSection for why.
+    return Wrap(
+      alignment: WrapAlignment.center,
+      spacing: AppSpacing.sm,
+      runSpacing: AppSpacing.sm,
       children: [
         PixelButton(
           height: 44,
@@ -848,7 +899,6 @@ class _SoundMuteToggle extends StatelessWidget {
             ],
           ),
         ),
-        const SizedBox(width: AppSpacing.sm),
         PixelButton(
           height: 44,
           onPressed: () => onChanged(false),
@@ -885,15 +935,18 @@ class _StreakChip extends StatelessWidget {
       children: [
         Icon(Icons.local_fire_department, color: colors.primary, size: 20),
         const SizedBox(width: AppSpacing.xs),
-        Text(
-          streak == 0
-              ? 'No days in a row yet'
-              : '$streak day${streak == 1 ? '' : 's'} in a row',
-          style: TextStyle(
-            color: colors.text,
-            fontFamily: kHeadingFontFamily,
-            fontWeight: FontWeight.w700,
-            fontSize: 15,
+        Flexible(
+          child: Text(
+            streak == 0
+                ? 'No days in a row yet'
+                : '$streak day${streak == 1 ? '' : 's'} in a row',
+            overflow: TextOverflow.ellipsis,
+            style: TextStyle(
+              color: colors.text,
+              fontFamily: kHeadingFontFamily,
+              fontWeight: FontWeight.w700,
+              fontSize: 15,
+            ),
           ),
         ),
       ],
