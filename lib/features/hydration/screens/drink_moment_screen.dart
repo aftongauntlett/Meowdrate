@@ -42,6 +42,7 @@ class _DrinkMomentScreenState extends ConsumerState<DrinkMomentScreen> {
   AudioPlayer? _songPlayer;
   StreamSubscription<Duration>? _songPositionSub;
   StreamSubscription<Duration>? _songDurationSub;
+  StreamSubscription<PlayerState>? _songStateSub;
   Duration? _songDuration;
   Duration _songPosition = Duration.zero;
 
@@ -58,7 +59,8 @@ class _DrinkMomentScreenState extends ConsumerState<DrinkMomentScreen> {
 
   // Picked once per visit (not per rebuild) so it doesn't shuffle under
   // the user mid-countdown — a fresh roll each time this screen opens.
-  late final _pose = pochiDrinkPoses[math.Random().nextInt(pochiDrinkPoses.length)];
+  late final _pose =
+      pochiDrinkPoses[math.Random().nextInt(pochiDrinkPoses.length)];
 
   @override
   void initState() {
@@ -102,7 +104,22 @@ class _DrinkMomentScreenState extends ConsumerState<DrinkMomentScreen> {
       _songDurationSub = player.onDurationChanged.listen((duration) {
         _songDuration = duration;
       });
+      // Volume only ever moves off its initial 0 from inside
+      // _updateSongVolume, which up to now was solely driven by
+      // onPositionChanged ticks — if that stream's first event was ever
+      // delayed or dropped (a real occasional hiccup on some devices right
+      // after audio focus/session setup), the song kept playing at volume 0
+      // forever, silently, for the rest of the loop. Re-driving it here
+      // (once playback has actually started) and on every player-state
+      // change means the volume gets set even when the position stream
+      // stays quiet.
+      _songStateSub = player.onPlayerStateChanged.listen((state) {
+        if (state == PlayerState.playing) {
+          _updateSongVolume();
+        }
+      });
       await player.play(AssetSource('audio/drinkMomentSong.mp3'));
+      _updateSongVolume();
     } catch (error) {
       if (kDebugMode) {
         debugPrint('DrinkMomentScreen: skipping song ($error)');
@@ -158,6 +175,7 @@ class _DrinkMomentScreenState extends ConsumerState<DrinkMomentScreen> {
     _timer?.cancel();
     _songPositionSub?.cancel();
     _songDurationSub?.cancel();
+    _songStateSub?.cancel();
     _songPlayer?.dispose();
     super.dispose();
   }
@@ -211,184 +229,192 @@ class _DrinkMomentScreenState extends ConsumerState<DrinkMomentScreen> {
         // at normal text sizes while still allowing the whole body to
         // scroll instead of overflowing once a large system font size (or
         // a tall on-screen keyboard-equivalent case) makes the content
-        // taller than the screen.
+        // taller than the screen. The padding has to live *inside* the
+        // ConstrainedBox (around the Column, not on the ScrollView) — padding
+        // outside it doesn't count against `minHeight`, so the scrollable
+        // content would always end up minHeight + padding tall and force a
+        // few pixels of scroll no matter how well the content itself fits.
         child: LayoutBuilder(
           builder: (context, constraints) {
             return SingleChildScrollView(
-              padding: const EdgeInsets.symmetric(horizontal: AppSpacing.xl)
-                  .copyWith(top: AppSpacing.xxl, bottom: AppSpacing.xl),
               child: ConstrainedBox(
                 constraints: BoxConstraints(minHeight: constraints.maxHeight),
-                child: IntrinsicHeight(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Flexible(
-                            child: Text(
-                              'Time to hydrate.',
-                              overflow: TextOverflow.ellipsis,
-                              style: Theme.of(context).textTheme.headlineSmall
-                                  ?.copyWith(
-                                    fontFamily: kHeadingFontFamily,
-                                    fontWeight: FontWeight.w700,
-                                  ),
-                            ),
-                          ),
-                          _MusicMuteButton(
-                            // Reflects whether the song is actually audible
-                            // right now (also off if Settings' master Sound
-                            // mute is on), even though tapping it only ever
-                            // flips this screen's own music-only flag — see
-                            // _toggleMusicMuted.
-                            muted: _musicMuted || _soundMuted,
-                            onPressed: _toggleMusicMuted,
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: AppSpacing.sm),
-                      Text(
-                        'Take a few sips. I\'ll be here the whole time, watching.',
-                        style: TextStyle(
-                          color: colors.textMuted,
-                          fontSize: 16,
-                          height: 1.4,
-                        ),
-                      ),
-                      const Spacer(),
-                      Center(
-                        child: Column(
-                          mainAxisSize: MainAxisSize.min,
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: AppSpacing.xl)
+                      .copyWith(top: AppSpacing.lg, bottom: AppSpacing.md),
+                  child: IntrinsicHeight(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            ThemedCard(
-                              // Fixed width so the box never resizes when the
-                              // caption below swaps between its two (differently
-                              // long) states — it used to visibly shrink the
-                              // instant the timer hit 00:00.
-                              width: 300,
-                              radius: 18,
-                              useArtInLightMode: false,
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: AppSpacing.lg,
-                                vertical: AppSpacing.xxl,
-                              ),
-                              child: Column(
-                                children: [
-                                  Text(
-                                    _formatSeconds(_remainingSeconds),
-                                    style: const TextStyle(
+                            Flexible(
+                              child: Text(
+                                'Time to hydrate.',
+                                overflow: TextOverflow.ellipsis,
+                                style: Theme.of(context).textTheme.headlineSmall
+                                    ?.copyWith(
                                       fontFamily: kHeadingFontFamily,
-                                      fontSize: 60,
                                       fontWeight: FontWeight.w700,
-                                      fontFeatures: [FontFeature.tabularFigures()],
                                     ),
-                                  ),
-                                  const SizedBox(height: AppSpacing.sm),
-                                  // A minimum (not fixed) height so a
-                                  // one-line vs. two-line wrap at the default
-                                  // text scale still can't shift the box's
-                                  // height, while still letting the caption
-                                  // grow — rather than silently clip — under
-                                  // a larger system font size.
-                                  ConstrainedBox(
-                                    constraints: const BoxConstraints(
-                                      minHeight: 36,
+                              ),
+                            ),
+                            _MusicMuteButton(
+                              // Reflects whether the song is actually audible
+                              // right now (also off if Settings' master Sound
+                              // mute is on), even though tapping it only ever
+                              // flips this screen's own music-only flag — see
+                              // _toggleMusicMuted.
+                              muted: _musicMuted || _soundMuted,
+                              onPressed: _toggleMusicMuted,
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: AppSpacing.sm),
+                        Text(
+                          'Take a few sips. I\'ll be here the whole time, watching.',
+                          style: TextStyle(
+                            color: colors.textMuted,
+                            fontSize: 16,
+                            height: 1.4,
+                          ),
+                        ),
+                        const Spacer(),
+                        Center(
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              ThemedCard(
+                                // Fixed width so the box never resizes when the
+                                // caption below swaps between its two (differently
+                                // long) states — it used to visibly shrink the
+                                // instant the timer hit 00:00.
+                                width: 300,
+                                radius: 18,
+                                useArtInLightMode: false,
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: AppSpacing.lg,
+                                  vertical: AppSpacing.lg,
+                                ),
+                                child: Column(
+                                  children: [
+                                    Text(
+                                      _formatSeconds(_remainingSeconds),
+                                      style: const TextStyle(
+                                        fontFamily: kHeadingFontFamily,
+                                        fontSize: 60,
+                                        fontWeight: FontWeight.w700,
+                                        fontFeatures: [
+                                          FontFeature.tabularFigures(),
+                                        ],
+                                      ),
                                     ),
-                                    child: Center(
-                                      child: Text(
-                                        _isComplete
-                                            ? 'All done? Let me know.'
-                                            : 'Drinking now — I\'m timing you.',
-                                        textAlign: TextAlign.center,
-                                        maxLines: 2,
-                                        style: TextStyle(
-                                          color: colors.textMuted,
-                                          fontFamily: kHeadingFontFamily,
-                                          fontSize: 13,
+                                    const SizedBox(height: AppSpacing.sm),
+                                    // A minimum (not fixed) height so a
+                                    // one-line vs. two-line wrap at the default
+                                    // text scale still can't shift the box's
+                                    // height, while still letting the caption
+                                    // grow — rather than silently clip — under
+                                    // a larger system font size.
+                                    ConstrainedBox(
+                                      constraints: const BoxConstraints(
+                                        minHeight: 36,
+                                      ),
+                                      child: Center(
+                                        child: Text(
+                                          _isComplete
+                                              ? 'All done? Let me know.'
+                                              : 'Drinking now — I\'m timing you.',
+                                          textAlign: TextAlign.center,
+                                          maxLines: 2,
+                                          style: TextStyle(
+                                            color: colors.textMuted,
+                                            fontFamily: kHeadingFontFamily,
+                                            fontSize: 13,
+                                          ),
                                         ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              // Explicit gap instead of letting Pochi overlap the
+                              // card's bottom edge — the earlier version had them
+                              // touching.
+                              const SizedBox(height: AppSpacing.sm),
+                              SpriteAnimation(
+                                creature: pochi,
+                                mood: MoodBand.happy,
+                                clipOverride: _pose,
+                                scale: 2.0,
+                              ),
+                            ],
+                          ),
+                        ),
+                        const Spacer(),
+                        Center(
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              // A Row (not Center) is what actually hugs the button to
+                              // its content width here — PixelButton's inner Container
+                              // sets `alignment: Alignment.center`, which makes it
+                              // expand to fill any *bounded* incoming constraint
+                              // (Center's included, even though it's loose). Only a
+                              // Row gives its non-flex child an *unbounded* main-axis
+                              // constraint, which is what lets the Container
+                              // shrink-wrap instead — same fix as the Meowdrate!
+                              // button in flood_home_screen.dart. Flexible on the
+                              // button itself is what then keeps it from
+                              // overflowing at large system text-scale settings.
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Flexible(
+                                    child: PixelButton(
+                                      onPressed: _handleDrank,
+                                      child: Row(
+                                        mainAxisSize: MainAxisSize.min,
+                                        children: [
+                                          const PixelIcon(
+                                            'assets/ui/icon_check.png',
+                                            color: Colors.white,
+                                            size: 26,
+                                          ),
+                                          const SizedBox(width: AppSpacing.sm),
+                                          const Flexible(
+                                            child: Text(
+                                              'I Meowdrated!',
+                                              overflow: TextOverflow.ellipsis,
+                                            ),
+                                          ),
+                                        ],
                                       ),
                                     ),
                                   ),
                                 ],
                               ),
-                            ),
-                            // Explicit gap instead of letting Pochi overlap the
-                            // card's bottom edge — the earlier version had them
-                            // touching.
-                            const SizedBox(height: AppSpacing.lg),
-                            SpriteAnimation(
-                              creature: pochi,
-                              mood: MoodBand.happy,
-                              clipOverride: _pose,
-                              scale: 2.2,
-                            ),
-                          ],
-                        ),
-                      ),
-                      const Spacer(),
-                      Center(
-                        child: Column(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            // A Row (not Center) is what actually hugs the button to
-                            // its content width here — PixelButton's inner Container
-                            // sets `alignment: Alignment.center`, which makes it
-                            // expand to fill any *bounded* incoming constraint
-                            // (Center's included, even though it's loose). Only a
-                            // Row gives its non-flex child an *unbounded* main-axis
-                            // constraint, which is what lets the Container
-                            // shrink-wrap instead — same fix as the Meowdrate!
-                            // button in flood_home_screen.dart. Flexible on the
-                            // button itself is what then keeps it from
-                            // overflowing at large system text-scale settings.
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Flexible(
-                                  child: PixelButton(
-                                    onPressed: _handleDrank,
-                                    child: Row(
-                                      mainAxisSize: MainAxisSize.min,
-                                      children: [
-                                        const PixelIcon(
-                                          'assets/ui/icon_check.png',
-                                          color: Colors.white,
-                                          size: 26,
-                                        ),
-                                        const SizedBox(width: AppSpacing.sm),
-                                        const Flexible(
-                                          child: Text(
-                                            'I Meowdrated!',
-                                            overflow: TextOverflow.ellipsis,
-                                          ),
-                                        ),
-                                      ],
+                              TextButton(
+                                onPressed: _handleSkip,
+                                child: Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    PixelIcon(
+                                      'assets/ui/icon_x.png',
+                                      color: colors.textMuted,
+                                      size: 20,
                                     ),
-                                  ),
+                                    const SizedBox(width: AppSpacing.xs),
+                                    const Text('Skip'),
+                                  ],
                                 ),
-                              ],
-                            ),
-                            TextButton(
-                              onPressed: _handleSkip,
-                              child: Row(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  PixelIcon(
-                                    'assets/ui/icon_x.png',
-                                    color: colors.textMuted,
-                                    size: 20,
-                                  ),
-                                  const SizedBox(width: AppSpacing.xs),
-                                  const Text('Skip'),
-                                ],
                               ),
-                            ),
-                          ],
+                            ],
+                          ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
                 ),
               ),
@@ -445,4 +471,3 @@ class _MusicMuteButton extends StatelessWidget {
     );
   }
 }
-
