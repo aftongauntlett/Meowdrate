@@ -33,9 +33,9 @@ Six one-off poses used only on the drink-moment countdown screen (via
 set. One is picked at random each time the screen opens
 (`drink_moment_screen.dart`'s `_pose`); `MoodBand.happy` still drives the
 shared tint/speed/bounce regardless of which pose is chosen. Frames come
-from a different, separately-licensed pack (`RetroCatsPaid.zip` in the
-repo root, `Cats/Sprites/`) rather than the toffeecraft sheet the mood
-clips above use.
+from a different toffeecraft pack (`RetroCatsPaid.zip` in the repo root,
+`Cats/Sprites/`) than the Cat Mega Pack sheet the mood clips above use —
+same studio, separate purchase.
 
 | File | Source frame | Frames |
 |------|------|--------|
@@ -46,6 +46,5 @@ clips above use.
 | `pochi_drink_box2.png` | `Box2.png` | 10 × 64×64 |
 | `pochi_drink_relaxing.png` | `Chilling.png` | 8 × 64×64 |
 
-**TODO:** add a Settings → Credits line for this pack once its
-source/license terms are confirmed — `RetroCatsPaid.zip` didn't include a
-license or readme file to source that from.
+Covered by the same toffeecraft credit line in Settings → Credits as the
+rest of the app's cat art — no separate line needed.

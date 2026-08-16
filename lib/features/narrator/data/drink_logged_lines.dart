@@ -1,6 +1,7 @@
 /// Shown after each drink is logged. Seen the most often of any trigger,
-/// so this pool stays the largest and mostly dry/wry per the Voice & Tone
-/// section of PRD.md.
+/// so this pool stays the largest and mostly dry/wry rather than
+/// full-force sarcastic — that tone is saved for goal-missed/long-absence
+/// lines, which land less often.
 const drinkLoggedLines = <String>[
   'Oh good, you\'re drinking water. I\'ll alert the media.',
   'Another sip. Groundbreaking stuff.',

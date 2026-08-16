@@ -2,7 +2,7 @@ enum TimeOfDayBand { dawn, day, dusk, night }
 
 /// Fixed clock-hour bands (local device time, no location permission
 /// needed) — not astronomically precise, just enough to give the flood
-/// scene a sense of day passing. See PRD.md's Time of Day & Theming.
+/// scene a sense of day passing.
 TimeOfDayBand bandForHour(int hour) {
   if (hour >= 5 && hour < 7) {
     return TimeOfDayBand.dawn;

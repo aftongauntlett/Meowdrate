@@ -1,3 +1,7 @@
+# Raw third-party asset packs (source .zip files kept locally for cropping
+# reference, not tracked — several are paid packs, see assets/*/README.md)
+/*.zip
+
 # Miscellaneous
 *.class
 *.log

@@ -25,8 +25,9 @@ const _onSceneText = Color(0xFFF5F7FF);
 /// narrator voice, under a sky that shifts with the time of day. Every
 /// color in this scene is fixed rather than theme-driven — the sky/water
 /// already have their own always-moody palette, independent of the
-/// user's Light/Dark/System chrome preference (see PRD.md's Time of Day
-/// & Theming section on why these two axes stay decoupled).
+/// user's Light/Dark/System chrome preference. These two theming axes
+/// (the scene's automatic day/night sky vs. the user's manual chrome
+/// preference) are deliberately decoupled and never affect each other.
 class FloodScene extends ConsumerStatefulWidget {
   const FloodScene({super.key});
 

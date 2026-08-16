@@ -11,6 +11,6 @@ void main() {
     await tester.pumpWidget(const ProviderScope(child: MeowdrateApp()));
     await tester.pump();
 
-    expect(find.text('Log a drink'), findsOneWidget);
+    expect(find.text('Meowdrate!'), findsOneWidget);
   });
 }

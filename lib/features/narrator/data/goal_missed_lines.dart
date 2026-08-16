@@ -1,8 +1,7 @@
 /// Shown once, the next time the app opens after a day the goal wasn't
-/// met. This is where the sharper GLaDOS-tier lines live — see the
-/// Guardrail note in PRD.md: comedic hyperbole only, never a real health
-/// warning. Nothing mechanical is actually lost, so the bite is free to
-/// land harder here.
+/// met. This is where the sharper GLaDOS-tier lines live — guardrail is
+/// comedic hyperbole only, never a real health warning. Nothing
+/// mechanical is actually lost, so the bite is free to land harder here.
 const goalMissedLines = <String>[
   'Look what you did. Are you proud of yourself?',
   'The water is still here. So are the consequences. Enjoy those kidney stones.',

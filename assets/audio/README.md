@@ -5,18 +5,17 @@ without these — a missing file is skipped silently (see
 `lib/core/audio/sound_service.dart`) — so there's no rush to source them
 before the rest of the app is working.
 
-Per `PRD.md`'s "Art & Audio — Self-Made First" section, the goal is to
-make these yourself with a procedural sound-effect generator rather than
-recording or composing — **jsfxr** (https://sfxr.me, browser-based, free,
-no install) or **bfxr** both work well for short retro chime/chirp/jingle
-sounds. Export as WAV or MP3 and drop the file in here with the exact
-name below — no code changes needed.
+The goal is to make these yourself with a procedural sound-effect
+generator rather than recording or composing — **jsfxr**
+(https://sfxr.me, browser-based, free, no install) or **bfxr** both work
+well for short retro chime/chirp/jingle sounds. Export as WAV or MP3 and
+drop the file in here with the exact name below — no code changes
+needed.
 
 | File | Plays when | Feel |
 |------|-----------|------|
 | `drinkLogged.mp3` | Every drink logged | Soft, short chime |
 | `goalMet.mp3` | The day's flood fully clears | A bit bigger — this is the daily "win" |
-| `creatureRescued.mp3` | Not wired yet — reserved for a future distinct reveal moment, since draining the flood *is* meeting the goal in the current mechanic | Small chirp/thank-you |
 | `drinkMomentSong.mp3` | Background music on the Drink Moment screen (`drink_moment_screen.dart`) — loops for as long as the screen stays open, with a fade in/out on every repeat, not just during the 15s countdown | Longer than the other three — this one isn't a short SFX, it's a full track meant to be listened to |
 | `narratorBlip.mp3` | Every few characters while the narrator's line types itself out (`typewriter_text.dart`) | A single short, soft blip — it repeats dozens of times per line, so it needs to disappear into the background rather than announce itself. Current file is a synthesized placeholder tone; swap for a jsfxr blip when there's time |
 | `uiTap.mp3` | The settings gear (open) and most controls inside the settings sheet (`settings_screen.dart`, `flood_home_screen.dart`) | A quick, soft click — one shared tap sound for all of these rather than a distinct one per control. Current file is a synthesized placeholder tone; swap for a jsfxr click when there's time |
