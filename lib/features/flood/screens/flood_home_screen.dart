@@ -56,6 +56,11 @@ class _FloodHomeScreenState extends ConsumerState<FloodHomeScreen>
         // Home-screen widgets aren't available on this platform/environment.
       }),
     );
+    // Builds the uiTap pool now, well ahead of the Meowdrate button. Without
+    // this, tapping it cold builds the pool and starts DrinkMomentScreen's
+    // song player at the same moment — a race that can silently drop the
+    // song's first playback (see SoundService.warmUp).
+    unawaited(ref.read(soundServiceProvider).warmUp(SoundEffect.uiTap));
   }
 
   @override

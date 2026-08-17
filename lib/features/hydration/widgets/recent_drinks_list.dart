@@ -16,20 +16,12 @@ import '../models/hydration_entry.dart';
 /// primary-tinted trail instead of a plain divider, so it reads as a
 /// little quest log rather than a spreadsheet. Each row's clock time
 /// ("3:45 PM") is pushed to a quiet trailing label — useful, but no
-/// longer the headline. Unbounded in count — once a day's
-/// worth of entries is taller than fits comfortably, the card scrolls
-/// internally (a fixed max height) rather than growing and pushing the
-/// rest of the home screen down the page.
+/// longer the headline. Unbounded in count — the card grows with the
+/// day's entries rather than capping height and scrolling internally.
 class RecentDrinksList extends StatelessWidget {
   const RecentDrinksList({super.key, required this.entries});
 
   final List<HydrationEntry> entries;
-
-  // Taller than the old chip-wrap cap (220) — timeline rows are bigger
-  // than chips, and a taller card is also most of the fix for the empty
-  // space this replaced: a handful of entries now reads as a real card
-  // instead of a sliver hugging the "Recent" label.
-  static const _maxListHeight = 340.0;
 
   @override
   Widget build(BuildContext context) {
@@ -40,15 +32,15 @@ class RecentDrinksList extends StatelessWidget {
       // art's tab decoration sits right at the top edge, so equal padding
       // on all sides still reads as less room above than below (same fix
       // as _SettingsPanel's own top padding).
-      padding: const EdgeInsets.fromLTRB(AppSpacing.lg, 26, AppSpacing.lg, AppSpacing.lg),
+      padding: const EdgeInsets.fromLTRB(
+        AppSpacing.lg,
+        26,
+        AppSpacing.lg,
+        AppSpacing.lg,
+      ),
       child: entries.isEmpty
           ? _EmptyState(colors: colors)
-          : ConstrainedBox(
-              // Sizes to content when short; caps and scrolls once the
-              // day's drink count grows past what fits.
-              constraints: const BoxConstraints(maxHeight: _maxListHeight),
-              child: SingleChildScrollView(child: _Timeline(entries: entries)),
-            ),
+          : _Timeline(entries: entries),
     );
   }
 }
@@ -86,20 +78,14 @@ class _Timeline extends StatelessWidget {
     return Column(
       children: [
         for (var i = 0; i < entries.length; i++)
-          _TimelineRow(
-            entry: entries[i],
-            isLast: i == entries.length - 1,
-          ),
+          _TimelineRow(entry: entries[i], isLast: i == entries.length - 1),
       ],
     );
   }
 }
 
 class _TimelineRow extends StatelessWidget {
-  const _TimelineRow({
-    required this.entry,
-    required this.isLast,
-  });
+  const _TimelineRow({required this.entry, required this.isLast});
 
   final HydrationEntry entry;
   final bool isLast;
@@ -172,7 +158,10 @@ class _TimelineRow extends StatelessWidget {
                         const SizedBox(height: 2),
                         Text(
                           _clockTime(entry.timestamp),
-                          style: TextStyle(color: colors.textMuted, fontSize: 12),
+                          style: TextStyle(
+                            color: colors.textMuted,
+                            fontSize: 12,
+                          ),
                         ),
                       ],
                     ),

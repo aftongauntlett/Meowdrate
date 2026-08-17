@@ -49,6 +49,24 @@ class SoundService {
   /// without every call site needing to read the provider itself.
   bool muted = false;
 
+  /// Builds [effect]'s player pool ahead of time without making any sound.
+  /// Meant to be called once, early, off the path of an actual tap — see
+  /// [_acquirePlayer]'s per-pool setup cost. Without this, an effect's
+  /// first-ever [play] call races other cold-start audio work (e.g.
+  /// DrinkMomentScreen's song player spinning up right after a [uiTap] on
+  /// the button that opens it), which on some devices silently drops the
+  /// racing playback rather than throwing. Same swallow-on-failure
+  /// tolerance as [play].
+  Future<void> warmUp(SoundEffect effect) async {
+    try {
+      await _acquirePlayer(effect);
+    } catch (error) {
+      if (kDebugMode) {
+        debugPrint('SoundService: skipping warm-up of ${effect.name} ($error)');
+      }
+    }
+  }
+
   Future<void> play(SoundEffect effect) async {
     if (muted) {
       return;

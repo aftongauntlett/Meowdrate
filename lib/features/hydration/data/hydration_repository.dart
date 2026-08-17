@@ -62,8 +62,8 @@ class HydrationRepository {
     return DrinksTodaySummary(
       count: drinksToday.length,
       totalAmountMl: totalAmountMl,
-      // Every drink today, not just the last few — the Recent card scrolls
-      // internally instead of capping the list (see RecentDrinksList).
+      // Every drink today, not just the last few — the Recent card grows
+      // to fit the whole list rather than capping it (see RecentDrinksList).
       recent: drinksToday,
     );
   }
