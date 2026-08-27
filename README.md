@@ -18,6 +18,15 @@ pulling you back to check in.
 
 Everything is stored locally - no backend, no login. This is intentional.
 
+## Screenshots
+
+<p align="center">
+  <img src="docs/screenshots/flood_scene.png" width="200" alt="The flood scene, partially receded after a couple of drinks">
+  <img src="docs/screenshots/drink_moment.png" width="200" alt="Drink Moment: a short countdown while you take a few sips">
+  <img src="docs/screenshots/rescued.png" width="200" alt="The flood fully cleared, cat rescued for the day">
+  <img src="docs/screenshots/settings.png" width="200" alt="Settings: appearance, daily glass goal, reminders, sound">
+</p>
+
 ## Tech stack
 
 - Flutter (Dart)
