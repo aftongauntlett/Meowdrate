@@ -51,117 +51,8 @@
     <link rel="icon" href="favicon.ico" sizes="any" />
     <link rel="icon" type="image/png" href="icon.png" />
     <link rel="apple-touch-icon" href="apple-touch-icon.png" />
+    <link rel="stylesheet" href="style.css" />
     <style>
-      :root {
-        --bg: #f5f7fc;
-        --surface: #ffffff;
-        --text: #12172b;
-        --text-muted: #5c6478;
-        --border: rgba(18, 23, 43, 0.12);
-        --accent: #0d9488;
-        --primary: #1897b3;
-        --shadow: 0 20px 44px rgba(18, 23, 43, 0.1);
-      }
-      @media (prefers-color-scheme: dark) {
-        :root {
-          --bg: #05070c;
-          --surface: #182540;
-          --text: #f5f7ff;
-          --text-muted: #b8c0d9;
-          --border: rgba(245, 247, 255, 0.14);
-          --accent: #2dd4bf;
-          --primary: #6ee7ff;
-          --shadow: 0 20px 44px rgba(0, 0, 0, 0.35);
-        }
-      }
-      * {
-        box-sizing: border-box;
-      }
-      html {
-        scroll-behavior: smooth;
-      }
-      body {
-        margin: 0;
-        background: var(--bg);
-        color: var(--text);
-        font-family:
-          -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-        line-height: 1.6;
-        overflow-x: hidden;
-      }
-      a {
-        color: var(--primary);
-      }
-
-      .skip-link {
-        position: absolute;
-        top: -60px;
-        left: 12px;
-        z-index: 1000;
-        background: var(--surface);
-        color: var(--text);
-        padding: 10px 18px;
-        border-radius: 8px;
-        border: 1px solid var(--border);
-        font-weight: 700;
-        font-size: 14px;
-        text-decoration: none;
-        transition: top 0.15s ease;
-      }
-      .skip-link:focus {
-        top: 12px;
-      }
-
-      a:focus-visible,
-      button:focus-visible,
-      [tabindex]:focus-visible {
-        outline: 3px solid var(--primary);
-        outline-offset: 3px;
-        border-radius: 4px;
-      }
-
-      @media (prefers-reduced-motion: reduce) {
-        html {
-          scroll-behavior: auto;
-        }
-        .skip-link {
-          transition: none;
-        }
-      }
-
-      .wrap {
-        max-width: 1040px;
-        margin: 0 auto;
-        padding: 0 24px;
-      }
-
-      /* ---- nav ---- */
-      nav.top {
-        padding: 22px 0;
-      }
-      nav.top .wrap {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        gap: 16px;
-      }
-      .brand {
-        display: flex;
-        align-items: center;
-        gap: 10px;
-        font-weight: 800;
-        font-size: 17px;
-        letter-spacing: -0.01em;
-        text-decoration: none;
-        color: var(--text);
-      }
-      .brand img {
-        width: 30px;
-        height: 30px;
-        border-radius: 8px;
-        display: block;
-      }
-
       /* ---- hero ---- */
       header.hero {
         padding: 28px 0 64px;
@@ -319,9 +210,6 @@
         color: var(--text-muted);
         margin: 0;
       }
-      .step-arrow {
-        display: none;
-      }
 
       /* ---- selling points ---- */
       .points {
@@ -352,19 +240,28 @@
       }
 
       /* ---- gallery ---- */
+      .gallery-group {
+        margin-bottom: 36px;
+      }
+      .gallery-group:last-child {
+        margin-bottom: 0;
+      }
+      .gallery-title {
+        font-size: 13px;
+        font-weight: 700;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+        color: var(--text-muted);
+        margin: 0 0 16px;
+      }
       .gallery {
-        display: flex;
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        align-items: end;
         gap: 22px;
-        overflow-x: auto;
-        padding-bottom: 8px;
-        scroll-snap-type: x proximity;
-        border-radius: 18px;
       }
       .gallery figure {
-        flex: 0 0 auto;
-        width: 190px;
         margin: 0;
-        scroll-snap-align: start;
       }
       .gallery img {
         width: 100%;
@@ -378,69 +275,6 @@
         font-size: 13px;
         color: var(--text-muted);
         text-align: center;
-      }
-
-      /* ---- footer ---- */
-      footer {
-        padding: 40px 0 64px;
-        border-top: 1px solid var(--border);
-      }
-      footer .wrap {
-        display: flex;
-        flex-wrap: wrap;
-        justify-content: space-between;
-        align-items: center;
-        gap: 16px;
-      }
-      footer .links {
-        display: flex;
-        gap: 20px;
-        font-size: 13.5px;
-      }
-      footer .links a {
-        display: inline-flex;
-        align-items: center;
-        color: var(--text-muted);
-        text-decoration: none;
-      }
-      footer .links a:hover {
-        color: var(--primary);
-      }
-      footer .fine {
-        font-size: 13px;
-        color: var(--text-muted);
-        margin: 0;
-      }
-      .sr-only {
-        position: absolute;
-        width: 1px;
-        height: 1px;
-        padding: 0;
-        margin: -1px;
-        overflow: hidden;
-        clip: rect(0, 0, 0, 0);
-        white-space: nowrap;
-        border: 0;
-      }
-      .external-icon {
-        width: 12px;
-        height: 12px;
-        margin-left: 4px;
-        opacity: 0;
-        transform: translateX(-2px);
-        transition:
-          opacity 0.15s ease,
-          transform 0.15s ease;
-      }
-      a:hover .external-icon,
-      a:focus-visible .external-icon {
-        opacity: 1;
-        transform: translateX(0);
-      }
-      @media (prefers-reduced-motion: reduce) {
-        .external-icon {
-          transition: none;
-        }
       }
 
       @media (max-width: 860px) {
@@ -460,6 +294,9 @@
           grid-template-columns: 1fr;
         }
         .points {
+          grid-template-columns: repeat(2, 1fr);
+        }
+        .gallery {
           grid-template-columns: repeat(2, 1fr);
         }
       }
@@ -618,68 +455,73 @@
               the real time of day, in both light and dark mode.
             </p>
           </div>
-          <div
-            class="gallery"
-            role="region"
-            aria-label="App screenshot gallery"
-            tabindex="0"
-          >
-            <figure>
-              <img
-                src="screenshots/flood_scene.png"
-                alt="Flood scene, partially receded."
-              />
-              <figcaption>The flood scene</figcaption>
-            </figure>
-            <figure>
-              <img
-                src="screenshots/drink_moment.png"
-                alt="Drink logging countdown screen."
-              />
-              <figcaption>Logging a drink</figcaption>
-            </figure>
-            <figure>
-              <img
-                src="screenshots/rescued.png"
-                alt="Cat rescued after the flood fully clears."
-              />
-              <figcaption>Cat, rescued</figcaption>
-            </figure>
-            <figure>
-              <img
-                src="screenshots/settings.png"
-                alt="Settings screen with appearance, daily glass goal, reminders, and sound controls."
-              />
-              <figcaption>Simple settings</figcaption>
-            </figure>
-            <figure>
-              <img
-                src="screenshots/flood_dawn.png"
-                alt="The flood scene at dawn, sky shifting from purple to warm orange."
-              />
-              <figcaption>Dawn</figcaption>
-            </figure>
-            <figure>
-              <img
-                src="screenshots/flood_dusk.png"
-                alt="The flood scene at dusk, sky fading from deep purple to amber."
-              />
-              <figcaption>Dusk</figcaption>
-            </figure>
-            <figure>
-              <img
-                src="screenshots/flood_night.png"
-                alt="The flood scene at night, a dark starry sky over the water."
-              />
-              <figcaption>Night</figcaption>
-            </figure>
-            <figure>
-              <img
-                src="screenshots/settings_dark.png"
-                alt="The settings screen in dark mode."
-              />
-              <figcaption>Dark mode</figcaption>
-            </figure>
+
+          <div class="gallery-group">
+            <p class="gallery-title">Light mode</p>
+            <div class="gallery" role="region" aria-label="Light mode screenshots">
+              <figure>
+                <img
+                  src="screenshots/flood_scene.png"
+                  alt="Flood scene, partially receded."
+                />
+                <figcaption>The flood scene</figcaption>
+              </figure>
+              <figure>
+                <img
+                  src="screenshots/drink_moment.png"
+                  alt="Drink logging countdown screen."
+                />
+                <figcaption>Logging a drink</figcaption>
+              </figure>
+              <figure>
+                <img
+                  src="screenshots/rescued.png"
+                  alt="Cat rescued after the flood fully clears."
+                />
+                <figcaption>Cat, rescued</figcaption>
+              </figure>
+              <figure>
+                <img
+                  src="screenshots/settings.png"
+                  alt="Settings screen with appearance, daily glass goal, reminders, and sound controls."
+                />
+                <figcaption>Simple settings</figcaption>
+              </figure>
+            </div>
+          </div>
+
+          <div class="gallery-group">
+            <p class="gallery-title">Dark mode</p>
+            <div class="gallery" role="region" aria-label="Dark mode screenshots">
+              <figure>
+                <img
+                  src="screenshots/flood_dawn.png"
+                  alt="The flood scene at dawn, sky shifting from purple to warm orange."
+                />
+                <figcaption>Dawn</figcaption>
+              </figure>
+              <figure>
+                <img
+                  src="screenshots/flood_dusk.png"
+                  alt="The flood scene at dusk, sky fading from deep purple to amber."
+                />
+                <figcaption>Dusk</figcaption>
+              </figure>
+              <figure>
+                <img
+                  src="screenshots/flood_night.png"
+                  alt="The flood scene at night, a dark starry sky over the water."
+                />
+                <figcaption>Night</figcaption>
+              </figure>
+              <figure>
+                <img
+                  src="screenshots/settings_dark.png"
+                  alt="The settings screen in dark mode."
+                />
+                <figcaption>Dark mode</figcaption>
+              </figure>
+            </div>
           </div>
         </div>
       </section>
@@ -687,6 +529,28 @@
 
     <footer>
       <div class="wrap">
+        <nav class="links" aria-label="Footer">
+          <a href="/">Home</a>
+          <a href="privacy.html">Privacy Policy</a>
+          <a href="credits.html">Credits</a>
+          <a
+            href="https://github.com/aftongauntlett/Meowdrate"
+            target="_blank"
+            rel="noopener noreferrer"
+            >GitHub<span class="sr-only"> (opens in new tab)</span
+            ><svg
+              class="external-icon"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2.2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              aria-hidden="true"
+            >
+              <path d="M7 17 17 7M17 7H8M17 7v9" /></svg
+          ></a>
+        </nav>
         <p class="fine">
           Built by
           <a
@@ -708,27 +572,6 @@
           ></a>
           · © 2026 · No company or third party involved in handling app data.
         </p>
-        <div class="links">
-          <a href="privacy.html">Privacy Policy</a>
-          <a href="credits.html">Credits</a>
-          <a
-            href="https://github.com/aftongauntlett/Meowdrate"
-            target="_blank"
-            rel="noopener noreferrer"
-            >GitHub<span class="sr-only"> (opens in new tab)</span
-            ><svg
-              class="external-icon"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="2.2"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              aria-hidden="true"
-            >
-              <path d="M7 17 17 7M17 7H8M17 7v9" /></svg
-          ></a>
-        </div>
       </div>
     </footer>
   </body>
