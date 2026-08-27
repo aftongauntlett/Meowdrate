@@ -277,6 +277,16 @@
         text-align: center;
       }
 
+      /* ---- feature banner ---- */
+      .feature-banner {
+        display: block;
+        width: 100%;
+        max-width: 720px;
+        margin: 0 auto;
+        border-radius: 20px;
+        box-shadow: var(--shadow);
+      }
+
       @media (max-width: 860px) {
         header.hero .wrap {
           grid-template-columns: 1fr;
@@ -292,6 +302,10 @@
         }
         .steps {
           grid-template-columns: 1fr;
+        }
+        .step .shot {
+          max-width: 220px;
+          margin-inline: auto;
         }
         .points {
           grid-template-columns: repeat(2, 1fr);
@@ -523,6 +537,16 @@
               </figure>
             </div>
           </div>
+        </div>
+      </section>
+
+      <section id="banner" aria-label="Meowdrate: drink water, save the cat">
+        <div class="wrap">
+          <img
+            class="feature-banner"
+            src="feature-graphic.png"
+            alt="Meowdrate: a pixel-art cat sipping water above a rising flood, with the tagline 'Drink water. Save the cat.'"
+          />
         </div>
       </section>
     </main>
