@@ -3,7 +3,16 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Meowdrate — Privacy Policy</title>
+<title>Meowdrate — A hydration app that starts full</title>
+<meta name="description" content="Meowdrate is a hydration app that starts full instead of empty. Every drink you log recedes a flood and rescues a cat. No ads, no accounts, no data collection — everything stays on your device.">
+<link rel="canonical" href="https://meowdrate.com/">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://meowdrate.com/">
+<meta property="og:title" content="Meowdrate — A hydration app that starts full">
+<meta property="og:description" content="A hydration app that starts full instead of empty. Every drink you log recedes a flood and rescues a cat. No ads, no accounts, no data collection.">
+<meta property="og:image" content="https://meowdrate.com/icon.png">
+<meta name="twitter:card" content="summary">
+<link rel="icon" type="image/png" href="icon.png">
 <style>
   :root {
     --bg: #F5F7FC;
@@ -13,6 +22,7 @@
     --border: rgba(18,23,43,0.12);
     --accent: #0D9488;
     --primary: #1897B3;
+    --shadow: 0 20px 44px rgba(18,23,43,0.10);
   }
   @media (prefers-color-scheme: dark) {
     :root {
@@ -23,20 +33,68 @@
       --border: rgba(245,247,255,0.14);
       --accent: #2DD4BF;
       --primary: #6EE7FF;
+      --shadow: 0 20px 44px rgba(0,0,0,0.35);
     }
   }
   * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
   body {
     margin: 0;
     background: var(--bg);
     color: var(--text);
     font-family: -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
     line-height: 1.6;
+    overflow-x: hidden;
   }
-  .page {
-    max-width: 680px;
+  a { color: var(--primary); }
+  .wrap {
+    max-width: 1040px;
     margin: 0 auto;
-    padding: 56px 24px 80px;
+    padding: 0 24px;
+  }
+
+  /* ---- nav ---- */
+  nav.top {
+    padding: 22px 0;
+  }
+  nav.top .wrap {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+  }
+  .brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-weight: 800;
+    font-size: 17px;
+    letter-spacing: -0.01em;
+    text-decoration: none;
+    color: var(--text);
+  }
+  .brand img {
+    width: 30px;
+    height: 30px;
+    border-radius: 8px;
+    display: block;
+  }
+  nav.top a.privacy-link {
+    font-size: 14px;
+    color: var(--text-muted);
+    text-decoration: none;
+  }
+  nav.top a.privacy-link:hover { color: var(--primary); }
+
+  /* ---- hero ---- */
+  header.hero {
+    padding: 28px 0 64px;
+  }
+  header.hero .wrap {
+    display: grid;
+    grid-template-columns: 1.1fr 0.9fr;
+    gap: 48px;
+    align-items: center;
   }
   .eyebrow {
     font-size: 12px;
@@ -44,94 +102,376 @@
     letter-spacing: 0.12em;
     text-transform: uppercase;
     color: var(--accent);
-    margin: 0 0 10px;
+    margin: 0 0 14px;
   }
   h1 {
-    font-size: 30px;
-    letter-spacing: -0.015em;
-    margin: 0 0 8px;
+    font-size: 42px;
+    line-height: 1.14;
+    letter-spacing: -0.02em;
+    margin: 0 0 18px;
   }
-  .updated {
-    font-size: 13.5px;
+  .hero-sub {
+    font-size: 17px;
     color: var(--text-muted);
+    margin: 0 0 30px;
+    max-width: 46ch;
+  }
+  .cta-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 14px;
+  }
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 13px 22px;
+    border-radius: 12px;
+    font-weight: 700;
+    font-size: 15px;
+    text-decoration: none;
+    border: 1px solid transparent;
+  }
+  .btn-primary {
+    background: var(--primary);
+    color: #04121A;
+  }
+  @media (prefers-color-scheme: dark) {
+    .btn-primary { color: #04121A; }
+  }
+  .btn-disabled {
+    background: var(--surface);
+    color: var(--text-muted);
+    border-color: var(--border);
+    cursor: default;
+  }
+  .btn-ghost {
+    background: transparent;
+    color: var(--text);
+    border-color: var(--border);
+  }
+  .btn-ghost:hover { border-color: var(--primary); color: var(--primary); }
+
+  .hero-art {
+    display: flex;
+    justify-content: center;
+  }
+  .phone {
+    position: relative;
+    width: 240px;
+    border-radius: 34px;
+    padding: 10px;
+    background: linear-gradient(160deg, #1897B3, #0D9488);
+    box-shadow: var(--shadow);
+  }
+  .phone img {
+    display: block;
+    width: 100%;
+    border-radius: 26px;
+  }
+
+  /* ---- section shell ---- */
+  section {
+    padding: 64px 0;
+    border-top: 1px solid var(--border);
+  }
+  .section-head {
+    max-width: 60ch;
     margin: 0 0 40px;
   }
   h2 {
-    font-size: 17px;
-    margin: 34px 0 10px;
-    letter-spacing: -0.005em;
+    font-size: 27px;
+    letter-spacing: -0.015em;
+    margin: 0 0 10px;
   }
-  p, li {
-    font-size: 15px;
+  .section-lede {
+    font-size: 15.5px;
     color: var(--text-muted);
+    margin: 0;
   }
-  p { margin: 0 0 12px; }
-  ul { margin: 0 0 12px; padding-left: 20px; }
-  li { margin-bottom: 6px; }
-  strong { color: var(--text); }
-  a { color: var(--primary); }
-  .summary {
+
+  /* ---- how it works ---- */
+  .steps {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 28px;
+  }
+  .step {
     background: var(--surface);
     border: 1px solid var(--border);
-    border-radius: 12px;
-    padding: 18px 20px;
-    margin-bottom: 8px;
+    border-radius: 18px;
+    padding: 20px 20px 26px;
+    box-shadow: var(--shadow);
   }
-  .summary p:last-child { margin-bottom: 0; }
-  footer {
-    margin-top: 48px;
-    padding-top: 20px;
-    border-top: 1px solid var(--border);
+  .step-num {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 26px;
+    height: 26px;
+    border-radius: 999px;
+    background: var(--accent);
+    color: #04211D;
+    font-size: 12.5px;
+    font-weight: 800;
+    margin-bottom: 14px;
+  }
+  .step .shot {
+    width: 100%;
+    border-radius: 12px;
+    border: 1px solid var(--border);
+    display: block;
+    margin-bottom: 16px;
+  }
+  .step h3 {
+    font-size: 16px;
+    margin: 0 0 6px;
+    letter-spacing: -0.005em;
+  }
+  .step p {
+    font-size: 14px;
+    color: var(--text-muted);
+    margin: 0;
+  }
+  .step-arrow {
+    display: none;
+  }
+
+  /* ---- selling points ---- */
+  .points {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 18px;
+  }
+  .point {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 22px 16px;
+    text-align: center;
+  }
+  .point .mark {
+    font-size: 22px;
+    margin-bottom: 10px;
+  }
+  .point h3 {
+    font-size: 14px;
+    margin: 0 0 4px;
+    letter-spacing: -0.005em;
+  }
+  .point p {
+    font-size: 12.5px;
+    color: var(--text-muted);
+    margin: 0;
+  }
+
+  /* ---- gallery ---- */
+  .gallery {
+    display: flex;
+    gap: 22px;
+    overflow-x: auto;
+    padding-bottom: 8px;
+    scroll-snap-type: x proximity;
+  }
+  .gallery figure {
+    flex: 0 0 auto;
+    width: 190px;
+    margin: 0;
+    scroll-snap-align: start;
+  }
+  .gallery img {
+    width: 100%;
+    border-radius: 18px;
+    border: 1px solid var(--border);
+    box-shadow: var(--shadow);
+    display: block;
+  }
+  .gallery figcaption {
+    margin-top: 10px;
     font-size: 13px;
     color: var(--text-muted);
+    text-align: center;
+  }
+
+  /* ---- footer ---- */
+  footer {
+    padding: 40px 0 64px;
+    border-top: 1px solid var(--border);
+  }
+  footer .wrap {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+  }
+  footer .links {
+    display: flex;
+    gap: 20px;
+    font-size: 13.5px;
+  }
+  footer .links a {
+    color: var(--text-muted);
+    text-decoration: none;
+  }
+  footer .links a:hover { color: var(--primary); }
+  footer .fine {
+    font-size: 13px;
+    color: var(--text-muted);
+    margin: 0;
+  }
+
+  @media (max-width: 860px) {
+    header.hero .wrap { grid-template-columns: 1fr; }
+    .hero-art { order: -1; }
+    .phone { width: 210px; }
+    h1 { font-size: 33px; }
+    .steps { grid-template-columns: 1fr; }
+    .points { grid-template-columns: repeat(2, 1fr); }
+  }
+  @media (max-width: 460px) {
+    .points { grid-template-columns: 1fr 1fr; }
+    h1 { font-size: 28px; }
   }
 </style>
 </head>
 <body>
-<div class="page">
 
-  <p class="eyebrow">Meowdrate</p>
-  <h1>Privacy Policy</h1>
-  <p class="updated">Last updated August 15, 2026</p>
-
-  <div class="summary">
-    <p><strong>The short version:</strong> Meowdrate doesn't collect, store, or transmit any personal data. There's no account, no server, and no analytics. Everything the app remembers lives only on your device.</p>
+<nav class="top">
+  <div class="wrap">
+    <a class="brand" href="#top">
+      <img src="icon.png" alt="">
+      Meowdrate
+    </a>
+    <a class="privacy-link" href="privacy.html">Privacy Policy</a>
   </div>
+</nav>
 
-  <h2>What the app stores, and where</h2>
-  <p>Meowdrate keeps all of its data locally on your device, using Android/iOS's standard local storage. This includes:</p>
-  <ul>
-    <li>The drinks you log and when you logged them</li>
-    <li>Your daily hydration goal and streak</li>
-    <li>App preferences — theme, sound, reminder settings</li>
-  </ul>
-  <p>None of this ever leaves your device. There is no backend server, no account or sign-in, and nothing is synced or backed up by the app itself. If you uninstall the app or switch devices, this data is gone — that's an intentional tradeoff for keeping everything private and local.</p>
+<header class="hero" id="top">
+  <div class="wrap">
+    <div>
+      <p class="eyebrow">Hydration, without the guilt trip</p>
+      <h1>A hydration app that starts full instead of empty.</h1>
+      <p class="hero-sub">
+        The screen is a flood, swishing near the top under a sky that shifts with
+        the real time of day. Every drink you log recedes it a little — and slowly
+        rescues the cat who's stuck in the middle of it.
+      </p>
+      <div class="cta-row">
+        <span class="btn btn-disabled" title="Not live yet">Coming soon to Google Play</span>
+        <a class="btn btn-ghost" href="privacy.html">Read the privacy policy</a>
+      </div>
+    </div>
+    <div class="hero-art">
+      <div class="phone">
+        <img src="screenshots/flood_scene.png" alt="Meowdrate's flood scene mid-recede — a cat sits at the water's edge under a day-lit sky, with roughly half the goal logged so far.">
+      </div>
+    </div>
+  </div>
+</header>
 
-  <h2>Notifications</h2>
-  <p>If you enable reminders, the app schedules local notifications directly on your device (via the operating system's own notification scheduler). No notification content or scheduling data is sent anywhere outside your device.</p>
+<section id="how">
+  <div class="wrap">
+    <div class="section-head">
+      <h2>How it works</h2>
+      <p class="section-lede">Three steps, no learning curve, no meter to grind.</p>
+    </div>
+    <div class="steps">
+      <div class="step">
+        <span class="step-num">1</span>
+        <img class="shot" src="screenshots/drink_moment.png" alt="The Drink Moment screen: a short countdown timer while you take a few sips, with a cat waiting patiently.">
+        <h3>Log a drink</h3>
+        <p>Tap in, take a few real sips while a short timer runs, then confirm. No manual ounce math.</p>
+      </div>
+      <div class="step">
+        <span class="step-num">2</span>
+        <img class="shot" src="screenshots/flood_scene.png" alt="The flood receded partway after a couple of drinks, revealing more of the cat above the waterline.">
+        <h3>The flood recedes</h3>
+        <p>Each logged drink pulls the water down a little. The sky keeps shifting with real time, whether you're keeping up or not.</p>
+      </div>
+      <div class="step">
+        <span class="step-num">3</span>
+        <img class="shot" src="screenshots/rescued.png" alt="The flood fully cleared: the cat sleeps safely on dry ground with a sarcastic thank-you line from the narrator.">
+        <h3>Cat rescued</h3>
+        <p>Clear the flood fully and the cat's safe for the day — with a dry comment from the narrator to match.</p>
+      </div>
+    </div>
+  </div>
+</section>
 
-  <h2>Home screen widget</h2>
-  <p>If you add the optional home screen widget, it reads your locally stored hydration data to display it — this stays entirely on-device as well.</p>
+<section id="why">
+  <div class="wrap">
+    <div class="section-head">
+      <h2>What it isn't</h2>
+      <p class="section-lede">No streak-shaming, no locked content, no history to grieve if you miss a day.</p>
+    </div>
+    <div class="points">
+      <div class="point">
+        <div class="mark">🚫</div>
+        <h3>No ads</h3>
+        <p>None, ever. Nothing to sit through.</p>
+      </div>
+      <div class="point">
+        <div class="mark">👤</div>
+        <h3>No accounts</h3>
+        <p>No sign-up, no login, no email.</p>
+      </div>
+      <div class="point">
+        <div class="mark">🔒</div>
+        <h3>No data collection</h3>
+        <p>No analytics, no tracking, no crash reporting.</p>
+      </div>
+      <div class="point">
+        <div class="mark">📱</div>
+        <h3>Local-only</h3>
+        <p>Everything lives on your device. Nothing synced or backed up.</p>
+      </div>
+      <div class="point">
+        <div class="mark">💸</div>
+        <h3>Free</h3>
+        <p>No purchases, no shop, no premium tier.</p>
+      </div>
+    </div>
+  </div>
+</section>
 
-  <h2>Links to outside websites</h2>
-  <p>A few places in the app — the credits list and the support/donation link — open external websites (such as itch.io, Pixabay, or Ko-fi) in your device's browser. Those sites are outside our control and have their own privacy policies; this policy only covers Meowdrate itself.</p>
+<section id="screens">
+  <div class="wrap">
+    <div class="section-head">
+      <h2>A closer look</h2>
+      <p class="section-lede">Real screenshots from the app — no mockups.</p>
+    </div>
+    <div class="gallery">
+      <figure>
+        <img src="screenshots/flood_scene.png" alt="Flood scene, partially receded.">
+        <figcaption>The flood scene</figcaption>
+      </figure>
+      <figure>
+        <img src="screenshots/drink_moment.png" alt="Drink logging countdown screen.">
+        <figcaption>Logging a drink</figcaption>
+      </figure>
+      <figure>
+        <img src="screenshots/rescued.png" alt="Cat rescued after the flood fully clears.">
+        <figcaption>Cat, rescued</figcaption>
+      </figure>
+      <figure>
+        <img src="screenshots/settings.png" alt="Settings screen with appearance, daily glass goal, reminders, and sound controls.">
+        <figcaption>Simple settings</figcaption>
+      </figure>
+    </div>
+  </div>
+</section>
 
-  <h2>Analytics, ads, and third-party tracking</h2>
-  <p>None. The app contains no analytics SDK, no advertising SDK, and no crash-reporting or tracking service of any kind.</p>
+<footer>
+  <div class="wrap">
+    <p class="fine">Meowdrate is developed independently. No company or third party involved in handling app data.</p>
+    <div class="links">
+      <a href="privacy.html">Privacy Policy</a>
+      <a href="https://github.com/aftongauntlett/Meowdrate">GitHub</a>
+    </div>
+  </div>
+</footer>
 
-  <h2>Children's privacy</h2>
-  <p>Since the app collects no personal data from anyone, it doesn't knowingly collect any data from children either.</p>
-
-  <h2>Changes to this policy</h2>
-  <p>If this policy ever changes — for example, if a future version of the app adds a feature that does transmit data — this page will be updated and the date above will change accordingly.</p>
-
-  <h2>Contact</h2>
-  <p>Questions about this policy can be sent to <a href="mailto:contact@prettyprettyprettygood.org">contact@prettyprettyprettygood.org</a>.</p>
-
-  <footer>
-    Meowdrate is developed independently, with no company or third party involved in handling app data.
-  </footer>
-
-</div>
 </body>
 </html>
