@@ -3,6 +3,8 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#f5f7fc" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#05070c" media="(prefers-color-scheme: dark)" />
     <title>Meowdrate — A hydration app that starts full</title>
     <meta
       name="description"
@@ -68,7 +70,7 @@
         font-weight: 700;
         letter-spacing: 0.12em;
         text-transform: uppercase;
-        color: var(--accent);
+        color: var(--text-accent);
         margin: 0 0 14px;
       }
       h1 {
@@ -113,12 +115,6 @@
           color: #04121a;
         }
       }
-      .btn-disabled {
-        background: var(--surface);
-        color: var(--text-muted);
-        border-color: var(--border);
-        cursor: default;
-      }
       .btn-ghost {
         background: transparent;
         color: var(--text);
@@ -126,7 +122,7 @@
       }
       .btn-ghost:hover {
         border-color: var(--primary);
-        color: var(--primary);
+        color: var(--link);
       }
 
       .hero-art {
@@ -209,6 +205,21 @@
         font-size: 14px;
         color: var(--text-muted);
         margin: 0;
+      }
+      .steps-2 {
+        grid-template-columns: repeat(2, 1fr);
+      }
+      .step .btn {
+        margin-top: 14px;
+      }
+      .step .step-note {
+        margin-top: 10px;
+        font-size: 12.5px;
+      }
+      .testing-note {
+        margin: 24px 0 0;
+        font-size: 13px;
+        color: var(--text-muted);
       }
 
       /* ---- selling points ---- */
@@ -330,7 +341,7 @@
     <nav class="top" aria-label="Primary">
       <div class="wrap">
         <a class="brand" href="#top">
-          <img src="icon.png" alt="" />
+          <img src="icon.png" alt="" width="512" height="512" />
           Meowdrate
         </a>
       </div>
@@ -348,9 +359,7 @@
               little to slowly rescues the cat who's stuck in the middle of it.
             </p>
             <div class="cta-row">
-              <button type="button" class="btn btn-disabled" disabled>
-                Coming soon to Google Play
-              </button>
+              <a class="btn btn-primary" href="#testing">Sign up to test</a>
               <a class="btn btn-ghost" href="privacy.html"
                 >Read the privacy policy</a
               >
@@ -358,14 +367,79 @@
           </div>
           <div class="hero-art">
             <div class="phone">
-              <img
-                src="screenshots/flood_scene.png"
-                alt="Meowdrate's flood scene mid-recede — a cat sits at the water's edge under a day-lit sky, with roughly half the goal logged so far."
-              />
+              <picture>
+                <source srcset="screenshots/flood_scene.webp" type="image/webp" />
+                <img
+                  src="screenshots/flood_scene.png"
+                  width="412"
+                  height="915"
+                  alt="Meowdrate's flood scene mid-recede — a cat sits at the water's edge under a day-lit sky, with roughly half the goal logged so far."
+                />
+              </picture>
             </div>
           </div>
         </div>
       </header>
+
+      <section id="testing" aria-labelledby="testing-heading">
+        <div class="wrap">
+          <div class="section-head">
+            <h2 id="testing-heading">Help test Meowdrate</h2>
+            <p class="section-lede">
+              Before Google lets me publish this publicly, it requires at
+              least 12 real testers to install the app and keep it for two
+              weeks. Android only, sorry — the Apple developer fee is a lot
+              pricier.
+            </p>
+          </div>
+          <div class="steps steps-2">
+            <div class="step">
+              <span class="step-num">1</span>
+              <h3>Join the tester group</h3>
+              <p>
+                Just needs a Google account — no approval wait, anyone can
+                join. This is what grants you test access.
+              </p>
+              <a
+                class="btn btn-primary"
+                href="https://groups.google.com/g/meowdrate-testers"
+                target="_blank"
+                rel="noopener noreferrer"
+                >Join Meowdrate Testers</a
+              >
+            </div>
+            <div class="step">
+              <span class="step-num">2</span>
+              <h3>Install from Google Play</h3>
+              <p>
+                Once you're in the group, tap below to opt in and install.
+                Leave it installed for about two weeks — opening it now and
+                then to log a drink is a bonus, not required.
+              </p>
+              <a
+                class="btn btn-primary"
+                href="https://play.google.com/apps/testing/com.aftongauntlett.meowdrate"
+                target="_blank"
+                rel="noopener noreferrer"
+                >Opt In &amp; Install</a
+              >
+              <p class="step-note">
+                Already have the Play Store app open?
+                <a
+                  href="https://play.google.com/store/apps/details?id=com.aftongauntlett.meowdrate"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  >Use this link instead</a
+                >.
+              </p>
+            </div>
+          </div>
+          <p class="testing-note">
+            Optional: found a bug or have feedback? Send it to
+            <a href="mailto:contact@meowdrate.com">contact@meowdrate.com</a>.
+          </p>
+        </div>
+      </section>
 
       <section id="how" aria-labelledby="how-heading">
         <div class="wrap">
@@ -378,11 +452,18 @@
           <div class="steps">
             <div class="step">
               <span class="step-num">1</span>
-              <img
-                class="shot"
-                src="screenshots/drink_moment.png"
-                alt="The Drink Moment screen: a short countdown timer while you take a few sips, with a cat waiting patiently."
-              />
+              <picture>
+                <source srcset="screenshots/drink_moment.webp" type="image/webp" />
+                <img
+                  class="shot"
+                  src="screenshots/drink_moment.png"
+                  width="412"
+                  height="915"
+                  loading="lazy"
+                  decoding="async"
+                  alt="The Drink Moment screen: a short countdown timer while you take a few sips, with a cat waiting patiently."
+                />
+              </picture>
               <h3>Log a drink</h3>
               <p>
                 Tap in, take a few real sips while a short timer runs, then
@@ -391,11 +472,18 @@
             </div>
             <div class="step">
               <span class="step-num">2</span>
-              <img
-                class="shot"
-                src="screenshots/flood_scene.png"
-                alt="The flood receded partway after a couple of drinks, revealing more of the cat above the waterline."
-              />
+              <picture>
+                <source srcset="screenshots/flood_scene.webp" type="image/webp" />
+                <img
+                  class="shot"
+                  src="screenshots/flood_scene.png"
+                  width="412"
+                  height="915"
+                  loading="lazy"
+                  decoding="async"
+                  alt="The flood receded partway after a couple of drinks, revealing more of the cat above the waterline."
+                />
+              </picture>
               <h3>The flood recedes</h3>
               <p>
                 Each logged drink pulls the water down a little. The sky keeps
@@ -404,11 +492,18 @@
             </div>
             <div class="step">
               <span class="step-num">3</span>
-              <img
-                class="shot"
-                src="screenshots/rescued.png"
-                alt="The flood fully cleared: the cat sleeps safely on dry ground with a sarcastic thank-you line from the narrator."
-              />
+              <picture>
+                <source srcset="screenshots/rescued.webp" type="image/webp" />
+                <img
+                  class="shot"
+                  src="screenshots/rescued.png"
+                  width="412"
+                  height="915"
+                  loading="lazy"
+                  decoding="async"
+                  alt="The flood fully cleared: the cat sleeps safely on dry ground with a sarcastic thank-you line from the narrator."
+                />
+              </picture>
               <h3>Cat rescued</h3>
               <p>
                 Clear the flood fully and the cat's safe for the day — with a
@@ -474,31 +569,59 @@
             <p class="gallery-title">Light mode</p>
             <div class="gallery" role="region" aria-label="Light mode screenshots">
               <figure>
-                <img
-                  src="screenshots/flood_scene.png"
-                  alt="Flood scene, partially receded."
-                />
+                <picture>
+                  <source srcset="screenshots/flood_scene.webp" type="image/webp" />
+                  <img
+                    src="screenshots/flood_scene.png"
+                    width="412"
+                    height="915"
+                    loading="lazy"
+                    decoding="async"
+                    alt="Flood scene, partially receded."
+                  />
+                </picture>
                 <figcaption>The flood scene</figcaption>
               </figure>
               <figure>
-                <img
-                  src="screenshots/drink_moment.png"
-                  alt="Drink logging countdown screen."
-                />
+                <picture>
+                  <source srcset="screenshots/drink_moment.webp" type="image/webp" />
+                  <img
+                    src="screenshots/drink_moment.png"
+                    width="412"
+                    height="915"
+                    loading="lazy"
+                    decoding="async"
+                    alt="Drink logging countdown screen."
+                  />
+                </picture>
                 <figcaption>Logging a drink</figcaption>
               </figure>
               <figure>
-                <img
-                  src="screenshots/rescued.png"
-                  alt="Cat rescued after the flood fully clears."
-                />
+                <picture>
+                  <source srcset="screenshots/rescued.webp" type="image/webp" />
+                  <img
+                    src="screenshots/rescued.png"
+                    width="412"
+                    height="915"
+                    loading="lazy"
+                    decoding="async"
+                    alt="Cat rescued after the flood fully clears."
+                  />
+                </picture>
                 <figcaption>Cat, rescued</figcaption>
               </figure>
               <figure>
-                <img
-                  src="screenshots/settings.png"
-                  alt="Settings screen with appearance, daily glass goal, reminders, and sound controls."
-                />
+                <picture>
+                  <source srcset="screenshots/settings.webp" type="image/webp" />
+                  <img
+                    src="screenshots/settings.png"
+                    width="412"
+                    height="915"
+                    loading="lazy"
+                    decoding="async"
+                    alt="Settings screen with appearance, daily glass goal, reminders, and sound controls."
+                  />
+                </picture>
                 <figcaption>Simple settings</figcaption>
               </figure>
             </div>
@@ -508,31 +631,59 @@
             <p class="gallery-title">Dark mode</p>
             <div class="gallery" role="region" aria-label="Dark mode screenshots">
               <figure>
-                <img
-                  src="screenshots/flood_dawn.png"
-                  alt="The flood scene at dawn/dusk, sky in deep purple and amber twilight tones."
-                />
+                <picture>
+                  <source srcset="screenshots/flood_dawn.webp" type="image/webp" />
+                  <img
+                    src="screenshots/flood_dawn.png"
+                    width="412"
+                    height="915"
+                    loading="lazy"
+                    decoding="async"
+                    alt="The flood scene at dawn/dusk, sky in deep purple and amber twilight tones."
+                  />
+                </picture>
                 <figcaption>Dawn/Dusk</figcaption>
               </figure>
               <figure>
-                <img
-                  src="screenshots/drink_moment_dark.png"
-                  alt="The Drink Moment screen in dark mode: a short countdown timer while you take a few sips."
-                />
+                <picture>
+                  <source srcset="screenshots/drink_moment_dark.webp" type="image/webp" />
+                  <img
+                    src="screenshots/drink_moment_dark.png"
+                    width="412"
+                    height="915"
+                    loading="lazy"
+                    decoding="async"
+                    alt="The Drink Moment screen in dark mode: a short countdown timer while you take a few sips."
+                  />
+                </picture>
                 <figcaption>Logging a drink</figcaption>
               </figure>
               <figure>
-                <img
-                  src="screenshots/flood_night.png"
-                  alt="The flood scene at night, a dark starry sky over the water."
-                />
+                <picture>
+                  <source srcset="screenshots/flood_night.webp" type="image/webp" />
+                  <img
+                    src="screenshots/flood_night.png"
+                    width="412"
+                    height="915"
+                    loading="lazy"
+                    decoding="async"
+                    alt="The flood scene at night, a dark starry sky over the water."
+                  />
+                </picture>
                 <figcaption>Night</figcaption>
               </figure>
               <figure>
-                <img
-                  src="screenshots/settings_dark.png"
-                  alt="The settings screen in dark mode."
-                />
+                <picture>
+                  <source srcset="screenshots/settings_dark.webp" type="image/webp" />
+                  <img
+                    src="screenshots/settings_dark.png"
+                    width="412"
+                    height="915"
+                    loading="lazy"
+                    decoding="async"
+                    alt="The settings screen in dark mode."
+                  />
+                </picture>
                 <figcaption>Dark mode</figcaption>
               </figure>
             </div>
@@ -542,11 +693,18 @@
 
       <section id="banner" aria-label="Meowdrate: drink water, save the cat">
         <div class="wrap">
-          <img
-            class="feature-banner"
-            src="feature-graphic.png"
-            alt="Meowdrate: a pixel-art cat sipping water above a rising flood, with the tagline 'Drink water. Save the cat.'"
-          />
+          <picture>
+            <source srcset="feature-graphic.webp" type="image/webp" />
+            <img
+              class="feature-banner"
+              src="feature-graphic.png"
+              width="1024"
+              height="500"
+              loading="lazy"
+              decoding="async"
+              alt="Meowdrate: a pixel-art cat sipping water above a rising flood, with the tagline 'Drink water. Save the cat.'"
+            />
+          </picture>
         </div>
       </section>
     </main>

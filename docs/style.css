@@ -8,6 +8,8 @@
   --border: rgba(18, 23, 43, 0.12);
   --accent: #0d9488;
   --primary: #1897b3;
+  --link: #137b91;
+  --text-accent: #0b7e74;
   --shadow: 0 20px 44px rgba(18, 23, 43, 0.1);
 }
 @media (prefers-color-scheme: dark) {
@@ -19,6 +21,8 @@
     --border: rgba(245, 247, 255, 0.14);
     --accent: #2dd4bf;
     --primary: #6ee7ff;
+    --link: #6ee7ff;
+    --text-accent: #2dd4bf;
     --shadow: 0 20px 44px rgba(0, 0, 0, 0.35);
   }
 }
@@ -39,7 +43,7 @@ body {
   overflow-x: hidden;
 }
 a {
-  color: var(--primary);
+  color: var(--link);
 }
 
 .skip-link {
@@ -169,7 +173,7 @@ footer .links a {
 }
 footer .links a:hover,
 footer .links a:focus-visible {
-  color: var(--primary);
+  color: var(--link);
 }
 footer .fine {
   font-size: 13px;
@@ -184,5 +188,5 @@ footer .fine a {
 }
 footer .fine a:hover,
 footer .fine a:focus-visible {
-  color: var(--primary);
+  color: var(--link);
 }
