@@ -117,6 +117,25 @@
       .btn-primary {
         background: var(--primary);
         color: #04121a;
+        transition:
+          transform 0.15s ease,
+          box-shadow 0.15s ease,
+          filter 0.15s ease;
+      }
+      .btn-primary:hover,
+      .btn-primary:focus-visible {
+        transform: translateY(-2px);
+        filter: brightness(1.08);
+        box-shadow: var(--shadow);
+      }
+      @media (prefers-reduced-motion: reduce) {
+        .btn-primary {
+          transition: none;
+        }
+        .btn-primary:hover,
+        .btn-primary:focus-visible {
+          transform: none;
+        }
       }
       @media (prefers-color-scheme: dark) {
         .btn-primary {
@@ -315,6 +334,46 @@
         text-align: center;
       }
 
+      /* ---- support cta ---- */
+      .support-cta {
+        text-align: center;
+      }
+      .support-cta h2 {
+        margin-bottom: 10px;
+      }
+      .support-cta p {
+        max-width: 46ch;
+        margin: 0 auto 22px;
+        color: var(--text-muted);
+        font-size: 15.5px;
+      }
+      .support-cta .heart-icon {
+        width: 16px;
+        height: 16px;
+        fill: #8b5cf6;
+        flex-shrink: 0;
+      }
+      /* every .btn-primary owns its icon spacing manually (instead of
+         the .btn gap) so the hover-reveal arrow adds zero width at rest */
+      .btn-primary {
+        gap: 0;
+      }
+      .btn-primary .heart-icon {
+        margin-right: 8px;
+      }
+      .btn-primary .external-icon {
+        width: 0;
+        height: 15px;
+        margin-left: 0;
+        opacity: 0;
+      }
+      .btn-primary:hover .external-icon,
+      .btn-primary:focus-visible .external-icon {
+        width: 15px;
+        margin-left: 8px;
+        opacity: 1;
+      }
+
       @media (max-width: 860px) {
         header.hero .wrap {
           grid-template-columns: 1fr;
@@ -424,8 +483,24 @@
                 href="https://groups.google.com/g/meowdrate-testers"
                 target="_blank"
                 rel="noopener noreferrer"
-                >Join Meowdrate Testers</a
-              >
+                >Join Meowdrate Testers<span class="sr-only">
+                  (opens in new tab)</span
+                ><svg
+                  class="external-icon"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2.4"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  aria-hidden="true"
+                >
+                  <path
+                    d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"
+                  />
+                  <path d="M15 3h6v6" />
+                  <path d="M10 14 21 3" /></svg
+              ></a>
             </div>
             <div class="step">
               <span class="step-num">2</span>
@@ -439,8 +514,23 @@
                 href="https://play.google.com/apps/testing/com.aftongauntlett.meowdrate"
                 target="_blank"
                 rel="noopener noreferrer"
-                >Get the App</a
-              >
+                >Get the App<span class="sr-only"> (opens in new tab)</span
+                ><svg
+                  class="external-icon"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2.4"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  aria-hidden="true"
+                >
+                  <path
+                    d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"
+                  />
+                  <path d="M15 3h6v6" />
+                  <path d="M10 14 21 3" /></svg
+              ></a>
             </div>
           </div>
           <p class="testing-note">
@@ -479,8 +569,9 @@
               </picture>
               <h3>Log a drink</h3>
               <p>
-                Tap in, take a few real sips while a short timer runs, then
-                confirm. No manual ounce math.
+                Take a few real sips while a short timer runs, then hit "I
+                Meowdrated" to log it. Hit skip if you didn't mean to log a
+                drink.
               </p>
             </div>
             <div class="step">
@@ -754,14 +845,68 @@
           </p>
         </div>
       </section>
+
+      <section id="support" aria-labelledby="support-heading">
+        <div class="wrap support-cta">
+          <h2 id="support-heading">Enjoying Meowdrate?</h2>
+          <p>
+            It's free, ad-free, and always will be. If it's helped you drink a
+            little more water, you can support me on Ko-fi! Completely optional,
+            no strings attached.
+          </p>
+          <a
+            class="btn btn-primary"
+            href="https://ko-fi.com/prettyprettyprettygood"
+            target="_blank"
+            rel="noopener noreferrer"
+            ><svg class="heart-icon" viewBox="0 0 24 24" aria-hidden="true">
+              <path
+                d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"
+              /></svg
+            >Support me on Ko-fi<span class="sr-only"> (opens in new tab)</span
+            ><svg
+              class="external-icon"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2.4"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              aria-hidden="true"
+            >
+              <path
+                d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"
+              />
+              <path d="M15 3h6v6" />
+              <path d="M10 14 21 3" /></svg
+          ></a>
+        </div>
+      </section>
     </main>
 
     <footer>
       <div class="wrap">
         <nav class="links" aria-label="Footer">
-          <a href="/">Home</a>
+          <a href="/" aria-current="page">Home</a>
           <a href="privacy.html">Privacy Policy</a>
           <a href="credits.html">Credits</a>
+          <a
+            href="https://ko-fi.com/prettyprettyprettygood"
+            target="_blank"
+            rel="noopener noreferrer"
+            >Donate<span class="sr-only"> (opens in new tab)</span
+            ><svg
+              class="external-icon"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2.2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              aria-hidden="true"
+            >
+              <path d="M7 17 17 7M17 7H8M17 7v9" /></svg
+          ></a>
           <a
             href="https://github.com/aftongauntlett/Meowdrate"
             target="_blank"

@@ -35,12 +35,18 @@ html {
 }
 body {
   margin: 0;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
   background: var(--bg);
   color: var(--text);
   font-family:
     -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
   line-height: 1.6;
   overflow-x: hidden;
+}
+main {
+  flex: 1 0 auto;
 }
 a {
   color: var(--link);
@@ -154,6 +160,7 @@ nav.top {
 
 /* ---- footer (identical on every page) ---- */
 footer {
+  flex-shrink: 0;
   padding: 40px 0 64px;
   border-top: 1px solid var(--border);
   margin-top: 24px;
@@ -174,6 +181,10 @@ footer .links a {
 footer .links a:hover,
 footer .links a:focus-visible {
   color: var(--link);
+}
+footer .links a[aria-current="page"] {
+  color: var(--text);
+  font-weight: 700;
 }
 footer .fine {
   font-size: 13px;

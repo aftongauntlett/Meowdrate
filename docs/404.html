@@ -108,13 +108,13 @@
     box-shadow: var(--shadow);
     margin-bottom: 28px;
   }
-  .eyebrow {
-    font-size: 12px;
-    font-weight: 700;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
+  .error-code {
+    font-size: 64px;
+    font-weight: 800;
+    line-height: 1;
+    letter-spacing: -0.02em;
     color: var(--text-accent);
-    margin: 0 0 14px;
+    margin: 0 0 10px;
   }
   h1 {
     font-size: 34px;
@@ -145,7 +145,17 @@
     text-decoration: none;
     border: 1px solid transparent;
   }
-  .btn-primary { background: var(--primary); color: #04121A; }
+  .btn-primary {
+    background: var(--primary);
+    color: #04121A;
+    transition: transform 0.15s ease, box-shadow 0.15s ease, filter 0.15s ease;
+  }
+  .btn-primary:hover,
+  .btn-primary:focus-visible {
+    transform: translateY(-2px);
+    filter: brightness(1.08);
+    box-shadow: var(--shadow);
+  }
   .btn-ghost { background: transparent; color: var(--text); border-color: var(--border); }
   .btn-ghost:hover { border-color: var(--primary); color: var(--link); }
 
@@ -190,6 +200,9 @@
   }
   @media (prefers-reduced-motion: reduce) {
     .external-icon { transition: none; }
+    .btn-primary { transition: none; }
+    .btn-primary:hover,
+    .btn-primary:focus-visible { transform: none; }
   }
 </style>
 </head>
@@ -209,7 +222,7 @@
 <main id="main">
   <div class="wrap">
     <img class="flood-icon" src="icon.png" width="512" height="512" alt="A soggy pixel cat, unimpressed.">
-    <p class="eyebrow">404</p>
+    <p class="error-code">404</p>
     <h1>This page got swept away in the flood.</h1>
     <p class="lede">There's no cat to rescue here — the page you're looking for doesn't exist, or it moved somewhere drier.</p>
     <div class="cta-row">
@@ -225,6 +238,9 @@
     <div class="links">
       <a href="/privacy.html">Privacy Policy</a>
       <a href="/credits.html">Credits</a>
+      <a href="https://ko-fi.com/prettyprettyprettygood" target="_blank" rel="noopener noreferrer"
+        >Donate<span class="sr-only"> (opens in new tab)</span><svg class="external-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17 17 7M17 7H8M17 7v9"/></svg
+      ></a>
       <a href="https://github.com/aftongauntlett/Meowdrate" target="_blank" rel="noopener noreferrer"
         >GitHub<span class="sr-only"> (opens in new tab)</span><svg class="external-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17 17 7M17 7H8M17 7v9"/></svg
       ></a>
