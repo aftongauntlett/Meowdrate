@@ -3,8 +3,16 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="theme-color" content="#f5f7fc" media="(prefers-color-scheme: light)" />
-    <meta name="theme-color" content="#05070c" media="(prefers-color-scheme: dark)" />
+    <meta
+      name="theme-color"
+      content="#f5f7fc"
+      media="(prefers-color-scheme: light)"
+    />
+    <meta
+      name="theme-color"
+      content="#05070c"
+      media="(prefers-color-scheme: dark)"
+    />
     <title>Meowdrate — A hydration app that starts full</title>
     <meta
       name="description"
@@ -140,6 +148,7 @@
       .phone img {
         display: block;
         width: 100%;
+        height: auto;
         border-radius: 26px;
       }
 
@@ -170,6 +179,8 @@
         gap: 28px;
       }
       .step {
+        display: flex;
+        flex-direction: column;
         background: var(--surface);
         border: 1px solid var(--border);
         border-radius: 18px;
@@ -191,6 +202,7 @@
       }
       .step .shot {
         width: 100%;
+        height: auto;
         border-radius: 12px;
         border: 1px solid var(--border);
         display: block;
@@ -204,17 +216,14 @@
       .step p {
         font-size: 14px;
         color: var(--text-muted);
-        margin: 0;
+        margin: 0 0 14px;
       }
       .steps-2 {
         grid-template-columns: repeat(2, 1fr);
       }
       .step .btn {
-        margin-top: 14px;
-      }
-      .step .step-note {
-        margin-top: 10px;
-        font-size: 12.5px;
+        margin-top: auto;
+        align-self: flex-start;
       }
       .testing-note {
         margin: 24px 0 0;
@@ -276,6 +285,7 @@
       }
       .gallery img {
         width: 100%;
+        height: auto;
         border-radius: 18px;
         border: 1px solid var(--border);
         box-shadow: var(--shadow);
@@ -292,10 +302,17 @@
       .feature-banner {
         display: block;
         width: 100%;
+        height: auto;
         max-width: 720px;
         margin: 0 auto;
         border-radius: 20px;
         box-shadow: var(--shadow);
+      }
+      .banner-note {
+        margin: 18px 0 0;
+        font-size: 13.5px;
+        color: var(--text-muted);
+        text-align: center;
       }
 
       @media (max-width: 860px) {
@@ -368,7 +385,10 @@
           <div class="hero-art">
             <div class="phone">
               <picture>
-                <source srcset="screenshots/flood_scene.webp" type="image/webp" />
+                <source
+                  srcset="screenshots/flood_scene.webp"
+                  type="image/webp"
+                />
                 <img
                   src="screenshots/flood_scene.png"
                   width="412"
@@ -386,10 +406,9 @@
           <div class="section-head">
             <h2 id="testing-heading">Help test Meowdrate</h2>
             <p class="section-lede">
-              Before Google lets me publish this publicly, it requires at
-              least 12 real testers to install the app and keep it for two
-              weeks. Android only, sorry — the Apple developer fee is a lot
-              pricier.
+              Before Google lets me publish this publicly, it requires at least
+              12 real testers to install the app and keep it for two weeks.
+              Android only for right now, coming soon to iOS.
             </p>
           </div>
           <div class="steps steps-2">
@@ -397,8 +416,8 @@
               <span class="step-num">1</span>
               <h3>Join the tester group</h3>
               <p>
-                Just needs a Google account — no approval wait, anyone can
-                join. This is what grants you test access.
+                Just needs a Google account. No approval wait, anyone can join.
+                This is what grants you test access.
               </p>
               <a
                 class="btn btn-primary"
@@ -412,26 +431,16 @@
               <span class="step-num">2</span>
               <h3>Install from Google Play</h3>
               <p>
-                Once you're in the group, tap below to opt in and install.
-                Leave it installed for about two weeks — opening it now and
-                then to log a drink is a bonus, not required.
+                Once you're in the group, click below to install the app and
+                leave it installed for two weeks!
               </p>
               <a
                 class="btn btn-primary"
                 href="https://play.google.com/apps/testing/com.aftongauntlett.meowdrate"
                 target="_blank"
                 rel="noopener noreferrer"
-                >Opt In &amp; Install</a
+                >Get the App</a
               >
-              <p class="step-note">
-                Already have the Play Store app open?
-                <a
-                  href="https://play.google.com/store/apps/details?id=com.aftongauntlett.meowdrate"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  >Use this link instead</a
-                >.
-              </p>
             </div>
           </div>
           <p class="testing-note">
@@ -453,7 +462,10 @@
             <div class="step">
               <span class="step-num">1</span>
               <picture>
-                <source srcset="screenshots/drink_moment.webp" type="image/webp" />
+                <source
+                  srcset="screenshots/drink_moment.webp"
+                  type="image/webp"
+                />
                 <img
                   class="shot"
                   src="screenshots/drink_moment.png"
@@ -473,7 +485,10 @@
             <div class="step">
               <span class="step-num">2</span>
               <picture>
-                <source srcset="screenshots/flood_scene.webp" type="image/webp" />
+                <source
+                  srcset="screenshots/flood_scene.webp"
+                  type="image/webp"
+                />
                 <img
                   class="shot"
                   src="screenshots/flood_scene.png"
@@ -506,8 +521,8 @@
               </picture>
               <h3>Cat rescued</h3>
               <p>
-                Clear the flood fully and the cat's safe for the day — with a
-                dry comment from the narrator to match.
+                Clear the flood fully and the cat's safe for the day! The
+                commentator will likely have a snarky response, of course.
               </p>
             </div>
           </div>
@@ -542,9 +557,7 @@
             <div class="point">
               <div class="mark">📱</div>
               <h3>Local-only</h3>
-              <p>
-                Everything lives on your device. Nothing synced or backed up.
-              </p>
+              <p>Everything lives on your device.</p>
             </div>
             <div class="point">
               <div class="mark">💸</div>
@@ -560,17 +573,24 @@
           <div class="section-head">
             <h2 id="screens-heading">A closer look</h2>
             <p class="section-lede">
-              Real screenshots from the app — no mockups. The sky shifts with
-              the real time of day, in both light and dark mode.
+              Real screenshots from the app. The sky shifts with the real time
+              of day, in both light and dark mode.
             </p>
           </div>
 
           <div class="gallery-group">
             <p class="gallery-title">Light mode</p>
-            <div class="gallery" role="region" aria-label="Light mode screenshots">
+            <div
+              class="gallery"
+              role="region"
+              aria-label="Light mode screenshots"
+            >
               <figure>
                 <picture>
-                  <source srcset="screenshots/flood_scene.webp" type="image/webp" />
+                  <source
+                    srcset="screenshots/flood_scene.webp"
+                    type="image/webp"
+                  />
                   <img
                     src="screenshots/flood_scene.png"
                     width="412"
@@ -584,7 +604,10 @@
               </figure>
               <figure>
                 <picture>
-                  <source srcset="screenshots/drink_moment.webp" type="image/webp" />
+                  <source
+                    srcset="screenshots/drink_moment.webp"
+                    type="image/webp"
+                  />
                   <img
                     src="screenshots/drink_moment.png"
                     width="412"
@@ -612,7 +635,10 @@
               </figure>
               <figure>
                 <picture>
-                  <source srcset="screenshots/settings.webp" type="image/webp" />
+                  <source
+                    srcset="screenshots/settings.webp"
+                    type="image/webp"
+                  />
                   <img
                     src="screenshots/settings.png"
                     width="412"
@@ -629,10 +655,17 @@
 
           <div class="gallery-group">
             <p class="gallery-title">Dark mode</p>
-            <div class="gallery" role="region" aria-label="Dark mode screenshots">
+            <div
+              class="gallery"
+              role="region"
+              aria-label="Dark mode screenshots"
+            >
               <figure>
                 <picture>
-                  <source srcset="screenshots/flood_dawn.webp" type="image/webp" />
+                  <source
+                    srcset="screenshots/flood_dawn.webp"
+                    type="image/webp"
+                  />
                   <img
                     src="screenshots/flood_dawn.png"
                     width="412"
@@ -646,7 +679,10 @@
               </figure>
               <figure>
                 <picture>
-                  <source srcset="screenshots/drink_moment_dark.webp" type="image/webp" />
+                  <source
+                    srcset="screenshots/drink_moment_dark.webp"
+                    type="image/webp"
+                  />
                   <img
                     src="screenshots/drink_moment_dark.png"
                     width="412"
@@ -660,7 +696,10 @@
               </figure>
               <figure>
                 <picture>
-                  <source srcset="screenshots/flood_night.webp" type="image/webp" />
+                  <source
+                    srcset="screenshots/flood_night.webp"
+                    type="image/webp"
+                  />
                   <img
                     src="screenshots/flood_night.png"
                     width="412"
@@ -674,7 +713,10 @@
               </figure>
               <figure>
                 <picture>
-                  <source srcset="screenshots/settings_dark.webp" type="image/webp" />
+                  <source
+                    srcset="screenshots/settings_dark.webp"
+                    type="image/webp"
+                  />
                   <img
                     src="screenshots/settings_dark.png"
                     width="412"
@@ -705,6 +747,7 @@
               alt="Meowdrate: a pixel-art cat sipping water above a rising flood, with the tagline 'Drink water. Save the cat.'"
             />
           </picture>
+          <p class="banner-note">Coming soon to the Google Play Store.</p>
         </div>
       </section>
     </main>
