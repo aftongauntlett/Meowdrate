@@ -3,6 +3,16 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<script>
+  (function () {
+    try {
+      var t = localStorage.getItem("meowdrate-theme");
+      if (t === "light" || t === "dark") {
+        document.documentElement.setAttribute("data-theme", t);
+      }
+    } catch (e) {}
+  })();
+</script>
 <meta name="theme-color" content="#f5f7fc" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#05070c" media="(prefers-color-scheme: dark)">
 <title>Page not found — Meowdrate</title>
@@ -17,25 +27,84 @@
     --text: #12172B;
     --text-muted: #5C6478;
     --border: rgba(18,23,43,0.12);
-    --accent: #0D9488;
-    --primary: #1897B3;
-    --link: #137B91;
-    --text-accent: #0B7E74;
+    --primary: #2674a6;
+    --on-primary: #ffffff;
+    --link: #2674a6;
+    --text-accent: #2674a6;
     --shadow: 0 20px 44px rgba(18,23,43,0.10);
   }
   @media (prefers-color-scheme: dark) {
-    :root {
+    :root:not([data-theme="light"]) {
       --bg: #05070C;
       --surface: #182540;
       --text: #F5F7FF;
       --text-muted: #B8C0D9;
       --border: rgba(245,247,255,0.14);
-      --accent: #2DD4BF;
       --primary: #6EE7FF;
+      --on-primary: #04121a;
       --link: #6EE7FF;
       --text-accent: #2DD4BF;
       --shadow: 0 20px 44px rgba(0,0,0,0.35);
     }
+  }
+  :root[data-theme="dark"] {
+    --bg: #05070C;
+    --surface: #182540;
+    --text: #F5F7FF;
+    --text-muted: #B8C0D9;
+    --border: rgba(245,247,255,0.14);
+    --primary: #6EE7FF;
+    --on-primary: #04121a;
+    --link: #6EE7FF;
+    --text-accent: #2DD4BF;
+    --shadow: 0 20px 44px rgba(0,0,0,0.35);
+  }
+  :root[data-theme="light"] {
+    --bg: #F5F7FC;
+    --surface: #FFFFFF;
+    --text: #12172B;
+    --text-muted: #5C6478;
+    --border: rgba(18,23,43,0.12);
+    --primary: #2674a6;
+    --on-primary: #ffffff;
+    --link: #2674a6;
+    --text-accent: #2674a6;
+    --shadow: 0 20px 44px rgba(18,23,43,0.10);
+  }
+  @font-face {
+    font-family: "Short Stack";
+    font-style: normal;
+    font-weight: 400;
+    font-display: swap;
+    src: url("fonts/shortstack-400.woff2") format("woff2");
+  }
+  @font-face {
+    font-family: "Quicksand";
+    font-style: normal;
+    font-weight: 600;
+    font-display: swap;
+    src: url("fonts/quicksand-600.woff2") format("woff2");
+  }
+  @font-face {
+    font-family: "Quicksand";
+    font-style: normal;
+    font-weight: 700;
+    font-display: swap;
+    src: url("fonts/quicksand-700.woff2") format("woff2");
+  }
+  @font-face {
+    font-family: "Nunito Sans";
+    font-style: normal;
+    font-weight: 400;
+    font-display: swap;
+    src: url("fonts/nunitosans-400.woff2") format("woff2");
+  }
+  @font-face {
+    font-family: "Nunito Sans";
+    font-style: normal;
+    font-weight: 700;
+    font-display: swap;
+    src: url("fonts/nunitosans-700.woff2") format("woff2");
   }
   * { box-sizing: border-box; }
   body {
@@ -45,8 +114,12 @@
     flex-direction: column;
     background: var(--bg);
     color: var(--text);
-    font-family: -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    font-family: "Nunito Sans", -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
     line-height: 1.6;
+  }
+  h1 {
+    font-family: "Quicksand", -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    font-weight: 600;
   }
   a { color: var(--link); }
 
@@ -84,9 +157,10 @@
     display: flex;
     align-items: center;
     gap: 10px;
-    font-weight: 800;
-    font-size: 17px;
-    letter-spacing: -0.01em;
+    font-family: "Short Stack", "Comic Sans MS", cursive;
+    font-weight: 400;
+    font-size: 21px;
+    letter-spacing: 0.01em;
     text-decoration: none;
     color: var(--text);
   }
@@ -109,8 +183,9 @@
     margin-bottom: 28px;
   }
   .error-code {
+    font-family: "Quicksand", -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
     font-size: 64px;
-    font-weight: 800;
+    font-weight: 700;
     line-height: 1;
     letter-spacing: -0.02em;
     color: var(--text-accent);
@@ -147,7 +222,7 @@
   }
   .btn-primary {
     background: var(--primary);
-    color: #04121A;
+    color: var(--on-primary);
     transition: transform 0.15s ease, box-shadow 0.15s ease, filter 0.15s ease;
   }
   .btn-primary:hover,
@@ -174,6 +249,32 @@
   footer .links a { display: inline-flex; align-items: center; color: var(--text-muted); text-decoration: none; }
   footer .links a:hover { color: var(--link); }
   footer .fine { font-size: 13px; color: var(--text-muted); margin: 0; }
+  .theme-toggle {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    background: transparent;
+    color: var(--text-muted);
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    padding: 5px 14px 5px 10px;
+    font: inherit;
+    font-size: 13.5px;
+    line-height: 1;
+    cursor: pointer;
+  }
+  .theme-toggle:hover,
+  .theme-toggle:focus-visible { color: var(--link); border-color: var(--link); }
+  .theme-toggle svg { width: 15px; height: 15px; flex-shrink: 0; display: none; }
+  .theme-toggle .icon-sun { display: block; }
+  :root[data-theme="light"] .theme-toggle .icon-sun { display: block; }
+  :root[data-theme="light"] .theme-toggle .icon-moon { display: none; }
+  :root[data-theme="dark"] .theme-toggle .icon-sun { display: none; }
+  :root[data-theme="dark"] .theme-toggle .icon-moon { display: block; }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) .theme-toggle .icon-sun { display: none; }
+    :root:not([data-theme="light"]) .theme-toggle .icon-moon { display: block; }
+  }
   .sr-only {
     position: absolute;
     width: 1px;
@@ -244,9 +345,14 @@
       <a href="https://github.com/aftongauntlett/Meowdrate" target="_blank" rel="noopener noreferrer"
         >GitHub<span class="sr-only"> (opens in new tab)</span><svg class="external-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17 17 7M17 7H8M17 7v9"/></svg
       ></a>
+      <button type="button" class="theme-toggle" data-theme-toggle aria-label="Toggle color theme">
+        <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>
+        <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+      </button>
     </div>
   </div>
 </footer>
+<script src="theme.js"></script>
 
 </body>
 </html>

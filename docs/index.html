@@ -3,6 +3,16 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <script>
+      (function () {
+        try {
+          var t = localStorage.getItem("meowdrate-theme");
+          if (t === "light" || t === "dark") {
+            document.documentElement.setAttribute("data-theme", t);
+          }
+        } catch (e) {}
+      })();
+    </script>
     <meta
       name="theme-color"
       content="#f5f7fc"
@@ -83,6 +93,7 @@
       }
       h1 {
         font-size: 42px;
+        font-weight: 700;
         line-height: 1.14;
         letter-spacing: -0.02em;
         margin: 0 0 18px;
@@ -116,7 +127,7 @@
       }
       .btn-primary {
         background: var(--primary);
-        color: #04121a;
+        color: var(--on-primary);
         transition:
           transform 0.15s ease,
           box-shadow 0.15s ease,
@@ -135,11 +146,6 @@
         .btn-primary:hover,
         .btn-primary:focus-visible {
           transform: none;
-        }
-      }
-      @media (prefers-color-scheme: dark) {
-        .btn-primary {
-          color: #04121a;
         }
       }
       .btn-ghost {
@@ -161,7 +167,7 @@
         width: 240px;
         border-radius: 34px;
         padding: 10px;
-        background: linear-gradient(160deg, #1897b3, #0d9488);
+        background: linear-gradient(160deg, #6ec6f0, #2c86bf);
         box-shadow: var(--shadow);
       }
       .phone img {
@@ -198,6 +204,7 @@
         gap: 28px;
       }
       .step {
+        position: relative;
         display: flex;
         flex-direction: column;
         background: var(--surface);
@@ -207,17 +214,23 @@
         box-shadow: var(--shadow);
       }
       .step-num {
+        display: none;
+      }
+      .steps-2 .step-num {
         display: inline-flex;
         align-items: center;
         justify-content: center;
+        position: absolute;
+        top: -13px;
+        left: 24px;
         width: 26px;
         height: 26px;
         border-radius: 999px;
-        background: var(--accent);
-        color: #04211d;
+        background: var(--primary);
+        color: var(--on-primary);
         font-size: 12.5px;
         font-weight: 800;
-        margin-bottom: 14px;
+        box-shadow: 0 0 0 4px var(--bg);
       }
       .step .shot {
         width: 100%;
@@ -259,13 +272,70 @@
       .point {
         background: var(--surface);
         border: 1px solid var(--border);
-        border-radius: 16px;
-        padding: 22px 16px;
+        border-radius: 18px;
+        padding: 28px 18px;
         text-align: center;
+        transition:
+          transform 0.25s ease,
+          border-color 0.25s ease,
+          box-shadow 0.25s ease;
+      }
+      .point:hover,
+      .point:focus-within {
+        transform: translateY(-5px);
+        border-color: var(--text-accent);
+        box-shadow:
+          0 16px 32px -14px var(--accent-glow),
+          0 0 0 3px var(--accent-glow);
       }
       .point .mark {
-        font-size: 22px;
-        margin-bottom: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 52px;
+        height: 52px;
+        margin: 0 auto 14px;
+        border-radius: 50%;
+        background: var(--accent-glow);
+        color: var(--text-accent);
+        transition: transform 0.2s ease;
+      }
+      .point .mark svg {
+        width: 26px;
+        height: 26px;
+      }
+      .point:hover .mark {
+        animation: point-wiggle 0.45s ease;
+      }
+      @keyframes point-wiggle {
+        0% {
+          transform: scale(1) rotate(0deg);
+        }
+        30% {
+          transform: scale(1.15) rotate(-10deg);
+        }
+        50% {
+          transform: scale(1.15) rotate(8deg);
+        }
+        70% {
+          transform: scale(1.15) rotate(-5deg);
+        }
+        100% {
+          transform: scale(1.1) rotate(0deg);
+        }
+      }
+      @media (prefers-reduced-motion: reduce) {
+        .point,
+        .point .mark {
+          transition: none;
+        }
+        .point:hover,
+        .point:focus-within {
+          transform: none;
+        }
+        .point:hover .mark {
+          animation: none;
+        }
       }
       .point h3 {
         font-size: 14px;
@@ -311,9 +381,11 @@
         display: block;
       }
       .gallery figcaption {
-        margin-top: 10px;
-        font-size: 13px;
-        color: var(--text-muted);
+        margin-top: 12px;
+        font-size: 13.5px;
+        font-weight: 700;
+        letter-spacing: 0.01em;
+        color: var(--text);
         text-align: center;
       }
 
@@ -350,7 +422,7 @@
       .support-cta .heart-icon {
         width: 16px;
         height: 16px;
-        fill: #8b5cf6;
+        fill: currentColor;
         flex-shrink: 0;
       }
       /* every .btn-primary owns its icon spacing manually (instead of
@@ -420,6 +492,40 @@
           <img src="icon.png" alt="" width="512" height="512" />
           Meowdrate
         </a>
+        <button
+          type="button"
+          class="theme-toggle"
+          data-theme-toggle
+          aria-label="Toggle color theme"
+        >
+          <svg
+            class="icon-sun"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            aria-hidden="true"
+          >
+            <circle cx="12" cy="12" r="4" />
+            <path
+              d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"
+            />
+          </svg>
+          <svg
+            class="icon-moon"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            aria-hidden="true"
+          >
+            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
+          </svg>
+        </button>
       </div>
     </nav>
 
@@ -551,7 +657,6 @@
           </div>
           <div class="steps">
             <div class="step">
-              <span class="step-num">1</span>
               <picture>
                 <source
                   srcset="screenshots/drink_moment.webp"
@@ -575,7 +680,6 @@
               </p>
             </div>
             <div class="step">
-              <span class="step-num">2</span>
               <picture>
                 <source
                   srcset="screenshots/flood_scene.webp"
@@ -598,7 +702,6 @@
               </p>
             </div>
             <div class="step">
-              <span class="step-num">3</span>
               <picture>
                 <source srcset="screenshots/rescued.webp" type="image/webp" />
                 <img
@@ -632,27 +735,37 @@
           </div>
           <div class="points">
             <div class="point">
-              <div class="mark">🚫</div>
+              <div class="mark">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11.636 6A13 13 0 0 0 19.4 3.2 1 1 0 0 1 21 4v11.344"/><path d="M14.378 14.357A13 13 0 0 0 11 14H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h1"/><path d="m2 2 20 20"/><path d="M6 14a12 12 0 0 0 2.4 7.2 2 2 0 0 0 3.2-2.4A8 8 0 0 1 10 14"/><path d="M8 8v6"/></svg>
+              </div>
               <h3>No ads</h3>
               <p>None, ever. Nothing to sit through.</p>
             </div>
             <div class="point">
-              <div class="mark">👤</div>
+              <div class="mark">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="17" x2="22" y1="8" y2="13"/><line x1="22" x2="17" y1="8" y2="13"/></svg>
+              </div>
               <h3>No accounts</h3>
               <p>No sign-up, no login, no email.</p>
             </div>
             <div class="point">
-              <div class="mark">🔒</div>
+              <div class="mark">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10.733 5.076a10.744 10.744 0 0 1 11.205 6.575 1 1 0 0 1 0 .696 10.747 10.747 0 0 1-1.444 2.49"/><path d="M14.084 14.158a3 3 0 0 1-4.242-4.242"/><path d="M17.479 17.499a10.75 10.75 0 0 1-15.417-5.151 1 1 0 0 1 0-.696 10.75 10.75 0 0 1 4.446-5.143"/><path d="m2 2 20 20"/></svg>
+              </div>
               <h3>No data collection</h3>
               <p>No analytics, no tracking, no crash reporting.</p>
             </div>
             <div class="point">
-              <div class="mark">📱</div>
+              <div class="mark">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 16h.01"/><path d="M2.212 11.577a2 2 0 0 0-.212.896V18a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-5.527a2 2 0 0 0-.212-.896L18.55 5.11A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"/><path d="M21.946 12.013H2.054"/><path d="M6 16h.01"/></svg>
+              </div>
               <h3>Local-only</h3>
               <p>Everything lives on your device.</p>
             </div>
             <div class="point">
-              <div class="mark">💸</div>
+              <div class="mark">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 7v14"/><path d="M20 11v8a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2v-8"/><path d="M7.5 7a1 1 0 0 1 0-5A4.8 8 0 0 1 12 7a4.8 8 0 0 1 4.5-5 1 1 0 0 1 0 5"/><rect x="3" y="7" width="18" height="4" rx="1"/></svg>
+              </div>
               <h3>Free</h3>
               <p>No purchases, no shop, no premium tier.</p>
             </div>
@@ -924,6 +1037,18 @@
             >
               <path d="M7 17 17 7M17 7H8M17 7v9" /></svg
           ></a>
+          <a class="back-to-top" href="#top" aria-label="Back to top"
+            ><svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2.2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              aria-hidden="true"
+            >
+              <path d="M12 19V6M6 11l6-6 6 6" /></svg
+          ></a>
         </nav>
         <p class="fine">
           Built by
@@ -948,5 +1073,6 @@
         </p>
       </div>
     </footer>
+    <script src="theme.js"></script>
   </body>
 </html>

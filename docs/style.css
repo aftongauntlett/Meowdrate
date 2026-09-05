@@ -6,25 +6,116 @@
   --text: #12172b;
   --text-muted: #5c6478;
   --border: rgba(18, 23, 43, 0.12);
-  --accent: #0d9488;
-  --primary: #1897b3;
-  --link: #137b91;
-  --text-accent: #0b7e74;
+  --primary: #2674a6;
+  --on-primary: #ffffff;
+  --link: #2674a6;
+  --text-accent: #2674a6;
+  --accent-glow: rgba(38, 116, 166, 0.35);
   --shadow: 0 20px 44px rgba(18, 23, 43, 0.1);
+  --font-body:
+    "Nunito Sans", -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial,
+    sans-serif;
+  --font-heading:
+    "Quicksand", -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial,
+    sans-serif;
+  --font-brand: "Short Stack", "Comic Sans MS", cursive;
 }
+
+/* Self-hosted (not Google's CDN) so the site makes zero third-party
+   requests on load. Latin subset only. */
+@font-face {
+  font-family: "Short Stack";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("fonts/shortstack-400.woff2") format("woff2");
+}
+@font-face {
+  font-family: "Quicksand";
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url("fonts/quicksand-500.woff2") format("woff2");
+}
+@font-face {
+  font-family: "Quicksand";
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url("fonts/quicksand-600.woff2") format("woff2");
+}
+@font-face {
+  font-family: "Quicksand";
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url("fonts/quicksand-700.woff2") format("woff2");
+}
+@font-face {
+  font-family: "Nunito Sans";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("fonts/nunitosans-400.woff2") format("woff2");
+}
+@font-face {
+  font-family: "Nunito Sans";
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url("fonts/nunitosans-600.woff2") format("woff2");
+}
+@font-face {
+  font-family: "Nunito Sans";
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url("fonts/nunitosans-700.woff2") format("woff2");
+}
+
+/* System preference: only when the visitor hasn't picked a theme by hand
+   (data-theme is set by the footer toggle in theme.js). */
 @media (prefers-color-scheme: dark) {
-  :root {
+  :root:not([data-theme="light"]) {
     --bg: #05070c;
     --surface: #182540;
     --text: #f5f7ff;
     --text-muted: #b8c0d9;
     --border: rgba(245, 247, 255, 0.14);
-    --accent: #2dd4bf;
     --primary: #6ee7ff;
+    --on-primary: #04121a;
     --link: #6ee7ff;
     --text-accent: #2dd4bf;
+    --accent-glow: rgba(45, 212, 191, 0.35);
     --shadow: 0 20px 44px rgba(0, 0, 0, 0.35);
   }
+}
+/* Explicit overrides from the footer toggle, win over OS preference either way. */
+:root[data-theme="dark"] {
+  --bg: #05070c;
+  --surface: #182540;
+  --text: #f5f7ff;
+  --text-muted: #b8c0d9;
+  --border: rgba(245, 247, 255, 0.14);
+  --primary: #6ee7ff;
+  --on-primary: #04121a;
+  --link: #6ee7ff;
+  --text-accent: #2dd4bf;
+  --accent-glow: rgba(45, 212, 191, 0.35);
+  --shadow: 0 20px 44px rgba(0, 0, 0, 0.35);
+}
+:root[data-theme="light"] {
+  --bg: #f5f7fc;
+  --surface: #ffffff;
+  --text: #12172b;
+  --text-muted: #5c6478;
+  --border: rgba(18, 23, 43, 0.12);
+  --primary: #2674a6;
+  --on-primary: #ffffff;
+  --link: #2674a6;
+  --text-accent: #2674a6;
+  --accent-glow: rgba(38, 116, 166, 0.35);
+  --shadow: 0 20px 44px rgba(18, 23, 43, 0.1);
 }
 
 * {
@@ -40,16 +131,30 @@ body {
   flex-direction: column;
   background: var(--bg);
   color: var(--text);
-  font-family:
-    -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  font-family: var(--font-body);
   line-height: 1.6;
   overflow-x: hidden;
+  transition:
+    background-color 0.2s ease,
+    color 0.2s ease;
+}
+@media (prefers-reduced-motion: reduce) {
+  body {
+    transition: none;
+  }
 }
 main {
   flex: 1 0 auto;
 }
 a {
   color: var(--link);
+}
+
+h1,
+h2,
+h3 {
+  font-family: var(--font-heading);
+  font-weight: 600;
 }
 
 .skip-link {
@@ -140,14 +245,21 @@ a:focus-visible .external-icon {
 /* ---- nav ---- */
 nav.top {
   padding: 22px 0;
+  border-bottom: 1px solid var(--border);
+}
+nav.top .wrap {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
 }
 .brand {
   display: flex;
   align-items: center;
   gap: 10px;
-  font-weight: 800;
-  font-size: 17px;
-  letter-spacing: -0.01em;
+  font-family: var(--font-brand);
+  font-weight: 400;
+  font-size: 21px;
+  letter-spacing: 0.01em;
   text-decoration: none;
   color: var(--text);
 }
@@ -168,6 +280,7 @@ footer {
 footer .links {
   display: flex;
   flex-wrap: wrap;
+  justify-content: center;
   gap: 20px;
   font-size: 13.5px;
   margin: 0 0 14px;
@@ -190,6 +303,7 @@ footer .fine {
   font-size: 13px;
   color: var(--text-muted);
   margin: 0;
+  text-align: center;
 }
 footer .fine a {
   display: inline-flex;
@@ -200,4 +314,71 @@ footer .fine a {
 footer .fine a:hover,
 footer .fine a:focus-visible {
   color: var(--link);
+}
+.back-to-top {
+  padding: 8px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+}
+.back-to-top:hover,
+.back-to-top:focus-visible {
+  border-color: var(--link);
+}
+.back-to-top svg {
+  width: 15px;
+  height: 15px;
+  flex-shrink: 0;
+  display: block;
+}
+
+/* ---- theme toggle (identical on every page) ---- */
+.theme-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  background: transparent;
+  color: var(--text-muted);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  padding: 8px;
+  font: inherit;
+  font-size: 13.5px;
+  line-height: 1;
+  cursor: pointer;
+  appearance: none;
+  -webkit-appearance: none;
+}
+.theme-toggle:hover,
+.theme-toggle:focus-visible {
+  color: var(--link);
+  border-color: var(--link);
+}
+.theme-toggle svg {
+  width: 15px;
+  height: 15px;
+  flex-shrink: 0;
+  display: none;
+}
+.theme-toggle .icon-sun {
+  display: block;
+}
+:root[data-theme="light"] .theme-toggle .icon-sun {
+  display: block;
+}
+:root[data-theme="light"] .theme-toggle .icon-moon {
+  display: none;
+}
+:root[data-theme="dark"] .theme-toggle .icon-sun {
+  display: none;
+}
+:root[data-theme="dark"] .theme-toggle .icon-moon {
+  display: block;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .theme-toggle .icon-sun {
+    display: none;
+  }
+  :root:not([data-theme="light"]) .theme-toggle .icon-moon {
+    display: block;
+  }
 }
