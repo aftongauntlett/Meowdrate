@@ -90,6 +90,7 @@ class _FloodHomeScreenState extends ConsumerState<FloodHomeScreen>
             selectAppReturnLine(
               ref.read(narratorBagServiceProvider),
               hour: ref.read(debugTimeOverrideProvider),
+              goalMet: ref.read(floodLevelProvider) <= 0.0,
             ),
           );
     }
@@ -120,6 +121,7 @@ class _FloodHomeScreenState extends ConsumerState<FloodHomeScreen>
             ref.read(narratorBagServiceProvider),
             trigger,
             hour: ref.read(debugTimeOverrideProvider),
+            goalMet: ref.read(floodLevelProvider) <= 0.0,
           ),
         );
   }

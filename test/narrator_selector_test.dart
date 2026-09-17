@@ -4,6 +4,7 @@ import 'package:meowdrate/core/storage/local_store.dart';
 import 'package:meowdrate/features/narrator/data/app_return_lines.dart';
 import 'package:meowdrate/features/narrator/data/dawn_lines.dart';
 import 'package:meowdrate/features/narrator/data/dusk_lines.dart';
+import 'package:meowdrate/features/narrator/data/goal_met_greeting_lines.dart';
 import 'package:meowdrate/features/narrator/data/goal_missed_lines.dart';
 import 'package:meowdrate/features/narrator/data/late_night_lines.dart';
 import 'package:meowdrate/features/narrator/data/long_absence_lines.dart';
@@ -79,6 +80,16 @@ void main() {
       expect(nightLines, contains(selectAppReturnLine(bag, hour: 22)));
       expect(lateNightLines, contains(selectAppReturnLine(bag, hour: 1)));
     });
+
+    test('goalMet overrides every hour band with the goal-met greeting pool', () {
+      final bag = _bag();
+      for (final hour in [6, 12, 19, 22, 1]) {
+        expect(
+          goalMetGreetingLines,
+          contains(selectAppReturnLine(bag, hour: hour, goalMet: true)),
+        );
+      }
+    });
   });
 
   group('selectOpeningGreeting', () {
@@ -87,6 +98,36 @@ void main() {
       expect(
         goalMissedLines,
         contains(selectOpeningGreeting(bag, NarratorTrigger.goalMissed, hour: 1)),
+      );
+    });
+
+    test('goalMissed ignores goalMet — a prior-day miss still shows even if today is already done', () {
+      final bag = _bag();
+      expect(
+        goalMissedLines,
+        contains(
+          selectOpeningGreeting(
+            bag,
+            NarratorTrigger.goalMissed,
+            hour: 1,
+            goalMet: true,
+          ),
+        ),
+      );
+    });
+
+    test('an appReturn trigger with goalMet uses the goal-met greeting pool', () {
+      final bag = _bag();
+      expect(
+        goalMetGreetingLines,
+        contains(
+          selectOpeningGreeting(
+            bag,
+            NarratorTrigger.appReturn,
+            hour: 19,
+            goalMet: true,
+          ),
+        ),
       );
     });
   });

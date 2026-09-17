@@ -122,6 +122,7 @@ class DebugPanel extends ConsumerWidget {
                     selectAppReturnLine(
                       ref.read(narratorBagServiceProvider),
                       hour: ref.read(debugTimeOverrideProvider),
+                      goalMet: ref.read(floodLevelProvider) <= 0.0,
                     ),
                   ),
                 ),

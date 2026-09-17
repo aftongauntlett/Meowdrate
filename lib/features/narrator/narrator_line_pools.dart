@@ -3,6 +3,7 @@ import 'data/dawn_lines.dart';
 import 'data/drink_logged_lines.dart';
 import 'data/drink_skipped_lines.dart';
 import 'data/dusk_lines.dart';
+import 'data/goal_met_greeting_lines.dart';
 import 'data/goal_met_lines.dart';
 import 'data/goal_missed_lines.dart';
 import 'data/late_night_lines.dart';
@@ -18,6 +19,7 @@ const narratorLinePools = <NarratorTrigger, List<String>>{
   NarratorTrigger.goalMissed: goalMissedLines,
   NarratorTrigger.longAbsence: longAbsenceLines,
   NarratorTrigger.appReturn: appReturnLines,
+  NarratorTrigger.goalMetGreeting: goalMetGreetingLines,
   NarratorTrigger.dawn: dawnLines,
   NarratorTrigger.dusk: duskLines,
   NarratorTrigger.night: nightLines,

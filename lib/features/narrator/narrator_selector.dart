@@ -18,8 +18,18 @@ String selectNarratorLine(
 /// Daytime keeps the generic [NarratorTrigger.appReturn] pool; dawn, dusk,
 /// evening, and past-midnight swap in a small time-specific pool so the
 /// line can mention the hour without drink-logged commentary pretending
-/// to know how long you took.
-String selectAppReturnLine(NarratorBagService bagService, {int? hour}) {
+/// to know how long you took. [goalMet] overrides all of those with
+/// [NarratorTrigger.goalMetGreeting] instead — the time-of-day pools assume
+/// the flood is still up ("the water didn't get short"), which reads wrong
+/// once today's goal is already cleared.
+String selectAppReturnLine(
+  NarratorBagService bagService, {
+  int? hour,
+  bool goalMet = false,
+}) {
+  if (goalMet) {
+    return selectNarratorLine(bagService, NarratorTrigger.goalMetGreeting);
+  }
   final h = hour ?? DateTime.now().hour;
   final trigger = appReturnTriggerForHour(h);
   return selectNarratorLine(bagService, trigger);
@@ -44,9 +54,10 @@ String selectOpeningGreeting(
   NarratorBagService bagService,
   NarratorTrigger trigger, {
   int? hour,
+  bool goalMet = false,
 }) {
   if (trigger == NarratorTrigger.appReturn) {
-    return selectAppReturnLine(bagService, hour: hour);
+    return selectAppReturnLine(bagService, hour: hour, goalMet: goalMet);
   }
   return selectNarratorLine(bagService, trigger);
 }

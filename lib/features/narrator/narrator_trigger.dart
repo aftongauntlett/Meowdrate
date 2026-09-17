@@ -5,6 +5,7 @@ enum NarratorTrigger {
   goalMissed,
   longAbsence,
   appReturn,
+  goalMetGreeting,
   dawn,
   dusk,
   night,
