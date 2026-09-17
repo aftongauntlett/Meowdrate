@@ -79,7 +79,7 @@ final currentNarratorLineProvider = Provider<String>((ref) {
   }
 
   if (occurrence == 0) {
-    return "Welcome. Cats hate water... help the cat, drink the water!";
+    return 'The cat is in the water. The water is your problem. You can see where this is going.';
   }
   return selectNarratorLine(NarratorTrigger.drinkLogged, occurrence: occurrence);
 });

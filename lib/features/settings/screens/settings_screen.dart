@@ -13,6 +13,8 @@ import '../../../core/widgets/pixel_button.dart';
 import '../../../core/widgets/pixel_icon.dart';
 import '../../../core/widgets/themed_card_decoration.dart';
 import '../../flood/providers/flood_providers.dart';
+import '../../narrator/narrator_selector.dart';
+import '../../narrator/providers/narrator_providers.dart';
 import '../../reminders/reminder_coordinator.dart';
 import '../../reminders/reminder_service.dart';
 import '../providers/daily_goal_providers.dart';
@@ -40,6 +42,15 @@ Future<void> showSettingsSheet(BuildContext context) async {
       builder: (context) => const _SettingsSheet(),
     );
   } finally {
+    // Set the caption *before* unfreezing the flood scene so the
+    // typewriter starts on this line instead of flashing the old one.
+    // Goal-missed / long-absence greetings are left alone.
+    final settingsLine = selectSettingsClosedLine(
+      currentOpeningLine: container.read(openingLineOverrideProvider),
+    );
+    if (settingsLine != null) {
+      container.read(openingLineOverrideProvider.notifier).set(settingsLine);
+    }
     container.read(settingsSheetOpenProvider.notifier).set(false);
   }
 }

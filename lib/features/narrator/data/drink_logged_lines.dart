@@ -1,7 +1,8 @@
 /// Shown after each drink is logged. Seen the most often of any trigger,
 /// so this pool stays the largest and mostly dry/wry rather than
 /// full-force sarcastic — that tone is saved for goal-missed/long-absence
-/// lines, which land less often.
+/// lines, which land less often. Lines here have to stay true after *any*
+/// sip: no assumed delay, no assumed flood still covering the cat.
 const drinkLoggedLines = <String>[
   'Oh good, you\'re drinking water. I\'ll alert the media.',
   'Another sip. Groundbreaking stuff.',
@@ -12,13 +13,23 @@ const drinkLoggedLines = <String>[
   'Look at you, functioning like a hydrated adult.',
   'I logged that. Try not to let it go to your head.',
   'Ten out of ten. The bar was on the floor, but still.',
-  'Noted. Your kidneys are thankful.',
-  'Congratulations, you\'ve delayed a headache.',
+  'Noted. File under "basic competence."',
+  'Logged. I\'ll try not to act like this was the plan all along.',
   'I\'ve updated my records: human, hydrated, temporarily.',
   'That\'s the spirit. Or at least, that\'s the water.',
   'Drink logged. Somewhere, a very small victory parade begins.',
   'You again. With the water. Fine, I\'ll allow it.',
-  'One sip closer to not being a raisin.',
+  'A useful thing, done on purpose. I\'m allowed to notice.',
   'Sip acknowledged. I remain unimpressed...but writing it down.',
   'You drank water without being asked twice. Miracles do happen.',
+  'Great job. I\'m required to say that. The requirement was very brief.',
+  'You drank water. I\'ll try to look surprised.',
+  'Performance review: one (1) liquid successfully transferred. Meeting adjourned.',
+  'You did the assignment. I\'m marking it "adequate" in red.',
+  'Water in, flood down. Try not to bow.',
+  'Sip logged. Productivity, of a sort.',
+  'A small, correct decision. I\'ve seen fewer.',
+  'Hydration: completed. Enthusiasm: optional. I\'ll take it.',
+  'That\'s the useful part of the hour taken care of.',
+  'Recorded. The bar remains on the floor, in case you need it again.',
 ];

@@ -115,8 +115,21 @@ class DebugPanel extends ConsumerWidget {
                 ),
                 _DebugButton(
                   label: 'Preview welcome-back line',
-                  onPressed: () =>
-                      _previewLine(context, ref, NarratorTrigger.appReturn),
+                  onPressed: () => _previewOpening(
+                    context,
+                    ref,
+                    selectAppReturnLine(
+                      hour: ref.read(debugTimeOverrideProvider),
+                    ),
+                  ),
+                ),
+                _DebugButton(
+                  label: 'Preview settings-closed line',
+                  onPressed: () => _previewOpening(
+                    context,
+                    ref,
+                    selectNarratorLine(NarratorTrigger.settingsClosed),
+                  ),
                 ),
                 _DebugButton(
                   label: 'Dawn',
@@ -133,6 +146,10 @@ class DebugPanel extends ConsumerWidget {
                 _DebugButton(
                   label: 'Night',
                   onPressed: () => timeOverride.setOverride(22),
+                ),
+                _DebugButton(
+                  label: 'Late night',
+                  onPressed: () => timeOverride.setOverride(2),
                 ),
                 _DebugButton(
                   label: 'Use real time of day',
@@ -173,10 +190,12 @@ void _previewLine(
   WidgetRef ref,
   NarratorTrigger trigger,
 ) {
+  _previewOpening(context, ref, selectNarratorLine(trigger));
+}
+
+void _previewOpening(BuildContext context, WidgetRef ref, String line) {
   ref.read(debugNarratorOccurrenceOverrideProvider.notifier).setOverride(0);
-  ref
-      .read(openingLineOverrideProvider.notifier)
-      .set(selectNarratorLine(trigger));
+  ref.read(openingLineOverrideProvider.notifier).set(line);
   Navigator.of(context).pop();
 }
 

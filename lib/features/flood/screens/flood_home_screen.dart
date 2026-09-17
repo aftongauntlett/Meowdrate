@@ -10,6 +10,7 @@ import '../../../core/home_widget/home_widget_sync_service.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_fonts.dart';
 import '../../../core/theme/app_spacing.dart';
+import '../../../core/time_of_day/providers/time_of_day_providers.dart';
 import '../../../core/widgets/pixel_button.dart';
 import '../../../core/widgets/slide_up_route.dart';
 import '../../debug/debug_panel.dart';
@@ -76,16 +77,17 @@ class _FloodHomeScreenState extends ConsumerState<FloodHomeScreen>
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
     if (state == AppLifecycleState.resumed) {
-      ref
-          .read(openingLineOverrideProvider.notifier)
-          .set(selectNarratorLine(NarratorTrigger.appReturn));
+      ref.read(openingLineOverrideProvider.notifier).set(
+            selectAppReturnLine(hour: ref.read(debugTimeOverrideProvider)),
+          );
     }
   }
 
   /// Sets today's opening caption: a goal-missed/long-absence line if the
-  /// app noticed one while catching up on missed days, otherwise a plain
-  /// "welcome back" line — either way, a greeting rather than a rerun of
-  /// whatever drink-logged line was showing when the app was last closed.
+  /// app noticed one while catching up on missed days, otherwise a welcome
+  /// that can mention the time of day — either way, a greeting rather than
+  /// a rerun of whatever drink-logged line was showing when the app was
+  /// last closed.
   Future<void> _checkRolloverEvent() async {
     await ref.read(floodStateProvider.future);
     if (!mounted) {
@@ -101,9 +103,12 @@ class _FloodHomeScreenState extends ConsumerState<FloodHomeScreen>
       DayRolloverEvent.none => NarratorTrigger.appReturn,
     };
 
-    ref
-        .read(openingLineOverrideProvider.notifier)
-        .set(selectNarratorLine(trigger));
+    ref.read(openingLineOverrideProvider.notifier).set(
+          selectOpeningGreeting(
+            trigger,
+            hour: ref.read(debugTimeOverrideProvider),
+          ),
+        );
   }
 
   Future<void> _openDrinkMoment() async {
