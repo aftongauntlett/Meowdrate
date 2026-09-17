@@ -49,6 +49,14 @@ class SoundService {
   /// without every call site needing to read the provider itself.
   bool muted = false;
 
+  /// When false, [play] no-ops for [SoundEffect.narratorBlip] even after an
+  /// in-flight call has already awaited [_acquirePlayer]. The flood scene
+  /// stays mounted under DrinkMomentScreen, so a still-typing narrator line
+  /// would otherwise keep firing blips that race the song player and — on
+  /// some devices — silently drop that first playback. Same race [warmUp]
+  /// exists to avoid for [SoundEffect.uiTap].
+  bool narratorBlipsEnabled = true;
+
   /// Builds [effect]'s player pool ahead of time without making any sound.
   /// Meant to be called once, early, off the path of an actual tap — see
   /// [_acquirePlayer]'s per-pool setup cost. Without this, an effect's
@@ -71,8 +79,21 @@ class SoundService {
     if (muted) {
       return;
     }
+    if (effect == SoundEffect.narratorBlip && !narratorBlipsEnabled) {
+      return;
+    }
     try {
       final player = await _acquirePlayer(effect);
+      // Re-check after the await: a tap that opens DrinkMomentScreen can
+      // flip [narratorBlipsEnabled] while this call is still sitting in
+      // [_acquirePlayer], and resuming anyway would be the same race the
+      // flag exists to close.
+      if (muted) {
+        return;
+      }
+      if (effect == SoundEffect.narratorBlip && !narratorBlipsEnabled) {
+        return;
+      }
       // Fired together via Future.wait rather than sequentially — awaiting
       // the haptic first would add its own platform-channel round trip
       // ahead of the sound.
@@ -83,6 +104,26 @@ class SoundService {
     } catch (error) {
       if (kDebugMode) {
         debugPrint('SoundService: skipping ${effect.name} ($error)');
+      }
+    }
+  }
+
+  /// Stops every already-decoded player for [effect]. Used to silence
+  /// in-flight narrator blips before DrinkMomentScreen's song starts —
+  /// [narratorBlipsEnabled] prevents new ones, this cuts the ones that
+  /// already made it to a player.
+  Future<void> stop(SoundEffect effect) async {
+    final pool = _pools[effect];
+    if (pool == null) {
+      return;
+    }
+    for (final player in pool) {
+      try {
+        await player.stop();
+      } catch (error) {
+        if (kDebugMode) {
+          debugPrint('SoundService: skipping stop of ${effect.name} ($error)');
+        }
       }
     }
   }

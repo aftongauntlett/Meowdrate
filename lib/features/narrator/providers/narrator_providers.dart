@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../flood/providers/flood_providers.dart';
 import '../../hydration/providers/hydration_providers.dart';
 import '../../settings/providers/daily_goal_providers.dart';
+import '../narrator_bag_service.dart';
 import '../narrator_selector.dart';
 import '../narrator_trigger.dart';
 
@@ -43,6 +44,22 @@ class OpeningLineOverride extends Notifier<String?> {
 final openingLineOverrideProvider =
     NotifierProvider<OpeningLineOverride, String?>(OpeningLineOverride.new);
 
+/// Whether the flood scene's typewriter should hold its current line
+/// instead of revealing (and blipping) further. FloodHomeScreen stays
+/// mounted under DrinkMomentScreen, so without this a still-playing
+/// narrator line keeps firing [SoundEffect.narratorBlip] and can prevent
+/// the drink-moment song from starting. TypewriterText watches this;
+/// FloodHomeScreen sets it for the lifetime of that route.
+class NarratorPlaybackPaused extends Notifier<bool> {
+  @override
+  bool build() => false;
+
+  void set(bool value) => state = value;
+}
+
+final narratorPlaybackPausedProvider =
+    NotifierProvider<NarratorPlaybackPaused, bool>(NarratorPlaybackPaused.new);
+
 /// The line shown in the flood scene right now: an opening-line override
 /// (see openingLineOverrideProvider) takes priority over everything else,
 /// since it's what makes each app open/return feel like a greeting rather
@@ -56,6 +73,7 @@ final currentNarratorLineProvider = Provider<String>((ref) {
     return openingLine;
   }
 
+  final bagService = ref.watch(narratorBagServiceProvider);
   final level = ref.watch(floodLevelProvider);
   final override = ref.watch(debugNarratorOccurrenceOverrideProvider);
   final drinkCount = ref.watch(hydrationSummaryProvider).value?.count ?? 0;
@@ -72,14 +90,19 @@ final currentNarratorLineProvider = Provider<String>((ref) {
     if (overGoal == 1) {
       return _firstOverGoalLine;
     }
+    // occurrence passed explicitly (rather than left null) so repeated
+    // rebuilds at the same overGoal/exact-goal count reuse today's
+    // already-assigned line instead of burning another one from the
+    // shuffle bag every time this provider recomputes for an unrelated
+    // reason (e.g. the daily goal changing in Settings).
     if (overGoal > 1) {
-      return selectNarratorLine(NarratorTrigger.goalMet, occurrence: overGoal);
+      return selectNarratorLine(bagService, NarratorTrigger.goalMet, occurrence: overGoal);
     }
-    return selectNarratorLine(NarratorTrigger.goalMet);
+    return selectNarratorLine(bagService, NarratorTrigger.goalMet, occurrence: 0);
   }
 
   if (occurrence == 0) {
-    return "Welcome. Cats hate water... help the cat, drink the water!";
+    return 'The cat is in the water. The water is your problem. You can see where this is going.';
   }
-  return selectNarratorLine(NarratorTrigger.drinkLogged, occurrence: occurrence);
+  return selectNarratorLine(bagService, NarratorTrigger.drinkLogged, occurrence: occurrence);
 });

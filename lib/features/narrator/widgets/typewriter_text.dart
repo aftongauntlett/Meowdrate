@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/audio/sound_effect.dart';
 import '../../../core/audio/sound_service.dart';
+import '../providers/narrator_providers.dart';
 
 /// Reveals [text] one character at a time, like the narrator is speaking it
 /// live, with a soft blip every few characters — the Stardew/Inscryption/
@@ -39,6 +40,7 @@ class TypewriterText extends ConsumerStatefulWidget {
 class _TypewriterTextState extends ConsumerState<TypewriterText> {
   int _visibleChars = 0;
   Timer? _timer;
+  bool _paused = false;
 
   @override
   void initState() {
@@ -62,14 +64,42 @@ class _TypewriterTextState extends ConsumerState<TypewriterText> {
 
   void _start() {
     _timer?.cancel();
+    _timer = null;
     setState(() => _visibleChars = 0);
     if (widget.text.isEmpty) return;
+    // A line change while DrinkMomentScreen is up (e.g. the drink being
+    // logged under this still-mounted scene) must not restart the blips —
+    // that's the race that can mute the song. Resume from [_resume] once
+    // the overlay is gone.
+    if (_paused || ref.read(narratorPlaybackPausedProvider)) {
+      _paused = true;
+      return;
+    }
+    _timer = Timer.periodic(widget.charDuration, (_) => _revealNextChar());
+  }
+
+  void _pause() {
+    _paused = true;
+    _timer?.cancel();
+    _timer = null;
+  }
+
+  void _resume() {
+    _paused = false;
+    if (!mounted || widget.text.isEmpty) return;
+    if (_visibleChars >= widget.text.length) return;
+    if (_timer != null) return;
     _timer = Timer.periodic(widget.charDuration, (_) => _revealNextChar());
   }
 
   void _revealNextChar() {
+    if (_paused || ref.read(narratorPlaybackPausedProvider)) {
+      _pause();
+      return;
+    }
     if (_visibleChars >= widget.text.length) {
       _timer?.cancel();
+      _timer = null;
       return;
     }
     final revealedChar = widget.text[_visibleChars];
@@ -86,6 +116,7 @@ class _TypewriterTextState extends ConsumerState<TypewriterText> {
     if ('.,!?'.contains(revealedChar)) {
       _timer?.cancel();
       _timer = Timer(widget.charDuration * 6, () {
+        if (_paused) return;
         _timer = Timer.periodic(widget.charDuration, (_) => _revealNextChar());
       });
     }
@@ -99,6 +130,14 @@ class _TypewriterTextState extends ConsumerState<TypewriterText> {
 
   @override
   Widget build(BuildContext context) {
+    ref.listen<bool>(narratorPlaybackPausedProvider, (previous, next) {
+      if (next) {
+        _pause();
+      } else {
+        _resume();
+      }
+    });
+
     final revealed = widget.text.substring(0, _visibleChars);
     final hidden = widget.text.substring(_visibleChars);
 

@@ -10,6 +10,7 @@ import '../../../core/home_widget/home_widget_sync_service.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_fonts.dart';
 import '../../../core/theme/app_spacing.dart';
+import '../../../core/time_of_day/providers/time_of_day_providers.dart';
 import '../../../core/widgets/pixel_button.dart';
 import '../../../core/widgets/slide_up_route.dart';
 import '../../debug/debug_panel.dart';
@@ -17,6 +18,7 @@ import '../../hydration/models/hydration_entry.dart';
 import '../../hydration/providers/hydration_providers.dart';
 import '../../hydration/screens/drink_moment_screen.dart';
 import '../../hydration/widgets/recent_drinks_list.dart';
+import '../../narrator/narrator_bag_service.dart';
 import '../../narrator/narrator_selector.dart';
 import '../../narrator/narrator_trigger.dart';
 import '../../narrator/providers/narrator_providers.dart';
@@ -76,16 +78,28 @@ class _FloodHomeScreenState extends ConsumerState<FloodHomeScreen>
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
     if (state == AppLifecycleState.resumed) {
-      ref
-          .read(openingLineOverrideProvider.notifier)
-          .set(selectNarratorLine(NarratorTrigger.appReturn));
+      // A goal-missed/long-absence greeting from cold launch is once-a-day
+      // and must survive a brief backgrounding (e.g. switching apps and
+      // coming right back) the same way it survives a trip through
+      // Settings — otherwise this handler would silently overwrite it with
+      // a generic welcome the moment the user resumes.
+      if (isPriorityOpeningLine(ref.read(openingLineOverrideProvider))) {
+        return;
+      }
+      ref.read(openingLineOverrideProvider.notifier).set(
+            selectAppReturnLine(
+              ref.read(narratorBagServiceProvider),
+              hour: ref.read(debugTimeOverrideProvider),
+            ),
+          );
     }
   }
 
   /// Sets today's opening caption: a goal-missed/long-absence line if the
-  /// app noticed one while catching up on missed days, otherwise a plain
-  /// "welcome back" line — either way, a greeting rather than a rerun of
-  /// whatever drink-logged line was showing when the app was last closed.
+  /// app noticed one while catching up on missed days, otherwise a welcome
+  /// that can mention the time of day — either way, a greeting rather than
+  /// a rerun of whatever drink-logged line was showing when the app was
+  /// last closed.
   Future<void> _checkRolloverEvent() async {
     await ref.read(floodStateProvider.future);
     if (!mounted) {
@@ -101,24 +115,45 @@ class _FloodHomeScreenState extends ConsumerState<FloodHomeScreen>
       DayRolloverEvent.none => NarratorTrigger.appReturn,
     };
 
-    ref
-        .read(openingLineOverrideProvider.notifier)
-        .set(selectNarratorLine(trigger));
+    ref.read(openingLineOverrideProvider.notifier).set(
+          selectOpeningGreeting(
+            ref.read(narratorBagServiceProvider),
+            trigger,
+            hour: ref.read(debugTimeOverrideProvider),
+          ),
+        );
   }
 
   Future<void> _openDrinkMoment() async {
-    unawaited(ref.read(soundServiceProvider).play(SoundEffect.uiTap));
+    // This screen stays mounted under DrinkMomentScreen, so a still-typing
+    // narrator line would keep firing blips while that screen's song
+    // player spins up — a race that can silently drop the song (see
+    // SoundService.narratorBlipsEnabled). Pause the typewriter and cut
+    // any in-flight blips *before* the route is pushed, so the song
+    // starts the same way whether the prior line had finished or not.
+    final sound = ref.read(soundServiceProvider);
+    ref.read(narratorPlaybackPausedProvider.notifier).set(true);
+    sound.narratorBlipsEnabled = false;
+    unawaited(sound.stop(SoundEffect.narratorBlip));
+    unawaited(sound.play(SoundEffect.uiTap));
     // Slides up like the Settings sheet, rather than the platform-default
     // horizontal push — the two full-screen overlays in this app should
     // feel like the same kind of thing entering.
-    final logged = await Navigator.of(context)
-        .push<bool>(SlideUpRoute(builder: (_) => const DrinkMomentScreen()));
-    // The flood scene's own caption already updates the moment a drink is
-    // logged, so there's no separate confirmation toast here — but the
-    // greeting override has to step aside first, or it'd keep showing
-    // instead of that drink's own reaction line.
-    if (logged ?? false) {
-      ref.read(openingLineOverrideProvider.notifier).set(null);
+    try {
+      final logged = await Navigator.of(context)
+          .push<bool>(SlideUpRoute(builder: (_) => const DrinkMomentScreen()));
+      // The flood scene's own caption already updates the moment a drink is
+      // logged, so there's no separate confirmation toast here — but the
+      // greeting override has to step aside first, or it'd keep showing
+      // instead of that drink's own reaction line.
+      if (logged ?? false) {
+        ref.read(openingLineOverrideProvider.notifier).set(null);
+      }
+    } finally {
+      sound.narratorBlipsEnabled = true;
+      if (mounted) {
+        ref.read(narratorPlaybackPausedProvider.notifier).set(false);
+      }
     }
   }
 

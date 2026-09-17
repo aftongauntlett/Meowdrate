@@ -1,13 +1,42 @@
-/// Shown every time the app is opened — cold launch or coming back from
-/// the background — so the caption greets you instead of repeating
-/// whatever drink-logged reaction was last showing. Milder and more
-/// frequent than longAbsenceLines, which is reserved for the rarer
-/// multi-day-gap case.
+/// Shown every time the app is opened during the day (7am–6pm local) —
+/// cold launch or coming back from the background — so the caption greets
+/// you instead of repeating whatever drink-logged reaction was last
+/// showing. Dawn/dusk/night/late-night use their own pools; see
+/// [selectAppReturnLine]. Milder and more frequent than longAbsenceLines,
+/// which is reserved for the rarer multi-day-gap case.
 const appReturnLines = <String>[
   'Welcome back. The water hasn\'t moved.',
   'Oh, you again. I mean — welcome back.',
   'You return. The cat remains cautiously optimistic.',
-  'Back so soon. Or not soon. I don\'t track that. Welcome back.',
+  'Back so soon. Or not soon. Either way, the water waited.',
   'You\'re here. The water\'s here. Let\'s pretend that\'s a coincidence.',
   'Welcome back. Try to act like you remember why you opened this.',
+  'You opened the app. That\'s the easy part.',
+  'Still flooded. Still you. Let\'s not make it a trilogy.',
+  'Welcome back. I\'ve kept the flood exactly where you left it. You\'re welcome.',
+  'You opened this. Step two is the glass, not the staring.',
+  'The experiment continues. You are, unfortunately, still the subject.',
+  'Good, you\'re here. The water was beginning to think this was a solo act.',
+  'Oh good, you\'re here. The water was beginning to think you\'d chosen a new hobby.',
+  'Session resumed. Previous performance: on file. Please try to look like you care.',
+  'You opened the app. Statistically, that\'s the high point of some people\'s hydration strategy.',
+  'Back again. The flood did not recede out of respect for your absence. Shocking, I know.',
+  'I\'ve prepared a brief: you, water, a cat. Two of those are still waiting.',
+  'Welcome back. Your last visit was logged. The gap was... educational.',
+  'You returned. I\'d call it dedication if it didn\'t look so much like guilt.',
+  'Good, you\'re here. I was about to start narrating the water. It\'s a short story.',
+  'Opening the app is step one. Step two remains stubbornly optional, I see.',
+  'I\'ve updated your attendance record. Participation trophy pending. Forever, possibly.',
+  'The flood missed you. I remained professional. The flood is a terrible liar.',
+  'You\'re back. Let\'s pretend the delay was part of the protocol.',
+  'Welcome. Please hydrate at your earliest convenience, which historically is not early.',
+  'I ran the numbers while you were gone. They were not inspiring. They still aren\'t.',
+  'Ah. A volunteer. The water has been waiting. Please proceed when you feel dramatically ready.',
+  'Status report: flood, present. Cat, patient. You, late. Begin when ready.',
+  'You\'re here. I\'ve taken the liberty of not draining the flood for you. Growth opportunity.',
+  'Welcome back. I\'ve prepared several versions of encouragement. All of them are lies.',
+  'Returned so soon? Or so late? My records say "yes."',
+  'The flood remains at an unhelpful percentage. I\'ve annotated it "see user."',
+  'Good, a test subject. Please ignore how long I waited. I\'ve been practicing patience. Poorly.',
+  'You opened this. That\'s the easy part. The water, as ever, is the homework.',
 ];

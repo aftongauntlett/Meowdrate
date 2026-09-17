@@ -8,7 +8,6 @@ const goalMetLines = <String>[
   'You actually finished. I had a bet against this. I lost.',
   'The water\'s gone and so is my excuse to be dramatic about it. For today.',
   'Congratulations, you hydrated like a person with functioning executive skills.',
-  'Goal met. Somewhere, a very small parade is now a medium parade.',
   'You cleared it. I\'d throw confetti if I had hands.',
-  'Achievement unlocked: basic human maintenance. I\'m applauding internally.',
+  'Achievement unlocked: basic human maintenance.',
 ];

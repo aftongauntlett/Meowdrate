@@ -12,6 +12,7 @@ import '../../core/widgets/confirm_dialog.dart';
 import '../flood/providers/flood_providers.dart';
 import '../hydration/providers/hydration_providers.dart';
 import '../narrator/data/drink_logged_lines.dart';
+import '../narrator/narrator_bag_service.dart';
 import '../narrator/narrator_selector.dart';
 import '../narrator/narrator_trigger.dart';
 import '../narrator/providers/narrator_providers.dart';
@@ -115,8 +116,36 @@ class DebugPanel extends ConsumerWidget {
                 ),
                 _DebugButton(
                   label: 'Preview welcome-back line',
-                  onPressed: () =>
-                      _previewLine(context, ref, NarratorTrigger.appReturn),
+                  onPressed: () => _previewOpening(
+                    context,
+                    ref,
+                    selectAppReturnLine(
+                      ref.read(narratorBagServiceProvider),
+                      hour: ref.read(debugTimeOverrideProvider),
+                    ),
+                  ),
+                ),
+                _DebugButton(
+                  label: 'Preview settings-closed line',
+                  onPressed: () => _previewOpening(
+                    context,
+                    ref,
+                    selectNarratorLine(
+                      ref.read(narratorBagServiceProvider),
+                      NarratorTrigger.settingsClosed,
+                    ),
+                  ),
+                ),
+                _DebugButton(
+                  label: 'Preview skipped-drink line',
+                  onPressed: () => _previewOpening(
+                    context,
+                    ref,
+                    selectNarratorLine(
+                      ref.read(narratorBagServiceProvider),
+                      NarratorTrigger.drinkSkipped,
+                    ),
+                  ),
                 ),
                 _DebugButton(
                   label: 'Dawn',
@@ -135,6 +164,10 @@ class DebugPanel extends ConsumerWidget {
                   onPressed: () => timeOverride.setOverride(22),
                 ),
                 _DebugButton(
+                  label: 'Late night',
+                  onPressed: () => timeOverride.setOverride(2),
+                ),
+                _DebugButton(
                   label: 'Use real time of day',
                   onPressed: () => timeOverride.setOverride(null),
                 ),
@@ -148,6 +181,7 @@ class DebugPanel extends ConsumerWidget {
                     );
                     if (confirmed == true) {
                       controller.debugResetAll();
+                      ref.read(narratorBagServiceProvider).debugReset();
                     }
                   },
                 ),
@@ -173,10 +207,16 @@ void _previewLine(
   WidgetRef ref,
   NarratorTrigger trigger,
 ) {
+  _previewOpening(
+    context,
+    ref,
+    selectNarratorLine(ref.read(narratorBagServiceProvider), trigger),
+  );
+}
+
+void _previewOpening(BuildContext context, WidgetRef ref, String line) {
   ref.read(debugNarratorOccurrenceOverrideProvider.notifier).setOverride(0);
-  ref
-      .read(openingLineOverrideProvider.notifier)
-      .set(selectNarratorLine(trigger));
+  ref.read(openingLineOverrideProvider.notifier).set(line);
   Navigator.of(context).pop();
 }
 

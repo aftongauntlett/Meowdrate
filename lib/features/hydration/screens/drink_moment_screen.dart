@@ -17,6 +17,10 @@ import '../../../core/widgets/themed_card_decoration.dart';
 import '../../creatures/creature_roster.dart';
 import '../../creatures/models/mood_band.dart';
 import '../../creatures/widgets/sprite_animation.dart';
+import '../../narrator/narrator_bag_service.dart';
+import '../../narrator/narrator_selector.dart';
+import '../../narrator/narrator_trigger.dart';
+import '../../narrator/providers/narrator_providers.dart';
 import '../../settings/providers/music_muted_providers.dart';
 import '../../settings/providers/sound_muted_providers.dart';
 import '../hydration_constants.dart';
@@ -89,6 +93,19 @@ class _DrinkMomentScreenState extends ConsumerState<DrinkMomentScreen> {
   // Same "missing/unplayable asset is skipped silently" tolerance as
   // SoundService — see assets/audio/README.md.
   Future<void> _playSong() async {
+    // FloodHomeScreen stays mounted underneath, so a narrator line that
+    // hadn't finished typing is still in the tree. Cut its blips before
+    // this player starts — otherwise the two race and this play() can be
+    // dropped silently. The typewriter is also paused by
+    // narratorPlaybackPausedProvider; this is the music trigger's own
+    // guard so the song still starts if that pause hasn't landed yet.
+    final sound = ref.read(soundServiceProvider);
+    sound.narratorBlipsEnabled = false;
+    await sound.stop(SoundEffect.narratorBlip);
+    if (!mounted) {
+      return;
+    }
+
     try {
       final player = _songPlayer = AudioPlayer();
       // Loops gaplessly on its own rather than us reseeking on completion
@@ -197,6 +214,17 @@ class _DrinkMomentScreenState extends ConsumerState<DrinkMomentScreen> {
 
   void _handleSkip() {
     unawaited(ref.read(soundServiceProvider).play(SoundEffect.uiTapNegative));
+    // A goal-missed/long-absence greeting is once-a-day and shouldn't be
+    // knocked out by declining a drink, same guard as a background/resume
+    // cycle or a trip through Settings.
+    if (!isPriorityOpeningLine(ref.read(openingLineOverrideProvider))) {
+      ref.read(openingLineOverrideProvider.notifier).set(
+            selectNarratorLine(
+              ref.read(narratorBagServiceProvider),
+              NarratorTrigger.drinkSkipped,
+            ),
+          );
+    }
     Navigator.of(context).pop(false);
   }
 
