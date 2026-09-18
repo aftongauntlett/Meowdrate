@@ -15,22 +15,22 @@
 </script>
 <meta name="theme-color" content="#f5f7fc" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#05070c" media="(prefers-color-scheme: dark)">
-<title>Meowdrate — Privacy Policy</title>
-<meta name="description" content="Meowdrate doesn't collect, store, or transmit any personal data. No account, no server, no analytics.">
-<link rel="canonical" href="https://meowdrate.com/privacy.html">
+<title>Meowdrate — Versions</title>
+<meta name="description" content="What's changed in each release of Meowdrate.">
+<link rel="canonical" href="https://meowdrate.com/versions.html">
 <meta property="og:type" content="website">
-<meta property="og:url" content="https://meowdrate.com/privacy.html">
+<meta property="og:url" content="https://meowdrate.com/versions.html">
 <meta property="og:site_name" content="Meowdrate">
 <meta property="og:locale" content="en_US">
-<meta property="og:title" content="Meowdrate — Privacy Policy">
-<meta property="og:description" content="Meowdrate doesn't collect, store, or transmit any personal data. No account, no server, no analytics.">
+<meta property="og:title" content="Meowdrate — Versions">
+<meta property="og:description" content="What's changed in each release of Meowdrate.">
 <meta property="og:image" content="https://meowdrate.com/feature-graphic.png">
 <meta property="og:image:width" content="1024">
 <meta property="og:image:height" content="500">
 <meta property="og:image:alt" content="Meowdrate: a pixel-art cat above a rising flood, with the tagline 'Drink water. Save the cat.'">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="Meowdrate — Privacy Policy">
-<meta name="twitter:description" content="Meowdrate doesn't collect, store, or transmit any personal data. No account, no server, no analytics.">
+<meta name="twitter:title" content="Meowdrate — Versions">
+<meta name="twitter:description" content="What's changed in each release of Meowdrate.">
 <meta name="twitter:image" content="https://meowdrate.com/feature-graphic.png">
 <meta name="twitter:image:alt" content="Meowdrate: a pixel-art cat above a rising flood, with the tagline 'Drink water. Save the cat.'">
 <link rel="icon" href="favicon.ico" sizes="any">
@@ -63,27 +63,39 @@
     color: var(--text-muted);
     margin: 0 0 40px;
   }
-  h2 {
-    font-size: 17px;
-    margin: 34px 0 10px;
-    letter-spacing: -0.005em;
-  }
   p, li {
     font-size: 15px;
     color: var(--text-muted);
   }
   p { margin: 0 0 12px; }
-  ul { margin: 0 0 12px; padding-left: 20px; }
+  ul { margin: 0; padding-left: 20px; }
   li { margin-bottom: 6px; }
   strong { color: var(--text); }
-  .summary {
+  .version-card {
     background: var(--surface);
     border: 1px solid var(--border);
     border-radius: 12px;
     padding: 18px 20px;
-    margin-bottom: 8px;
+    margin-bottom: 16px;
   }
-  .summary p:last-child { margin-bottom: 0; }
+  .version-head {
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-bottom: 10px;
+  }
+  .version-num {
+    font-family: var(--font-heading);
+    font-weight: 700;
+    font-size: 16px;
+    color: var(--text);
+  }
+  .version-date {
+    font-size: 13px;
+    color: var(--text-muted);
+  }
+  .version-card ul:last-child { margin-bottom: 0; }
 </style>
 </head>
 <body>
@@ -106,42 +118,30 @@
 <main id="main" class="page">
 
   <p class="eyebrow">Meowdrate</p>
-  <h1>Privacy Policy</h1>
-  <p class="updated">Last updated August 15, 2026</p>
+  <h1>Versions</h1>
+  <p class="updated">What's changed in each release. Updated occasionally, not every release.</p>
 
-  <div class="summary">
-    <p><strong>The short version:</strong> Meowdrate doesn't collect, store, or transmit any personal data. There's no account, no server, and no analytics. Everything the app remembers lives only on your device.</p>
+  <div class="version-card">
+    <div class="version-head">
+      <span class="version-num">1.0.1</span>
+      <span class="version-date">September 2026</span>
+    </div>
+    <ul>
+      <li>Added a large batch of new narrator/cat dialogue lines, picked from a shuffle bag so they all cycle before repeating</li>
+      <li>Added a greeting for opening the app after the day's goal is already met, instead of a line that contradicts a cleared flood</li>
+      <li>Fixed a bug where tapping "I Meowdrated!" before the narrator finished talking could silently skip the Drink Moment music</li>
+    </ul>
   </div>
 
-  <h2>What the app stores, and where</h2>
-  <p>Meowdrate keeps all of its data locally on your device, using Android/iOS's standard local storage. This includes:</p>
-  <ul>
-    <li>The drinks you log and when you logged them</li>
-    <li>Your daily hydration goal and streak</li>
-    <li>App preferences — theme, sound, reminder settings</li>
-  </ul>
-  <p>None of this ever leaves your device. There is no backend server, no account or sign-in, and nothing is synced or backed up by the app itself. If you uninstall the app or switch devices, this data is gone — that's an intentional tradeoff for keeping everything private and local.</p>
-
-  <h2>Notifications</h2>
-  <p>If you enable reminders, the app schedules local notifications directly on your device (via the operating system's own notification scheduler). No notification content or scheduling data is sent anywhere outside your device.</p>
-
-  <h2>Home screen widget</h2>
-  <p>If you add the optional home screen widget, it reads your locally stored hydration data to display it — this stays entirely on-device as well.</p>
-
-  <h2>Links to outside websites</h2>
-  <p>A few places in the app — the credits list and the support/donation link — open external websites (such as itch.io, Pixabay, or Ko-fi) in your device's browser. Those sites are outside our control and have their own privacy policies; this policy only covers Meowdrate itself.</p>
-
-  <h2>Analytics, ads, and third-party tracking</h2>
-  <p>None. The app contains no analytics SDK, no advertising SDK, and no crash-reporting or tracking service of any kind.</p>
-
-  <h2>Children's privacy</h2>
-  <p>Since the app collects no personal data from anyone, it doesn't knowingly collect any data from children either.</p>
-
-  <h2>Changes to this policy</h2>
-  <p>If this policy ever changes — for example, if a future version of the app adds a feature that does transmit data — this page will be updated and the date above will change accordingly.</p>
-
-  <h2>Contact</h2>
-  <p>Questions about this policy can be sent to <a href="mailto:contact@meowdrate.com">contact@meowdrate.com</a>.</p>
+  <div class="version-card">
+    <div class="version-head">
+      <span class="version-num">1.0.0</span>
+      <span class="version-date">August 2026</span>
+    </div>
+    <ul>
+      <li>First release on Google Play</li>
+    </ul>
+  </div>
 
 </main>
 
@@ -149,9 +149,9 @@
   <div class="wrap">
     <nav class="links" aria-label="Footer">
       <a href="/">Home</a>
-      <a href="privacy.html" aria-current="page">Privacy Policy</a>
+      <a href="privacy.html">Privacy Policy</a>
       <a href="credits.html">Credits</a>
-      <a href="versions.html">Versions</a>
+      <a href="versions.html" aria-current="page">Versions</a>
       <a href="https://ko-fi.com/prettyprettyprettygood" target="_blank" rel="noopener noreferrer"
         >Donate<span class="sr-only"> (opens in new tab)</span><svg class="external-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17 17 7M17 7H8M17 7v9"/></svg
       ></a>

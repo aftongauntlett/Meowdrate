@@ -213,25 +213,6 @@
         padding: 20px 20px 26px;
         box-shadow: var(--shadow);
       }
-      .step-num {
-        display: none;
-      }
-      .steps-2 .step-num {
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        position: absolute;
-        top: -13px;
-        left: 24px;
-        width: 26px;
-        height: 26px;
-        border-radius: 999px;
-        background: var(--primary);
-        color: var(--on-primary);
-        font-size: 12.5px;
-        font-weight: 800;
-        box-shadow: 0 0 0 4px var(--bg);
-      }
       .step .shot {
         width: 100%;
         height: auto;
@@ -250,15 +231,8 @@
         color: var(--text-muted);
         margin: 0 0 14px;
       }
-      .steps-2 {
-        grid-template-columns: repeat(2, 1fr);
-      }
-      .step .btn {
-        margin-top: auto;
-        align-self: flex-start;
-      }
-      .testing-note {
-        margin: 24px 0 0;
+      .platform-note {
+        margin: 16px 0 0;
         font-size: 13px;
         color: var(--text-muted);
       }
@@ -533,7 +507,7 @@
       <header class="hero" id="top">
         <div class="wrap">
           <div>
-            <p class="eyebrow">Hydration, without the guilt trip</p>
+            <p class="eyebrow">Live now on Google Play</p>
             <h1>A hydration app that starts full instead of empty.</h1>
             <p class="hero-sub">
               The screen is a flood, swishing near the top under a sky that
@@ -541,11 +515,31 @@
               little to slowly rescues the cat who's stuck in the middle of it.
             </p>
             <div class="cta-row">
-              <a class="btn btn-primary" href="#testing">Sign up to test</a>
-              <a class="btn btn-ghost" href="privacy.html"
-                >Read the privacy policy</a
-              >
+              <a
+                class="btn btn-primary"
+                href="https://play.google.com/store/apps/details?id=com.aftongauntlett.meowdrate"
+                target="_blank"
+                rel="noopener noreferrer"
+                >Get it on Google Play<span class="sr-only">
+                  (opens in new tab)</span
+                ><svg
+                  class="external-icon"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2.4"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  aria-hidden="true"
+                >
+                  <path
+                    d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"
+                  />
+                  <path d="M15 3h6v6" />
+                  <path d="M10 14 21 3" /></svg
+              ></a>
             </div>
+            <p class="platform-note">Coming soon to the App Store.</p>
           </div>
           <div class="hero-art">
             <div class="phone">
@@ -565,87 +559,6 @@
           </div>
         </div>
       </header>
-
-      <section id="testing" aria-labelledby="testing-heading">
-        <div class="wrap">
-          <div class="section-head">
-            <h2 id="testing-heading">Help test Meowdrate</h2>
-            <p class="section-lede">
-              Before Google lets me publish this publicly, it requires at least
-              12 real testers to install the app and keep it for two weeks.
-              Android only for right now, coming soon to iOS.
-            </p>
-          </div>
-          <div class="steps steps-2">
-            <div class="step">
-              <span class="step-num">1</span>
-              <h3>Join the tester group</h3>
-              <p>
-                Just needs a Google account. No approval wait, anyone can join.
-                This is what grants you test access.
-              </p>
-              <a
-                class="btn btn-primary"
-                href="https://groups.google.com/g/meowdrate-testers"
-                target="_blank"
-                rel="noopener noreferrer"
-                >Join Meowdrate Testers<span class="sr-only">
-                  (opens in new tab)</span
-                ><svg
-                  class="external-icon"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  stroke-width="2.4"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  aria-hidden="true"
-                >
-                  <path
-                    d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"
-                  />
-                  <path d="M15 3h6v6" />
-                  <path d="M10 14 21 3" /></svg
-              ></a>
-            </div>
-            <div class="step">
-              <span class="step-num">2</span>
-              <h3>Install from Google Play</h3>
-              <p>
-                Once you're in the group, click below to install the app and
-                leave it installed for two weeks!
-              </p>
-              <a
-                class="btn btn-primary"
-                href="https://play.google.com/apps/testing/com.aftongauntlett.meowdrate"
-                target="_blank"
-                rel="noopener noreferrer"
-                >Get the App<span class="sr-only"> (opens in new tab)</span
-                ><svg
-                  class="external-icon"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  stroke-width="2.4"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  aria-hidden="true"
-                >
-                  <path
-                    d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"
-                  />
-                  <path d="M15 3h6v6" />
-                  <path d="M10 14 21 3" /></svg
-              ></a>
-            </div>
-          </div>
-          <p class="testing-note">
-            Note: once the group page opens, click "Join group" in the top right
-            corner. Use the same Google account for both steps, or the Play
-            Store won't recognize you as a tester.
-          </p>
-        </div>
-      </section>
 
       <section id="how" aria-labelledby="how-heading">
         <div class="wrap">
@@ -1003,6 +916,7 @@
           <a href="/" aria-current="page">Home</a>
           <a href="privacy.html">Privacy Policy</a>
           <a href="credits.html">Credits</a>
+          <a href="versions.html">Versions</a>
           <a
             href="https://ko-fi.com/prettyprettyprettygood"
             target="_blank"
