@@ -148,14 +148,104 @@
           transform: none;
         }
       }
-      .btn-ghost {
-        background: transparent;
-        color: var(--text);
-        border-color: var(--border);
+      .store-badge {
+        display: inline-flex;
+        align-items: center;
+        height: 48px;
       }
-      .btn-ghost:hover {
-        border-color: var(--primary);
-        color: var(--link);
+      .store-badge img {
+        display: block;
+        height: 100%;
+        width: auto;
+      }
+      a.store-badge {
+        border-radius: 10px;
+        transition:
+          transform 0.15s ease,
+          box-shadow 0.15s ease;
+      }
+      a.store-badge:hover,
+      a.store-badge:focus-visible {
+        transform: translateY(-2px);
+        box-shadow: var(--shadow);
+      }
+      @media (prefers-reduced-motion: reduce) {
+        a.store-badge {
+          transition: none;
+        }
+        a.store-badge:hover,
+        a.store-badge:focus-visible {
+          transform: none;
+        }
+      }
+      /* Apple ships separate black/white badge art rather than a
+         currentColor icon, so swap images the same way the nav's
+         sun/moon toggle icons swap. */
+      .store-badge .badge-dark {
+        display: none;
+      }
+      :root[data-theme="light"] .store-badge .badge-light {
+        display: block;
+      }
+      :root[data-theme="light"] .store-badge .badge-dark {
+        display: none;
+      }
+      :root[data-theme="dark"] .store-badge .badge-light {
+        display: none;
+      }
+      :root[data-theme="dark"] .store-badge .badge-dark {
+        display: block;
+      }
+      @media (prefers-color-scheme: dark) {
+        :root:not([data-theme="light"]) .store-badge .badge-light {
+          display: none;
+        }
+        :root:not([data-theme="light"]) .store-badge .badge-dark {
+          display: block;
+        }
+      }
+      .store-badge-disabled {
+        position: relative;
+        cursor: not-allowed;
+        opacity: 0.55;
+      }
+      .store-badge-disabled .tooltip {
+        position: absolute;
+        bottom: calc(100% + 9px);
+        left: 50%;
+        transform: translateX(-50%) translateY(4px);
+        background: var(--text);
+        color: var(--bg);
+        font-size: 12px;
+        font-weight: 700;
+        letter-spacing: 0.01em;
+        padding: 6px 10px;
+        border-radius: 8px;
+        white-space: nowrap;
+        opacity: 0;
+        pointer-events: none;
+        transition:
+          opacity 0.15s ease,
+          transform 0.15s ease;
+      }
+      .store-badge-disabled .tooltip::after {
+        content: "";
+        position: absolute;
+        top: 100%;
+        left: 50%;
+        transform: translateX(-50%);
+        border: 5px solid transparent;
+        border-top-color: var(--text);
+      }
+      .store-badge-disabled:hover .tooltip,
+      .store-badge-disabled:focus-visible .tooltip {
+        opacity: 1;
+        transform: translateX(-50%) translateY(0);
+      }
+      @media (prefers-reduced-motion: reduce) {
+        .store-badge-disabled .tooltip {
+          transition: none;
+        }
       }
 
       .hero-art {
@@ -231,12 +321,6 @@
         color: var(--text-muted);
         margin: 0 0 14px;
       }
-      .platform-note {
-        margin: 16px 0 0;
-        font-size: 13px;
-        color: var(--text-muted);
-      }
-
       /* ---- selling points ---- */
       .points {
         display: grid;
@@ -516,30 +600,43 @@
             </p>
             <div class="cta-row">
               <a
-                class="btn btn-primary"
+                class="store-badge"
                 href="https://play.google.com/store/apps/details?id=com.aftongauntlett.meowdrate"
                 target="_blank"
                 rel="noopener noreferrer"
-                >Get it on Google Play<span class="sr-only">
-                  (opens in new tab)</span
-                ><svg
-                  class="external-icon"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  stroke-width="2.4"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  aria-hidden="true"
-                >
-                  <path
-                    d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"
-                  />
-                  <path d="M15 3h6v6" />
-                  <path d="M10 14 21 3" /></svg
-              ></a>
+                aria-label="Get it on Google Play (opens in new tab)"
+              >
+                <img
+                  src="badges/google-play-badge.png"
+                  width="646"
+                  height="250"
+                  alt=""
+                />
+              </a>
+              <span
+                class="store-badge store-badge-disabled"
+                tabindex="0"
+                role="button"
+                aria-disabled="true"
+                aria-label="Download on the App Store — Coming soon"
+              >
+                <img
+                  class="badge-light"
+                  src="badges/app-store-badge-black.svg"
+                  width="120"
+                  height="40"
+                  alt=""
+                />
+                <img
+                  class="badge-dark"
+                  src="badges/app-store-badge-white.svg"
+                  width="120"
+                  height="40"
+                  alt=""
+                />
+                <span class="tooltip" aria-hidden="true">Coming soon</span>
+              </span>
             </div>
-            <p class="platform-note">Coming soon to the App Store.</p>
           </div>
           <div class="hero-art">
             <div class="phone">
