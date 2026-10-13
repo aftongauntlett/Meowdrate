@@ -154,53 +154,6 @@
         flex-shrink: 0;
         object-fit: contain;
       }
-      .btn-disabled {
-        position: relative;
-        background: transparent;
-        color: var(--text-muted);
-        border-color: var(--border);
-        cursor: not-allowed;
-        opacity: 0.65;
-      }
-      .btn-disabled .tooltip {
-        position: absolute;
-        bottom: calc(100% + 9px);
-        left: 50%;
-        transform: translateX(-50%) translateY(4px);
-        background: var(--text);
-        color: var(--bg);
-        font-size: 12px;
-        font-weight: 700;
-        letter-spacing: 0.01em;
-        padding: 6px 10px;
-        border-radius: 8px;
-        white-space: nowrap;
-        opacity: 0;
-        pointer-events: none;
-        transition:
-          opacity 0.15s ease,
-          transform 0.15s ease;
-      }
-      .btn-disabled .tooltip::after {
-        content: "";
-        position: absolute;
-        top: 100%;
-        left: 50%;
-        transform: translateX(-50%);
-        border: 5px solid transparent;
-        border-top-color: var(--text);
-      }
-      .btn-disabled:hover .tooltip,
-      .btn-disabled:focus-visible .tooltip {
-        opacity: 1;
-        transform: translateX(-50%) translateY(0);
-      }
-      @media (prefers-reduced-motion: reduce) {
-        .btn-disabled .tooltip {
-          transition: none;
-        }
-      }
-
       /* ---- official store badges (bottom of page) ---- */
       .store-row {
         display: flex;
@@ -219,6 +172,11 @@
         display: block;
         height: 100%;
         width: auto;
+      }
+      /* The Play badge PNG has built-in padding (art is ~46px of its 68px);
+         the App Store SVG has none, so size it to match visually. */
+      .store-badge-apple {
+        height: 46px;
       }
       a.store-badge {
         border-radius: 10px;
@@ -455,12 +413,6 @@
         color: var(--text-muted);
         text-align: center;
       }
-      .store-row-note {
-        margin: 12px 0 0;
-        font-size: 13px;
-        color: var(--text-muted);
-        text-align: center;
-      }
 
       /* ---- support cta ---- */
       .support-cta {
@@ -589,7 +541,7 @@
       <header class="hero" id="top">
         <div class="wrap">
           <div>
-            <p class="eyebrow">Live now on Google Play</p>
+            <p class="eyebrow">Live now on the App Store and Google Play</p>
             <h1>A hydration app that starts full instead of empty.</h1>
             <p class="hero-sub">
               The screen is a flood, swishing near the top under a sky that
@@ -614,11 +566,11 @@
                   (opens in new tab)</span
                 >
               </a>
-              <button
-                type="button"
-                class="btn btn-disabled"
-                aria-disabled="true"
-                aria-label="App Store — Coming soon"
+              <a
+                class="btn btn-primary"
+                href="https://apps.apple.com/app/id6822110452"
+                target="_blank"
+                rel="noopener noreferrer"
               >
                 <svg
                   class="store-icon"
@@ -633,9 +585,10 @@
                     d="M22.03725,12.21089a4.87248,4.87248,0,0,0,1.11452-3.49062,4.95746,4.95746,0,0,0-3.20758,1.65961,4.63634,4.63634,0,0,0-1.14371,3.36139A4.09905,4.09905,0,0,0,22.03725,12.21089Z"
                   />
                 </svg>
-                App Store
-                <span class="tooltip" aria-hidden="true">Coming soon</span>
-              </button>
+                Download on the App Store<span class="sr-only">
+                  (opens in new tab)</span
+                >
+              </a>
             </div>
           </div>
           <div class="hero-art">
@@ -968,6 +921,20 @@
           </p>
           <div class="store-row">
             <a
+              class="store-badge store-badge-apple"
+              href="https://apps.apple.com/app/id6822110452"
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="Download on the App Store (opens in new tab)"
+            >
+              <img
+                src="badges/app-store-badge-black.svg"
+                width="120"
+                height="40"
+                alt=""
+              />
+            </a>
+            <a
               class="store-badge"
               href="https://play.google.com/store/apps/details?id=com.aftongauntlett.meowdrate"
               target="_blank"
@@ -982,7 +949,6 @@
               />
             </a>
           </div>
-          <p class="store-row-note">Coming soon to the App Store.</p>
         </div>
       </section>
 
