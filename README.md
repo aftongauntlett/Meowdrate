@@ -36,7 +36,7 @@ Everything is stored locally - no backend, no login. This is intentional.
   silently until files are dropped in, see `assets/audio/README.md`)
 - `flutter_local_notifications` + `timezone`/`flutter_timezone` for
   scheduled hydration reminders
-- `home_widget` for the optional Android home-screen widget
+- `home_widget` for the optional home-screen widget (Android and iOS)
 - `url_launcher` for the credits/support links in Settings
 
 ## How to run
