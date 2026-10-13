@@ -35,7 +35,14 @@ class ReminderService {
 
   Future<void> init() async {
     const androidSettings = AndroidInitializationSettings('@mipmap/ic_launcher');
-    const darwinSettings = DarwinInitializationSettings();
+    // Don't prompt at launch: on iOS the default settings show the
+    // permission dialog inside initialize(), before runApp. Permission is
+    // requested in context via requestPermission(), same as Android.
+    const darwinSettings = DarwinInitializationSettings(
+      requestAlertPermission: false,
+      requestBadgePermission: false,
+      requestSoundPermission: false,
+    );
 
     await _plugin.initialize(
       settings: const InitializationSettings(
